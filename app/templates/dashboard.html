@@ -2,7 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Transaksi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Transaksi - Catetin</title>
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Catetin - Asisten Keuangan Personal 🟢">
+    <meta property="og:description" content="Pantau dan kelola semua catatan transaksi harianmu di Dashboard Catetin.">
+    <meta property="og:image" content="https://0259-125-167-191-40.ngrok-free.app/static/logo.png">
+    <meta property="og:url" content="https://0259-125-167-191-40.ngrok-free.app/dashboard">
+
     <style>
         body { font-family: sans-serif; background: #f4f6f8; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -23,7 +31,7 @@
             <a href="/logout" class="logout-btn">Logout</a>
         </div>
 
-        <h3>Daftar Transaksi (WHERE user_id = {{ user.id }})</h3>
+        <h3>Daftar Transaksi</h3>
         <table>
             <thead>
                 <tr>
