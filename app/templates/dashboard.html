@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Transaksi</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f6f8; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; }
+        .logout-btn { color: #dc3545; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h2>Dashboard Transaksi</h2>
+                <p>User ID: <strong>{{ user.id }}</strong> | User: <strong>{{ user.username }}</strong> ({{ user.phone_number }})</p>
+            </div>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+
+        <h3>Daftar Transaksi (WHERE user_id = {{ user.id }})</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Deskripsi</th>
+                    <th>Jumlah (Rp)</th>
+                    <th>Waktu</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in transactions %}
+                <tr>
+                    <td>{{ txn.id }}</td>
+                    <td>{{ txn.description }}</td>
+                    <td>Rp {{ "{:,.0f}".format(txn.amount) }}</td>
+                    <td>{{ txn.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #888;">Belum ada transaksi. Kirim pesan ke WhatsApp untuk mencatat otomatis!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
