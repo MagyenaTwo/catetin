@@ -8,3 +8,4 @@ jinja2
 itsdangerous
 mistralai
 slowapi
+python-dotenv
