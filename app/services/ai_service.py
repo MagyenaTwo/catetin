@@ -43,10 +43,10 @@ def get_smart_fallback(user_message: str, transaction_result: dict = None) -> st
             "=========================\n\n"
             "⚠️ *FORMAT KURANG PAS*\n\n"
             "Formatnya simpel kok, contoh:\n"
-            "• ☕ `beli kopi 29k`\n"
-            "• 🍜 `nasi goreng 15rb`\n"
-            "• ⛽ `bensin 50rb`\n"
-            "• 💰 `gaji 5jt`"
+            "• ☕ beli kopi 29k\n"
+            "• 🍜 nasi goreng 15rb\n"
+            "• ⛽ bensin 50rb\n"
+            "• 💰 gaji 5jt"
         )
 
     return (
@@ -55,8 +55,8 @@ def get_smart_fallback(user_message: str, transaction_result: dict = None) -> st
         "=========================\n\n"
         "👋 *Halo! Mau catat transaksi apa hari ini?*\n\n"
         "Langsung ketik aja, contoh:\n"
-        "• ☕ `beli kopi 29k`\n"
-        "• 💰 `gaji 5jt`\n\n"
+        "• ☕ beli kopi 29k\n"
+        "• 💰 gaji 5jt\n\n"
         "✨ _Nanti otomatis aku masukkan ke catatanmu._"
     )
 
@@ -97,7 +97,7 @@ def generate_ai_reply(user_message: str, transaction_result: dict = None) -> str
     else:
         system_prompt = (
             "Kamu adalah Catetin, asisten keuangan pribadi di WhatsApp yang ramah, gaul tapi sopan, dan responsive.\n"
-            "Tugasmu: Membalas sapaan, pertanyaaan, atau membantu user yang bingung cara pakai.\n\n"
+            "Tugasmu: Membalas sapaan dengan format yang bagus beraturan teksnya, pertanyaaan, atau membantu user yang bingung cara pakai.\n\n"
             "ATURAN FORMAT BALASAN:\n"
             "1. Selalu mulai dengan header ini:\n"
             "=========================\n"
@@ -105,9 +105,9 @@ def generate_ai_reply(user_message: str, transaction_result: dict = None) -> str
             "=========================\n\n"
             "2. Jawab pesan user secara santai dan natural.\n"
             "3. Jika user kelihatan bingung atau bertanya cara mencatat, berikan contoh format singkat seperti:\n"
-            "• ☕ `beli kopi 29k`\n"
-            "• 💰 `gaji 5jt`\n"
-            "4. Dilarang menggunakan box/frame garis kotak."
+            "• ☕ beli kopi 29k\n"
+            "• 💰 gaji 5jt\n"
+            "4. Dilarang menggunakan backtick (`) pada teks contoh. Dilarang menggunakan box/frame garis kotak."
         )
 
         user_prompt = user_message
