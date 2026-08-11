@@ -1,0 +1,362 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #ffffff;
+    color: #1a1a1a;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    height: 100vh;
+    width: 100vw;
+    padding: 1.25rem;
+    gap: 1.5rem;
+}
+
+.hero-card {
+    background: linear-gradient(180deg, #e8f7f0 0%, #d1f2e2 50%, #e8f7f0 100%);
+    border-radius: 24px;
+    padding: 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.hero-header {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.logo-img {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
+}
+
+.hero-title h1 {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: #033a28;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+
+.feature-cards {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    max-width: 520px;
+    margin-top: 1rem;
+}
+
+.feature-item {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(27, 183, 116, 0.25);
+    border-radius: 16px;
+    padding: 1.1rem;
+    text-align: left;
+    box-shadow: 0 8px 20px rgba(3, 58, 40, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-graphic {
+    height: 48px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.wa-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #25d366;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.wa-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.ai-badge {
+    background: #033a28;
+    color: #a7f3d0;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 32px;
+}
+
+.chart-bar {
+    width: 8px;
+    background: #1bb774;
+    border-radius: 4px;
+}
+
+.feature-item h4 {
+    font-size: 0.875rem;
+    color: #033a28;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.feature-item p {
+    font-size: 0.725rem;
+    color: #1e5643;
+    line-height: 1.35;
+}
+
+.dashboard-preview-card {
+    background: #ffffff;
+    border: 1px solid #a7f3d0;
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 25px rgba(27, 183, 116, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.preview-info {
+    text-align: left;
+}
+
+.preview-info span {
+    display: block;
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.preview-info strong {
+    font-size: 1.1rem;
+    color: #033a28;
+}
+
+.status-pill {
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 0.725rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.hero-footer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.divider-text {
+    display: flex;
+    align-items: center;
+    width: 85%;
+    color: #2d6a4f;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.divider-text::before, .divider-text::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #a7f3d0;
+}
+
+.divider-text span {
+    padding: 0 0.75rem;
+}
+
+.family-logos {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1e5643;
+    opacity: 0.85;
+}
+
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem 3rem 2.5rem 3rem;
+    position: relative;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.nav-btn.active {
+    color: #1bb774;
+    background-color: #f0fdf4;
+}
+
+.auth-content {
+    max-width: 380px;
+    width: 100%;
+    margin: auto;
+}
+
+.auth-content h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #033a28;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.auth-content p.sub {
+    font-size: 0.825rem;
+    color: #64748b;
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 1.75rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.35rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    outline: none;
+    background: #f8fafc;
+    transition: border 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #1bb774;
+    background: #ffffff;
+}
+
+.hint {
+    font-size: 0.725rem;
+    color: #94a3b8;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 0.85rem;
+    background: #1bb774;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s;
+}
+
+.btn-submit:hover {
+    background: #159a61;
+}
+
+.dashboard-note {
+    margin-top: 1.5rem;
+    padding: 0.85rem;
+    background-color: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.dashboard-note p {
+    font-size: 0.75rem;
+    color: #475569;
+    line-height: 1.4;
+}
+
+.dashboard-note strong {
+    color: #033a28;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .wrapper {
+        grid-template-columns: 1fr;
+    }
+    .hero-card {
+        display: none;
+    }
+    html, body {
+        overflow: auto;
+    }
+}
