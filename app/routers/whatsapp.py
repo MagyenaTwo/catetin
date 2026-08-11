@@ -13,7 +13,7 @@ def process_ai_and_reply(db_session_factory, sender: str, message: str):
     db = db_session_factory()
     try:
         tx_result = process_whatsapp_payload(db, sender=sender, message=message)
-        ai_reply = generate_ai_reply(user_message=message, transaction_result=tx_result)
+        ai_reply = generate_ai_reply(db=db, phone_number=sender, user_message=message, transaction_result=tx_result)
         send_whatsapp_message(target=sender, reply_text=ai_reply)
     finally:
         db.close()

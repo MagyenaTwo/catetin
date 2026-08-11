@@ -1,6 +1,11 @@
 import os
 import re
 import requests
+from sqlalchemy.orm import Session
+
+from app.models.user import User
+
+
 
 BYNARA_API_KEY = os.getenv("BYNARA_API_KEY", "")
 BYNARA_URL = "https://router.bynara.id/v1/chat/completions"
@@ -8,7 +13,33 @@ BYNARA_URL = "https://router.bynara.id/v1/chat/completions"
 session = requests.Session()
 
 
-def get_smart_fallback(user_message: str, transaction_result: dict = None) -> str:
+def check_user_registered(db: Session, phone_number: str) -> bool:
+    if not phone_number:
+        return False
+    
+    clean_phone = re.sub(r"\D", "", phone_number)
+    phones_to_check = [clean_phone]
+    
+    if clean_phone.startswith("62"):
+        phones_to_check.append("0" + clean_phone[2:])
+    elif clean_phone.startswith("0"):
+        phones_to_check.append("62" + clean_phone[1:])
+
+    user = db.query(User).filter(User.phone_number.in_(phones_to_check)).first()
+    return user is not None
+
+
+def get_smart_fallback(user_message: str, transaction_result: dict = None, is_registered: bool = True) -> str:
+    if not is_registered:
+        return (
+            "=========================\n"
+            "🔐 *CATETIN SYSTEM*\n"
+            "=========================\n\n"
+            "⚠️ *AKUN BELUM TERDAFTAR*\n\n"
+            "Nomor WhatsApp ini belum terdaftar di Catetin.\n"
+            "Silakan mendaftar via Web Dashboard dulu ya!"
+        )
+
     if transaction_result:
         status = transaction_result.get("status")
         msg = transaction_result.get("message", "")
@@ -61,8 +92,13 @@ def get_smart_fallback(user_message: str, transaction_result: dict = None) -> st
     )
 
 
-def generate_ai_reply(user_message: str, transaction_result: dict = None) -> str:
-    fallback = get_smart_fallback(user_message, transaction_result)
+def generate_ai_reply(db: Session, phone_number: str, user_message: str, transaction_result: dict = None) -> str:
+    is_registered = check_user_registered(db, phone_number)
+    
+    if not is_registered:
+        return get_smart_fallback(user_message, transaction_result, is_registered=False)
+
+    fallback = get_smart_fallback(user_message, transaction_result, is_registered=True)
 
     if not BYNARA_API_KEY:
         return fallback

@@ -8,6 +8,19 @@ from app.services.transaction_service import create_transaction
 
 LOGO_URL = "https://0259-125-167-191-40.ngrok-free.app/static/logo-catetin.png"
 
+
+def normalize_phone_number(phone: str) -> list[str]:
+    clean_phone = re.sub(r"\D", "", str(phone))
+    phones = [clean_phone]
+    
+    if clean_phone.startswith("62"):
+        phones.append("0" + clean_phone[2:])
+    elif clean_phone.startswith("0"):
+        phones.append("62" + clean_phone[1:])
+        
+    return phones
+
+
 def parse_whatsapp_message(text: str) -> Tuple[Optional[str], Optional[float]]:
     text = text.strip()
     
@@ -43,9 +56,11 @@ def parse_whatsapp_message(text: str) -> Tuple[Optional[str], Optional[float]]:
 
     return desc, amount_num
 
+
 def process_whatsapp_payload(db: Session, sender: str, message: str):
-    clean_sender = sender.strip().replace("+", "")
-    user = db.query(User).filter(User.phone_number == clean_sender).first()
+    phones_to_check = normalize_phone_number(sender)
+    
+    user = db.query(User).filter(User.phone_number.in_(phones_to_check)).first()
     if not user:
         return {
             "status": "error",
@@ -68,6 +83,7 @@ def process_whatsapp_payload(db: Session, sender: str, message: str):
         "message": f"Berhasil mencatat '{desc}' sebesar Rp {amount:,.0f}"
     }
 
+
 def sanitize_text_for_fonnte(text: str) -> str:
     sensitive_words = ["anjing", "babi", "kuntul", "monyet", "bangsat", "kontol", "memek"]
     censored_text = str(text)
@@ -79,6 +95,7 @@ def sanitize_text_for_fonnte(text: str) -> str:
             replacement = "*" * len(word)
         censored_text = pattern.sub(replacement, censored_text)
     return censored_text
+
 
 def send_whatsapp_message(target: str, reply_text: str):
     fonnte_token = os.getenv("FONNTE_TOKEN", "")
