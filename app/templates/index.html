@@ -82,13 +82,15 @@
             </div>
 
             <div class="auth-content">
+                <div id="toast" class="toast hidden"></div>
+
                 <h2 id="form-title">Selamat Datang</h2>
                 <p class="sub" id="form-sub">Masuk ke akun Anda untuk mulai mengelola pencatatan keuangan secara otomatis.</p>
 
                 <form id="loginForm" action="/login" method="POST">
                     <div class="form-group">
-                        <label for="login-username">Username</label>
-                        <input type="text" id="login-username" name="username" placeholder="Masukkan username" required autocomplete="username">
+                        <label for="login-identifier">Username / Email / No. WhatsApp</label>
+                        <input type="text" id="login-identifier" name="username" placeholder="Masukkan username, email, atau no WA" required autocomplete="username">
                     </div>
                     <div class="form-group">
                         <label for="login-password">Password</label>
@@ -102,11 +104,35 @@
                         <label for="reg-username">Username</label>
                         <input type="text" id="reg-username" name="username" placeholder="Pilih username" required>
                     </div>
-                    <div class="form-group">
-                        <label for="reg-phone">Nomor WhatsApp</label>
-                        <input type="tel" id="reg-phone" name="phone_number" placeholder="081234567890" required>
-                        <span class="hint">Gunakan nomor WA yang terhubung ke Catetin.</span>
+
+                    <div class="method-selector">
+                        <button type="button" class="method-btn active" id="btn-method-email" onclick="switchRegMethod('email')">Gunakan Email</button>
+                        <button type="button" class="method-btn" id="btn-method-phone" onclick="switchRegMethod('phone')">Gunakan Nomor</button>
                     </div>
+
+                    <div id="reg-email-section">
+                        <div class="form-group">
+                            <label for="reg-email">Alamat Email</label>
+                            <div class="input-with-btn">
+                                <input type="email" id="reg-email" name="email" placeholder="nama@email.com">
+                                <button type="button" id="btn-send-otp" class="btn-secondary" onclick="requestOTP()">Kirim OTP</button>
+                            </div>
+                            <span class="hint">Kode verifikasi akan dikirim ke email via Resend.</span>
+                        </div>
+                        <div class="form-group hidden" id="otp-group">
+                            <label for="reg-otp">Kode OTP Email</label>
+                            <input type="text" id="reg-otp" name="otp" placeholder="Masukkan 6 digit OTP" maxlength="6">
+                        </div>
+                    </div>
+
+                    <div id="reg-phone-section" class="hidden">
+                        <div class="form-group">
+                            <label for="reg-phone">Nomor WhatsApp</label>
+                            <input type="tel" id="reg-phone" name="phone_number" placeholder="081234567890">
+                            <span class="hint">Pastikan nomor aktif dan terhubung ke WhatsApp.</span>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="reg-password">Password</label>
                         <input type="password" id="reg-password" name="password" placeholder="Buat password" required>

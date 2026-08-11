@@ -272,6 +272,34 @@ html, body {
     margin-bottom: 1.75rem;
 }
 
+.method-selector {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    gap: 4px;
+}
+
+.method-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.method-btn.active {
+    background: #ffffff;
+    color: #033a28;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
 .form-group {
     margin-bottom: 1rem;
     text-align: left;
@@ -299,6 +327,37 @@ html, body {
 .form-group input:focus {
     border-color: #1bb774;
     background: #ffffff;
+}
+
+.input-with-btn {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input-with-btn input {
+    flex: 1;
+}
+
+.btn-secondary {
+    padding: 0 0.85rem;
+    background: #033a28;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #05543a;
+}
+
+.btn-secondary:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
 }
 
 .hint {
@@ -346,7 +405,7 @@ html, body {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 @media (max-width: 900px) {
@@ -359,4 +418,25 @@ html, body {
     html, body {
         overflow: auto;
     }
+}
+.toast {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.toast.success {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.toast.error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
 }
