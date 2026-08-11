@@ -33,6 +33,18 @@ function parseErrorMessage(data) {
     return data.message || 'Terjadi kesalahan pada sistem.';
 }
 
+function resetRegisterFormState() {
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.reset();
+    }
+    clearOtpBoxes();
+    const otpGroup = document.getElementById('otp-group');
+    if (otpGroup) {
+        otpGroup.classList.add('hidden');
+    }
+}
+
 function showForm(type) {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -48,6 +60,7 @@ function showForm(type) {
         navRegister.classList.remove('active');
         formTitle.textContent = "Selamat Datang";
         formSub.textContent = "Masuk ke akun Anda untuk mulai mengelola pencatatan keuangan secara otomatis.";
+        resetRegisterFormState();
     } else {
         loginForm.classList.add('hidden');
         registerForm.classList.remove('hidden');
@@ -55,6 +68,9 @@ function showForm(type) {
         navRegister.classList.add('active');
         formTitle.textContent = "Buat Akun Baru";
         formSub.textContent = "Daftarkan diri Anda untuk merasakan kemudahan catat keuangan via WhatsApp.";
+        if (loginForm) {
+            loginForm.reset();
+        }
         switchRegMethod(currentRegMethod);
     }
 }
@@ -138,7 +154,10 @@ function setupOtpBoxes() {
 function clearOtpBoxes() {
     const digits = document.querySelectorAll('.otp-digit');
     digits.forEach(d => d.value = '');
-    document.getElementById('reg-otp').value = '';
+    const hiddenOtp = document.getElementById('reg-otp');
+    if (hiddenOtp) {
+        hiddenOtp.value = '';
+    }
 }
 
 function validatePasswordCombination(password) {
@@ -312,6 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 showToast('Pendaftaran berhasil! Silakan masuk.', 'success');
+                resetRegisterFormState();
                 setTimeout(() => {
                     showForm('login');
                     setBtnLoading(submitBtn, false, 'Daftar Sekarang');
