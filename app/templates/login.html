@@ -2,27 +2,517 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catetin - Solusi Catat Keuangan AI</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f6f8; margin: 0; }
-        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
-        input { width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .error { color: red; font-size: 0.9em; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #ffffff;
+            color: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .wrapper {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            height: 100vh;
+            width: 100vw;
+            padding: 1.25rem;
+            gap: 1.5rem;
+        }
+
+        /* --- SISI KIRI: BANNER HIJAU --- */
+        .hero-card {
+            background: linear-gradient(180deg, #e8f7f0 0%, #d1f2e2 50%, #e8f7f0 100%);
+            border-radius: 24px;
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-header {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .logo-img {
+            height: 100px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .hero-title h1 {
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #033a28;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+        }
+
+        /* CARD ILUSTRASI VISUAL BARU (TANPA EMOJI) */
+        .feature-cards {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            max-width: 520px;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(27, 183, 116, 0.25);
+            border-radius: 16px;
+            padding: 1.1rem;
+            text-align: left;
+            box-shadow: 0 8px 20px rgba(3, 58, 40, 0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-graphic {
+            height: 48px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Graphic 1: WhatsApp Badge */
+        .wa-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #25d366;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .wa-icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* Graphic 2: AI Tag */
+        .ai-badge {
+            background: #033a28;
+            color: #a7f3d0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Graphic 3: Mini Chart Visual */
+        .mini-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 32px;
+        }
+
+        .chart-bar {
+            width: 8px;
+            background: #1bb774;
+            border-radius: 4px;
+        }
+
+        .feature-item h4 {
+            font-size: 0.875rem;
+            color: #033a28;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-item p {
+            font-size: 0.725rem;
+            color: #1e5643;
+            line-height: 1.35;
+        }
+
+        /* BANNER TENGAH ILUSTRASI DASHBOARD MOCKUP */
+        .dashboard-preview-card {
+            background: #ffffff;
+            border: 1px solid #a7f3d0;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 25px rgba(27, 183, 116, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-info {
+            text-align: left;
+        }
+
+        .preview-info span {
+            display: block;
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .preview-info strong {
+            font-size: 1.1rem;
+            color: #033a28;
+        }
+
+        .status-pill {
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 0.725rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        /* HERO FOOTER */
+        .hero-footer {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .divider-text {
+            display: flex;
+            align-items: center;
+            width: 85%;
+            color: #2d6a4f;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .divider-text::before, .divider-text::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #a7f3d0;
+        }
+
+        .divider-text span {
+            padding: 0 0.75rem;
+        }
+
+        .family-logos {
+            display: flex;
+            gap: 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1e5643;
+            opacity: 0.85;
+        }
+
+        /* --- SISI KANAN: AUTH FORM --- */
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.5rem 3rem 2.5rem 3rem;
+            position: relative;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active {
+            color: #1bb774;
+            background-color: #f0fdf4;
+        }
+
+        .auth-content {
+            max-width: 380px;
+            width: 100%;
+            margin: auto;
+        }
+
+        .auth-content h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #033a28;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-content p.sub {
+            font-size: 0.825rem;
+            color: #64748b;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 1.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            background: #f8fafc;
+            transition: border 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #1bb774;
+            background: #ffffff;
+        }
+
+        .hint {
+            font-size: 0.725rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.85rem;
+            background: #1bb774;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #159a61;
+        }
+
+        /* CATATAN TAMBAHAN DASHBOARD */
+        .dashboard-note {
+            margin-top: 1.5rem;
+            padding: 0.85rem;
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .dashboard-note p {
+            font-size: 0.75rem;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .dashboard-note strong {
+            color: #033a28;
+        }
+
+        .hidden { display: none; }
+
+        @media (max-width: 900px) {
+            .wrapper { grid-template-columns: 1fr; }
+            .hero-card { display: none; }
+            html, body { overflow: auto; }
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Login</h2>
-        {% if error %}<p class="error">{{ error }}</p>{% endif %}
-        <form action="/login" method="POST">
-            <label>Username</label>
-            <input type="text" name="username" required>
-            <label>Password</label>
-            <input type="password" name="password" required>
-            <button type="submit">Masuk</button>
-        </form>
-        <p style="font-size: 0.85em;">Belum punya akun? <a href="/register">Register</a></p>
+
+    <div class="wrapper">
+        <!-- SISI KIRI BANNER -->
+        <div class="hero-card">
+            <div class="hero-header">
+                <img src="/static/logo.png" alt="Catetin Logo" class="logo-img">
+            </div>
+
+            <div class="hero-title">
+                <h1>Solusi Catat Keuangan<br>WhatsApp Berbasis AI</h1>
+            </div>
+
+            <!-- TAMPILAN DASHBOARD PREVIEW SEMENTARA -->
+            <div class="dashboard-preview-card">
+                <div class="preview-info">
+                    <span>Laporan Hari Ini</span>
+                    <strong>Rp 250.000 Tercatat</strong>
+                </div>
+                <div class="status-pill">● Realtime Sync</div>
+            </div>
+
+            <!-- KARTU GAMBAR FITUR (TANPA EMOJI) -->
+            <div class="feature-cards">
+                <div class="feature-item">
+                    <div class="card-graphic">
+                        <div class="wa-badge">
+                            <svg class="wa-icon" viewBox="0 0 24 24">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+                            </svg>
+                            WhatsApp Chat
+                        </div>
+                    </div>
+                    <h4>Ketik Bebas</h4>
+                    <p>Kirim pesan transaksi secara langsung lewat obrolan WhatsApp.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="card-graphic">
+                        <div class="ai-badge">CATETIN AI</div>
+                    </div>
+                    <h4>Deteksi Otomatis</h4>
+                    <p>Sistem cerdas memilah nominal, tanggal, dan kategori pesan.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="card-graphic">
+                        <div class="mini-chart">
+                            <div class="chart-bar" style="height: 40%;"></div>
+                            <div class="chart-bar" style="height: 70%;"></div>
+                            <div class="chart-bar" style="height: 50%;"></div>
+                            <div class="chart-bar" style="height: 100%;"></div>
+                        </div>
+                    </div>
+                    <h4>Laporan Rapi</h4>
+                    <p>Pantau rekapan arus kas harian dan bulanan secara visual.</p>
+                </div>
+            </div>
+
+            <div class="hero-footer">
+                <div class="divider-text"><span>Catatan Keuangan Otomatis via WhatsApp</span></div>
+                <div class="family-logos">
+                    <span>WhatsApp AI</span>
+                    <span>•</span>
+                    <span>Realtime Sync</span>
+                    <span>•</span>
+                    <span>Export Excel</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SISI KANAN FORM -->
+        <div class="auth-container">
+            <div class="top-nav">
+                <button class="nav-btn active" id="nav-login" onclick="showForm('login')">Masuk</button>
+                <button class="nav-btn" id="nav-register" onclick="showForm('register')">Mendaftar</button>
+            </div>
+
+            <div class="auth-content">
+                <h2 id="form-title">Selamat Datang</h2>
+                <p class="sub" id="form-sub">Masuk ke akun Anda untuk mulai mengelola pencatatan keuangan secara otomatis.</p>
+
+                <!-- FORM LOGIN -->
+                <form id="loginForm" action="/login" method="POST">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" name="username" placeholder="Masukkan username" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn-submit">Masuk ke Dashboard</button>
+                </form>
+
+                <!-- FORM REGISTER -->
+                <form id="registerForm" action="/register" method="POST" class="hidden">
+                    <div class="form-group">
+                        <label for="reg-username">Username</label>
+                        <input type="text" id="reg-username" name="username" placeholder="Pilih username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Nomor WhatsApp</label>
+                        <input type="tel" id="reg-phone" name="phone_number" placeholder="081234567890" required>
+                        <span class="hint">Gunakan nomor WA yang terhubung ke Catetin.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" name="password" placeholder="Buat password" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Daftar Sekarang</button>
+                </form>
+
+                <!-- CATATAN TAMBAHAN UNTUK DASHBOARD WEB -->
+               
+            </div>
+
+            <div></div>
+        </div>
     </div>
+
+    <script>
+        function showForm(type) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const navLogin = document.getElementById('nav-login');
+            const navRegister = document.getElementById('nav-register');
+            const formTitle = document.getElementById('form-title');
+            const formSub = document.getElementById('form-sub');
+
+            if (type === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                navLogin.classList.add('active');
+                navRegister.classList.remove('active');
+                formTitle.textContent = "Selamat Datang";
+                formSub.textContent = "Masuk ke akun Anda untuk mulai mengelola pencatatan keuangan secara otomatis.";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                navLogin.classList.remove('active');
+                navRegister.classList.add('active');
+                formTitle.textContent = "Buat Akun Baru";
+                formSub.textContent = "Daftarkan diri Anda untuk merasakan kemudahan catat keuangan via WhatsApp.";
+            }
+        }
+    </script>
 </body>
 </html>
