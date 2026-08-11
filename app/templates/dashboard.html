@@ -1,123 +1,125 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Catetin Keuangan{% endblock %}
+{% block title %}Dashboard - Catetin{% endblock %}
+{% block header_title %}Dashboard Keuangan{% endblock %}
 
 {% block extra_css %}
 <style>
-    .page-title-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-    .page-title h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
-    .page-title p { font-size: 0.875rem; color: var(--text-muted); }
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
 
-    /* Summary Grid Cards */
-    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; }
-    .stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-    .stat-icon.green { background: #dcfce7; color: #15803d; }
-    .stat-icon.blue { background: #e0f2fe; color: #0369a1; }
-    .stat-icon.purple { background: #f3e8ff; color: #6b21a8; }
-    .stat-info span { display: block; font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
-    .stat-info h3 { font-size: 1.25rem; font-weight: 700; margin-top: 2px; }
+    .stat-box {
+        background: #ffffff;
+        border: 1px solid #a7f3d0;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 8px 20px rgba(3, 58, 40, 0.03);
+    }
 
-    /* Transaction Table Section */
-    .card-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-    .panel-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .panel-header h2 { font-size: 1.1rem; font-weight: 600; }
+    .stat-label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+    .stat-value { font-size: 1.6rem; font-weight: 700; color: #033a28; margin-top: 4px; }
 
-    .table-responsive { overflow-x: auto; }
-    .custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
-    .custom-table th { background: #f8fafc; padding: 0.85rem 1.25rem; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-    .custom-table td { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); color: var(--text-main); }
-    .custom-table tbody tr:last-child td { border-bottom: none; }
-    .custom-table tbody tr:hover { background-color: #f8fafc; }
+    /* Card Table Panel */
+    .panel-card {
+        background: #ffffff;
+        border: 1px solid #a7f3d0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(3, 58, 40, 0.03);
+    }
 
-    /* Status Badges */
-    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
-    .badge-expense { background: #fee2e2; color: #b91c1c; }
-    .badge-income { background: #dcfce7; color: #15803d; }
+    .panel-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-    .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--text-muted); }
-    .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 0.5rem; display: block; }
+    .panel-header h3 { font-size: 1rem; font-weight: 700; color: #033a28; }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.875rem;
+    }
+
+    .data-table th {
+        background: #e8f7f0;
+        padding: 0.85rem 1.5rem;
+        font-weight: 700;
+        color: #033a28;
+        border-bottom: 1px solid #a7f3d0;
+    }
+
+    .data-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #1a1a1a;
+    }
+
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background-color: #f8fafc; }
+
+    .empty-row {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #64748b;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-title-area">
-    <div class="page-title">
-        <h1>Dashboard Transaksi</h1>
-        <p>Ringkasan transaksi dan aktivitas pencatatan keuangan Anda.</p>
+<div class="stats-grid">
+    <div class="stat-box">
+        <div class="stat-label">Total Transaksi</div>
+        <div class="stat-value">{{ transactions|length }}</div>
     </div>
-    {% if user.phone_number %}
-    <button class="btn-connect" onclick="openPhoneModal()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text-main);">
-        <i class='bx bxl-whatsapp' style="color: #25D366; font-size: 1.1rem;"></i> WA: {{ user.phone_number }}
-    </button>
-    {% endif %}
-</div>
-
-<!-- Ringkasan Statistik -->
-<div class="summary-grid">
-    <div class="stat-card">
-        <div class="stat-icon green"><i class='bx bx-receipt'></i></div>
-        <div class="stat-info">
-            <span>Total Transaksi</span>
-            <h3>{{ transactions|length }}</h3>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon blue"><i class='bx bx-wallet'></i></div>
-        <div class="stat-info">
-            <span>Status WhatsApp</span>
-            <h3>{% if user.phone_number %}Terhubung{% else %}Belum{% endif %}</h3>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon purple"><i class='bx bx-bot'></i></div>
-        <div class="stat-info">
-            <span>Metode Catat</span>
-            <h3>WhatsApp AI</h3>
+    <div class="stat-box">
+        <div class="stat-label">Status WhatsApp</div>
+        <div class="stat-value" style="font-size: 1.15rem; margin-top: 8px;">
+            {% if user.phone_number %}
+                <span class="status-pill">Terhubung</span>
+            {% else %}
+                <span style="color: #d97706; font-weight: 600;">Belum Set</span>
+            {% endif %}
         </div>
     </div>
 </div>
 
-<!-- Tabel Transaksi -->
-<div class="card-panel">
+<div class="panel-card">
     <div class="panel-header">
-        <h2>Riwayat Transaksi Harian</h2>
+        <h3>Daftar Transaksi Saya</h3>
     </div>
 
-    <div class="table-responsive">
-        <table class="custom-table">
+    <div style="overflow-x: auto;">
+        <table class="data-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Deskripsi Transaksi</th>
+                    <th style="width: 60px;">No</th>
+                    <th>Deskripsi</th>
                     <th>Nominal</th>
-                    <th>Waktu Pencatatan</th>
+                    <th>Tanggal & Waktu</th>
                 </tr>
             </thead>
             <tbody>
                 {% for txn in transactions %}
                 <tr>
-                    <td><span style="font-weight: 600; color: var(--text-muted);">#{{ txn.id }}</span></td>
-                    <td>
-                        <strong style="display: block; font-size: 0.9rem;">{{ txn.description }}</strong>
-                    </td>
-                    <td>
-                        <span class="badge badge-expense">
-                            Rp {{ "{:,.0f}".format(txn.amount) }}
-                        </span>
-                    </td>
-                    <td style="color: var(--text-muted);">
-                        {{ txn.created_at.strftime("%d %b %Y, %H:%M") }}
-                    </td>
+                    <td style="color: #64748b; font-weight: 600;">{{ loop.index }}</td>
+                    <td><strong style="color: #033a28;">{{ txn.description }}</strong></td>
+                    <td style="font-weight: 700; color: #033a28;">Rp {{ "{:,.0f}".format(txn.amount) }}</td>
+                    <td style="color: #64748b;">{{ txn.created_at.strftime("%d/%m/%Y %H:%M") }}</td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="4">
-                        <div class="empty-state">
-                            <i class='bx bx-data'></i>
-                            <strong style="display: block; color: var(--text-main); margin-bottom: 4px;">Belum Ada Transaksi</strong>
-                            <span>Kirim pesan singkat ke WhatsApp Bot untuk mulai mencatat keuangan secara otomatis!</span>
-                        </div>
+                    <td colspan="4" class="empty-row">
+                        Belum ada transaksi recorded. Kirim pesan ke WhatsApp Bot untuk mulai mencatat.
                     </td>
                 </tr>
                 {% endfor %}
