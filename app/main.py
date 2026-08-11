@@ -1,11 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from streamlit import status
-from streamlit import status
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
 from app.database import engine, Base, get_db
 from app.routers import auth, dashboard, whatsapp
 import app.models
@@ -15,6 +16,9 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="WhatsApp Transaction Tracker")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+app.state.limiter = auth.limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.include_router(auth.router)
 app.include_router(dashboard.router)
@@ -39,9 +43,7 @@ def check_db_connection(db: Session = Depends(get_db)):
 
 @app.exception_handler(HTTPException)
 async def custom_http_exception_handler(request: Request, exc: HTTPException):
-    # Jika error 401 terjadi saat meminta halaman web HTML
     if exc.status_code == status.HTTP_401_UNAUTHORIZED:
-        # Jika request meminta halaman HTML (bukan request API AJAX/Fetch JSON)
         accept = request.headers.get("accept", "")
         if "text/html" in accept:
             return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)

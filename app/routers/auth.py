@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from jose import jwt, JWTError
 
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
 from app.database import get_db
+from app.models.blacklisted_token import BlacklistedToken
 from app.models.user import User
 from app.schemas.auth import UserCreate, UserLogin
 from app.services.auth_service import create_user, authenticate_user, create_and_send_otp
@@ -17,9 +21,12 @@ from fastapi.templating import Jinja2Templates
 router = APIRouter(tags=["Auth"])
 templates = Jinja2Templates(directory="app/templates")
 
+limiter = Limiter(key_func=get_remote_address)
+
 SECRET_KEY = os.getenv("SECRET_KEY", "SUPER_SECRET_KEY_CHANGE_THIS_IN_PRODUCTION_123456789")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
+IS_PRODUCTION = os.getenv("ENVIRONMENT", "development") == "production"
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -75,7 +82,8 @@ class OTPRequest(BaseModel):
     email: EmailStr
 
 @router.post("/send-otp")
-def send_otp(payload: OTPRequest, db: Session = Depends(get_db)):
+@limiter.limit("3/minute")
+def send_otp(request: Request, payload: OTPRequest, db: Session = Depends(get_db)):
     try:
         create_and_send_otp(db, payload.email)
         return {"message": "Kode OTP berhasil dikirim."}
@@ -93,7 +101,8 @@ def register_page(request: Request):
     return templates.TemplateResponse(request=request, name="register.html")
 
 @router.post("/register")
-def register(user_in: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("5/hour")
+def register(request: Request, user_in: UserCreate, db: Session = Depends(get_db)):
     try:
         new_user = create_user(db, user_in)
         return {"message": "Pendaftaran berhasil", "user_id": new_user.id}
@@ -111,7 +120,8 @@ def login_page(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
 @router.post("/login")
-def login(data: UserLogin, response: Response, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def login(request: Request, data: UserLogin, response: Response, db: Session = Depends(get_db)):
     user = authenticate_user(db, data.username, data.password)
     if not user:
         raise HTTPException(
@@ -125,7 +135,7 @@ def login(data: UserLogin, response: Response, db: Session = Depends(get_db)):
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
-        secure=False,
+        secure=IS_PRODUCTION,
         samesite="lax",
         max_age=86400
     )
@@ -133,7 +143,23 @@ def login(data: UserLogin, response: Response, db: Session = Depends(get_db)):
     return {"message": "Login berhasil", "redirect_url": "/dashboard"}
 
 @router.get("/logout")
-def logout(response: Response):
+def logout(request: Request, response: Response, db: Session = Depends(get_db)):
+    token_cookie = request.cookies.get("access_token")
+    
+    if token_cookie:
+        try:
+            # Ambil raw token tanpa awalan 'Bearer '
+            _, token = token_cookie.split(" ")
+            
+            # Simpan ke tabel blacklist jika belum ada
+            existing = db.query(BlacklistedToken).filter(BlacklistedToken.token == token).first()
+            if not existing:
+                blacklisted = BlacklistedToken(token=token)
+                db.add(blacklisted)
+                db.commit()
+        except ValueError:
+            pass
+
     res = responses.RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
     res.delete_cookie(key="access_token", httponly=True, samesite="lax")
     return res
