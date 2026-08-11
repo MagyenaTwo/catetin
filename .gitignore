@@ -1,4 +1,17 @@
-.env
-app.db
+# Byte-compiled / Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Environment variables (SANGAT PENTING jika berisi password Supabase)
+.env
+
+# Virtual Environment (jika ada)
+venv/
+.venv/
+env/
+
+# Database lokal / SQLite
+*.db
+*.sqlite3
