@@ -9,3 +9,4 @@ itsdangerous
 mistralai
 slowapi
 python-dotenv
+psycopg2-binary
