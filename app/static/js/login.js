@@ -68,7 +68,7 @@ function switchRegMethod(method) {
 
     const emailInput = document.getElementById('reg-email');
     const phoneInput = document.getElementById('reg-phone');
-    const otpInput = document.getElementById('reg-otp');
+    const otpHiddenInput = document.getElementById('reg-otp');
 
     if (method === 'email') {
         emailSection.classList.remove('hidden');
@@ -87,9 +87,80 @@ function switchRegMethod(method) {
 
         phoneInput.required = true;
         emailInput.required = false;
-        otpInput.required = false;
+        otpHiddenInput.required = false;
         emailInput.value = '';
-        otpInput.value = '';
+        otpHiddenInput.value = '';
+        clearOtpBoxes();
+    }
+}
+
+function setupOtpBoxes() {
+    const digits = document.querySelectorAll('.otp-digit');
+    const hiddenOtp = document.getElementById('reg-otp');
+
+    digits.forEach((digit, index) => {
+        digit.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = val;
+
+            if (val && index < digits.length - 1) {
+                digits[index + 1].focus();
+            }
+            updateHiddenOtp();
+        });
+
+        digit.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !digit.value && index > 0) {
+                digits[index - 1].focus();
+            }
+        });
+
+        digit.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasted = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+            if (pasted) {
+                pasted.split('').forEach((char, i) => {
+                    if (digits[i]) digits[i].value = char;
+                });
+                if (digits[pasted.length - 1]) digits[pasted.length - 1].focus();
+                updateHiddenOtp();
+            }
+        });
+    });
+
+    function updateHiddenOtp() {
+        let code = '';
+        digits.forEach(d => code += d.value);
+        hiddenOtp.value = code;
+    }
+}
+
+function clearOtpBoxes() {
+    const digits = document.querySelectorAll('.otp-digit');
+    digits.forEach(d => d.value = '');
+    document.getElementById('reg-otp').value = '';
+}
+
+function validatePasswordCombination(password) {
+    const minLength = password.length >= 8;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    return minLength && hasUpper && hasLower && hasNumber;
+}
+
+function setBtnLoading(button, isLoading, originalText) {
+    const btnText = button.querySelector('.btn-text');
+    const spinner = button.querySelector('.spinner');
+
+    if (isLoading) {
+        button.disabled = true;
+        if (btnText) btnText.textContent = 'Memproses...';
+        if (spinner) spinner.classList.remove('hidden');
+    } else {
+        button.disabled = false;
+        if (btnText) btnText.textContent = originalText;
+        if (spinner) spinner.classList.add('hidden');
     }
 }
 
@@ -98,15 +169,14 @@ async function requestOTP() {
     const email = emailInput.value.trim();
     const btnSendOtp = document.getElementById('btn-send-otp');
     const otpGroup = document.getElementById('otp-group');
-    const otpInput = document.getElementById('reg-otp');
+    const otpHiddenInput = document.getElementById('reg-otp');
 
     if (!email) {
         showToast('Harap masukkan alamat email terlebih dahulu.', 'error');
         return;
     }
 
-    btnSendOtp.disabled = true;
-    btnSendOtp.textContent = 'Mengirim...';
+    setBtnLoading(btnSendOtp, true, 'Kirim OTP');
 
     try {
         const response = await fetch('/send-otp', {
@@ -122,53 +192,57 @@ async function requestOTP() {
         if (response.ok) {
             showToast('Kode OTP telah dikirim ke email Anda.', 'success');
             otpGroup.classList.remove('hidden');
-            otpInput.required = true;
+            otpHiddenInput.required = true;
             startCooldown(btnSendOtp, 60);
         } else {
             showToast(parseErrorMessage(data), 'error');
-            btnSendOtp.disabled = false;
-            btnSendOtp.textContent = 'Kirim OTP';
+            setBtnLoading(btnSendOtp, false, 'Kirim OTP');
         }
     } catch (error) {
         showToast('Terjadi kesalahan koneksi server.', 'error');
-        btnSendOtp.disabled = false;
-        btnSendOtp.textContent = 'Kirim OTP';
+        setBtnLoading(btnSendOtp, false, 'Kirim OTP');
     }
 }
 
 function startCooldown(button, seconds) {
     let timeLeft = seconds;
     button.disabled = true;
+    const btnText = button.querySelector('.btn-text');
+    const spinner = button.querySelector('.spinner');
+    if (spinner) spinner.classList.add('hidden');
 
     const timer = setInterval(() => {
-        button.textContent = `${timeLeft}s`;
+        if (btnText) btnText.textContent = `${timeLeft}s`;
         timeLeft--;
 
         if (timeLeft < 0) {
             clearInterval(timer);
             button.disabled = false;
-            button.textContent = 'Kirim Ulang';
+            if (btnText) btnText.textContent = 'Kirim Ulang';
         }
     }, 1000);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    setupOtpBoxes();
+
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
         const formData = new FormData(loginForm);
         const payload = {};
+        
         formData.forEach((value, key) => {
             const trimmed = value.trim();
             if (trimmed !== '') {
                 payload[key] = trimmed;
             }
         });
-        const submitBtn = loginForm.querySelector('button[type="submit"]');
 
-        submitBtn.disabled = true;
+        setBtnLoading(submitBtn, true, 'Masuk ke Dashboard');
 
         try {
             const response = await fetch('/login', {
@@ -188,16 +262,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 1000);
             } else {
                 showToast(parseErrorMessage(data), 'error');
-                submitBtn.disabled = false;
+                setBtnLoading(submitBtn, false, 'Masuk ke Dashboard');
             }
         } catch (error) {
             showToast('Terjadi kesalahan koneksi server.', 'error');
-            submitBtn.disabled = false;
+            setBtnLoading(submitBtn, false, 'Masuk ke Dashboard');
         }
     });
 
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitBtn = registerForm.querySelector('button[type="submit"]');
+        const passwordInput = document.getElementById('reg-password').value;
+
+        if (!validatePasswordCombination(passwordInput)) {
+            showToast('Password harus minimal 8 karakter dan kombinasi huruf besar, huruf kecil, serta angka.', 'error');
+            return;
+        }
+
+        if (currentRegMethod === 'email') {
+            const otpCode = document.getElementById('reg-otp').value;
+            if (otpCode.length !== 6) {
+                showToast('Kode OTP harus terdiri dari 6 digit angka.', 'error');
+                return;
+            }
+        }
+
         const formData = new FormData(registerForm);
         const payload = {};
         formData.forEach((value, key) => {
@@ -206,9 +296,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 payload[key] = trimmed;
             }
         });
-        const submitBtn = registerForm.querySelector('button[type="submit"]');
 
-        submitBtn.disabled = true;
+        setBtnLoading(submitBtn, true, 'Daftar Sekarang');
 
         try {
             const response = await fetch('/register', {
@@ -225,15 +314,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast('Pendaftaran berhasil! Silakan masuk.', 'success');
                 setTimeout(() => {
                     showForm('login');
-                    submitBtn.disabled = false;
+                    setBtnLoading(submitBtn, false, 'Daftar Sekarang');
                 }, 1500);
             } else {
                 showToast(parseErrorMessage(data), 'error');
-                submitBtn.disabled = false;
+                setBtnLoading(submitBtn, false, 'Daftar Sekarang');
             }
         } catch (error) {
             showToast('Terjadi kesalahan koneksi server.', 'error');
-            submitBtn.disabled = false;
+            setBtnLoading(submitBtn, false, 'Daftar Sekarang');
         }
     });
 });

@@ -96,7 +96,10 @@
                         <label for="login-password">Password</label>
                         <input type="password" id="login-password" name="password" placeholder="••••••••" required autocomplete="current-password">
                     </div>
-                    <button type="submit" class="btn-submit">Masuk ke Dashboard</button>
+                    <button type="submit" class="btn-submit">
+                        <span class="btn-text">Masuk ke Dashboard</span>
+                        <span class="spinner hidden"></span>
+                    </button>
                 </form>
 
                 <form id="registerForm" action="/register" method="POST" class="hidden">
@@ -115,13 +118,24 @@
                             <label for="reg-email">Alamat Email</label>
                             <div class="input-with-btn">
                                 <input type="email" id="reg-email" name="email" placeholder="nama@email.com">
-                                <button type="button" id="btn-send-otp" class="btn-secondary" onclick="requestOTP()">Kirim OTP</button>
+                                <button type="button" id="btn-send-otp" class="btn-secondary" onclick="requestOTP()">
+                                    <span class="btn-text">Kirim OTP</span>
+                                    <span class="spinner hidden"></span>
+                                </button>
                             </div>
                             <span class="hint">Kode verifikasi akan dikirim ke email via Resend.</span>
                         </div>
                         <div class="form-group hidden" id="otp-group">
-                            <label for="reg-otp">Kode OTP Email</label>
-                            <input type="text" id="reg-otp" name="otp" placeholder="Masukkan 6 digit OTP" maxlength="6">
+                            <label>Kode OTP Email</label>
+                            <div class="otp-box-container">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="\d*" inputmode="numeric">
+                            </div>
+                            <input type="hidden" id="reg-otp" name="otp">
                         </div>
                     </div>
 
@@ -136,8 +150,12 @@
                     <div class="form-group">
                         <label for="reg-password">Password</label>
                         <input type="password" id="reg-password" name="password" placeholder="Buat password" required>
+                        <span class="hint">Minimal 8 karakter, kombinasi huruf besar, huruf kecil, dan angka.</span>
                     </div>
-                    <button type="submit" class="btn-submit">Daftar Sekarang</button>
+                    <button type="submit" class="btn-submit">
+                        <span class="btn-text">Daftar Sekarang</span>
+                        <span class="spinner hidden"></span>
+                    </button>
                 </form>
             </div>
 
