@@ -10,3 +10,4 @@ mistralai
 slowapi
 python-dotenv
 psycopg2-binary
+python-jose[cryptography]
