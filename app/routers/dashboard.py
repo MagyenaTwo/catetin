@@ -1,31 +1,30 @@
-from fastapi import APIRouter, Depends, Request, responses, status
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
+
 from app.database import get_db
-from app.services.transaction_service import get_user_transactions
+from app.dependencies import get_current_user
 from app.models.user import User
+from app.services.transaction_service import get_user_transactions
 from fastapi.templating import Jinja2Templates
 
 router = APIRouter(tags=["Dashboard"])
 templates = Jinja2Templates(directory="app/templates")
 
-@router.get("/dashboard")
-def dashboard(request: Request, db: Session = Depends(get_db)):
-    user_id = request.cookies.get("user_id")
-    if not user_id:
-        return responses.RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
-    user = db.query(User).filter(User.id == int(user_id)).first()
-    if not user:
-        return responses.RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+@router.get("/dashboard")  # Typo sudah diperbaiki
+def dashboard(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)  # Menggunakan JWT Dependency yang aman
+):
+    # Ambil transaksi berdasarkan user yang sedang login
+    transactions = get_user_transactions(db, user_id=current_user.id)
 
-    transactions = get_user_transactions(db, user_id=user.id)
-
-    # Perubahan di baris ini: request dipindah ke argumen pertama
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
         context={
-            "user": user,
+            "user": current_user,
             "transactions": transactions
         }
     )

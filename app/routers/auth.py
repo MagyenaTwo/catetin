@@ -34,49 +34,49 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
-    token_cookie = request.cookies.get("access_token")
-    if not token_cookie:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Akses ditolak. Silakan login terlebih dahulu."
-        )
+# def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
+#     token_cookie = request.cookies.get("access_token")
+#     if not token_cookie:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Akses ditolak. Silakan login terlebih dahulu."
+#         )
 
-    try:
-        scheme, token = token_cookie.split(" ")
-        if scheme.lower() != "bearer":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Skema token tidak valid."
-            )
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Format token cookie tidak valid."
-        )
+#     try:
+#         scheme, token = token_cookie.split(" ")
+#         if scheme.lower() != "bearer":
+#             raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail="Skema token tidak valid."
+#             )
+#     except ValueError:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Format token cookie tidak valid."
+#         )
 
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token tidak valid."
-            )
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token kadaluwarsa atau tidak valid."
-        )
+#     try:
+#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         user_id: str = payload.get("sub")
+#         if user_id is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail="Token tidak valid."
+#             )
+#     except JWTError:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Token kadaluwarsa atau tidak valid."
+#         )
 
-    user = db.query(User).filter(User.id == int(user_id)).first()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Pengguna tidak ditemukan."
-        )
+#     user = db.query(User).filter(User.id == int(user_id)).first()
+#     if user is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Pengguna tidak ditemukan."
+#         )
 
-    return user
+#     return user
 
 class OTPRequest(BaseModel):
     email: EmailStr
@@ -135,9 +135,10 @@ def login(request: Request, data: UserLogin, response: Response, db: Session = D
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
-        secure=IS_PRODUCTION,
+        secure=IS_PRODUCTION,  # Pastikan bernilai False jika masih test di HTTP biasa (IP/localhost)
         samesite="lax",
-        max_age=86400
+        max_age=86400,
+        path="/"               # <--- TAMBAHKAN BARIS INI
     )
     
     return {"message": "Login berhasil", "redirect_url": "/dashboard"}
@@ -163,14 +164,3 @@ def logout(request: Request, response: Response, db: Session = Depends(get_db)):
     res = responses.RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
     res.delete_cookie(key="access_token", httponly=True, samesite="lax")
     return res
-
-@router.get("/dashboard")
-def dashboard_page(
-    request: Request,
-    current_user: User = Depends(get_current_user)
-):
-    return templates.TemplateResponse(
-        request=request,
-        name="dashboard.html",
-        context={"user": current_user}
-    )
