@@ -10,6 +10,29 @@ function showToast(message, type = 'error') {
     }, 4000);
 }
 
+function parseErrorMessage(data) {
+    if (typeof data.detail === 'string') {
+        return data.detail;
+    }
+    if (Array.isArray(data.detail) && data.detail.length > 0) {
+        const err = data.detail[0];
+        const fieldName = Array.isArray(err.loc) ? err.loc[err.loc.length - 1] : '';
+        const fieldMap = {
+            'username': 'Username',
+            'password': 'Password',
+            'email': 'Email',
+            'phone_number': 'Nomor WhatsApp',
+            'otp': 'Kode OTP'
+        };
+        const label = fieldMap[fieldName] || fieldName;
+        if (err.type === 'missing') {
+            return `Field ${label} wajib diisi.`;
+        }
+        return `${label}: ${err.msg || 'Terjadi kesalahan validasi.'}`;
+    }
+    return data.message || 'Terjadi kesalahan pada sistem.';
+}
+
 function showForm(type) {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -102,8 +125,7 @@ async function requestOTP() {
             otpInput.required = true;
             startCooldown(btnSendOtp, 60);
         } else {
-            const errorMsg = data.detail || data.message || 'Gagal mengirim OTP.';
-            showToast(errorMsg, 'error');
+            showToast(parseErrorMessage(data), 'error');
             btnSendOtp.disabled = false;
             btnSendOtp.textContent = 'Kirim OTP';
         }
@@ -129,3 +151,89 @@ function startCooldown(button, seconds) {
         }
     }, 1000);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+        const payload = {};
+        formData.forEach((value, key) => {
+            const trimmed = value.trim();
+            if (trimmed !== '') {
+                payload[key] = trimmed;
+            }
+        });
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast('Login berhasil! Mengalihkan...', 'success');
+                setTimeout(() => {
+                    window.location.href = data.redirect_url || '/dashboard';
+                }, 1000);
+            } else {
+                showToast(parseErrorMessage(data), 'error');
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            showToast('Terjadi kesalahan koneksi server.', 'error');
+            submitBtn.disabled = false;
+        }
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(registerForm);
+        const payload = {};
+        formData.forEach((value, key) => {
+            const trimmed = value.trim();
+            if (trimmed !== '') {
+                payload[key] = trimmed;
+            }
+        });
+        const submitBtn = registerForm.querySelector('button[type="submit"]');
+
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast('Pendaftaran berhasil! Silakan masuk.', 'success');
+                setTimeout(() => {
+                    showForm('login');
+                    submitBtn.disabled = false;
+                }, 1500);
+            } else {
+                showToast(parseErrorMessage(data), 'error');
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            showToast('Terjadi kesalahan koneksi server.', 'error');
+            submitBtn.disabled = false;
+        }
+    });
+});

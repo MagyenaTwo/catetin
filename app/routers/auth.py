@@ -39,36 +39,20 @@ def register_page(request: Request):
 
 @router.post("/register")
 def register(
-    request: Request,
-    username: str = Form(...),
-    email: str = Form(...),
-    otp: str = Form(...),
-    phone_number: str = Form(...),
-    password: str = Form(...),
+    user_in: UserCreate,
     db: Session = Depends(get_db)
 ):
     try:
-        user_in = UserCreate(
-            username=username,
-            email=email,
-            otp=otp,
-            phone_number=phone_number,
-            password=password
-        )
-        create_user(db, user_in)
-        return responses.RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+        new_user = create_user(db, user_in)
+        return {"message": "Pendaftaran berhasil", "user_id": new_user.id}
     except ValueError as ve:
-        return templates.TemplateResponse(
-            request=request,
-            name="register.html",
-            context={"error": str(ve)}
-        )
-    except Exception:
-        return templates.TemplateResponse(
-            request=request,
-            name="register.html",
-            context={"error": "Terjadi kesalahan saat pendaftaran."}
-        )
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        print("="*50)
+        print("ERROR REGISTER 500:")
+        traceback.print_exc()
+        print("="*50)
+        raise HTTPException(status_code=500, detail=f"Terjadi kesalahan: {str(e)}")
 
 @router.get("/login")
 def login_page(request: Request):
