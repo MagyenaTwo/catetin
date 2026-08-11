@@ -1,13 +1,13 @@
-# Byte-compiled / Python cache
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Environment variables (SANGAT PENTING jika berisi password Supabase)
+# Environment variables
 .env
 
-# Virtual Environment (jika ada)
+# Virtual environment
 venv/
 .venv/
 env/
