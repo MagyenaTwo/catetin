@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Catetin - Solusi Catat Keuangan AI{% endblock %}</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23ffffff'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' font-size='60' font-weight='bold' font-family='sans-serif' fill='%231bb774'>C</text></svg>">
+    
+    <!-- Font Inter & Boxicons Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1bb774;
+            --primary-dark: #148f5a;
+            --primary-light: #e8f8f1;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning-bg: #fffbeb;
+            --warning-border: #fde68a;
+            --warning-text: #b45309;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Navbar Layout */
+        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+        .nav-container { max-width: 1100px; margin: 0 auto; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center; }
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 1.2rem; }
+        .brand-logo { width: 34px; height: 34px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
+        
+        .user-nav { display: flex; align-items: center; gap: 1rem; }
+        .user-info { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-muted); }
+        .user-avatar { width: 32px; height: 32px; background: #e2e8f0; color: #475569; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; }
+        .btn-logout { color: var(--danger); text-decoration: none; font-size: 0.875rem; font-weight: 600; padding: 6px 12px; border-radius: 6px; transition: all 0.2s; }
+        .btn-logout:hover { background: #fef2f2; }
+
+        /* App Container */
+        .main-wrapper { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem; width: 100%; flex: 1; }
+
+        /* Connect Phone Banner Alert */
+        .alert-banner { background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning-text); padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .alert-content { display: flex; align-items: center; gap: 12px; }
+        .alert-content i { font-size: 1.5rem; color: #d97706; }
+        .btn-connect { background: #d97706; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-connect:hover { background: #b45309; }
+
+        /* Modal Component */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; visibility: hidden; transition: all 0.2s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-card { background: white; padding: 1.75rem; border-radius: 16px; width: 100%; max-width: 440px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; }
+        
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+        .form-control { width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; outline: none; transition: border 0.2s; }
+        .form-control:focus { border-color: var(--primary); }
+        .btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:hover { background: var(--primary-dark); }
+    </style>
+
+    <!-- Block Jinja2 dipindahkan ke luar tag <style> -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/dashboard" class="brand">
+                <div class="brand-logo">C</div>
+                <span>Catetin</span>
+            </a>
+            <div class="user-nav">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username[0]|upper }}</div>
+                    <span style="font-weight: 600; color: var(--text-main);">{{ user.username }}</span>
+                </div>
+                <a href="/logout" class="btn-logout"><i class='bx bx-log-out'></i> Keluar</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-wrapper">
+        <!-- Banner peringatan jika nomor WA belum terhubung -->
+        {% if not user.phone_number %}
+        <div class="alert-banner" id="connect-banner">
+            <div class="alert-content">
+                <i class='bx bx-mobile-vibration'></i>
+                <div>
+                    <strong style="display: block; font-size: 0.95rem;">WhatsApp Belum Terhubung</strong>
+                    <span style="font-size: 0.85rem;">Hubungkan nomor WhatsApp Anda agar AI dapat mencatat transaksi secara otomatis.</span>
+                </div>
+            </div>
+            <button class="btn-connect" onclick="openPhoneModal()">
+                <i class='bx bxl-whatsapp'></i> Hubungkan Bot AI
+            </button>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Modal Hubungkan WA -->
+    <div class="modal-overlay" id="phoneModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closePhoneModal()"><i class='bx bx-x'></i></button>
+            <h3 style="margin-bottom: 0.5rem; font-size: 1.2rem;">Hubungkan WhatsApp AI</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                Masukkan nomor WhatsApp Anda. Setelah disimpan, Anda bisa langsung memulai chat dengan Bot Catetin.
+            </p>
+
+            <form id="updatePhoneForm" onsubmit="handleSavePhone(event)">
+                <div class="form-group">
+                    <label for="modal-phone">Nomor WhatsApp</label>
+                    <input type="tel" id="modal-phone" class="form-control" placeholder="Contoh: 081234567890" value="{{ user.phone_number or '' }}" required>
+                </div>
+                <button type="submit" class="btn-primary" id="btn-save-phone">Simpan Nomor</button>
+            </form>
+
+            <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed var(--border); text-align: center;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Nomor Bot AI Catetin:</span>
+                <a href="https://wa.me/6281234567890?text=Halo%20Catetin%20saya%20mau%20catat%20keuangan" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: #25D366; text-decoration: none; font-weight: 600; font-size: 0.9rem; margin-top: 4px;">
+                    <i class='bx bxl-whatsapp' style="font-size: 1.2rem;"></i> Chat Bot WA (+62 812-3456-7890)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPhoneModal() {
+            document.getElementById('phoneModal').classList.add('active');
+        }
+
+        function closePhoneModal() {
+            document.getElementById('phoneModal').classList.remove('active');
+        }
+
+        async function handleSavePhone(e) {
+            e.preventDefault();
+            const phone = document.getElementById('modal-phone').value.trim();
+            const btn = document.getElementById('btn-save-phone');
+
+            if (!phone) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Menyimpan...';
+
+            try {
+                // Endpoint untuk update profil/nomor hp user
+                const response = await fetch('/user/update-phone', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone_number: phone })
+                });
+
+                if (response.ok) {
+                    alert('Nomor WhatsApp berhasil dihubungkan!');
+                    window.location.reload();
+                } else {
+                    const resData = await response.json();
+                    alert(resData.detail || 'Gagal menyimpan nomor.');
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Simpan Nomor';
+            }
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

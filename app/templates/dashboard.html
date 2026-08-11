@@ -1,61 +1,128 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Transaksi - Catetin</title>
+{% extends "base.html" %}
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Catetin - Asisten Keuangan Personal 🟢">
-    <meta property="og:description" content="Pantau dan kelola semua catatan transaksi harianmu di Dashboard Catetin.">
-    <meta property="og:image" content="https://0259-125-167-191-40.ngrok-free.app/static/logo.png">
-    <meta property="og:url" content="https://0259-125-167-191-40.ngrok-free.app/dashboard">
+{% block title %}Dashboard - Catetin Keuangan{% endblock %}
 
-    <style>
-        body { font-family: sans-serif; background: #f4f6f8; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
-        th { background: #f8f9fa; }
-        .logout-btn { color: #dc3545; text-decoration: none; font-weight: bold; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h2>Dashboard Transaksi</h2>
-                <p>User ID: <strong>{{ user.id }}</strong> | User: <strong>{{ user.username }}</strong> ({{ user.phone_number }})</p>
-            </div>
-            <a href="/logout" class="logout-btn">Logout</a>
+{% block extra_css %}
+<style>
+    .page-title-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .page-title h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+    .page-title p { font-size: 0.875rem; color: var(--text-muted); }
+
+    /* Summary Grid Cards */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; }
+    .stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+    .stat-icon.green { background: #dcfce7; color: #15803d; }
+    .stat-icon.blue { background: #e0f2fe; color: #0369a1; }
+    .stat-icon.purple { background: #f3e8ff; color: #6b21a8; }
+    .stat-info span { display: block; font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+    .stat-info h3 { font-size: 1.25rem; font-weight: 700; margin-top: 2px; }
+
+    /* Transaction Table Section */
+    .card-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+    .panel-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .panel-header h2 { font-size: 1.1rem; font-weight: 600; }
+
+    .table-responsive { overflow-x: auto; }
+    .custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
+    .custom-table th { background: #f8fafc; padding: 0.85rem 1.25rem; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .custom-table td { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); color: var(--text-main); }
+    .custom-table tbody tr:last-child td { border-bottom: none; }
+    .custom-table tbody tr:hover { background-color: #f8fafc; }
+
+    /* Status Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+    .badge-expense { background: #fee2e2; color: #b91c1c; }
+    .badge-income { background: #dcfce7; color: #15803d; }
+
+    .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--text-muted); }
+    .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 0.5rem; display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-title-area">
+    <div class="page-title">
+        <h1>Dashboard Transaksi</h1>
+        <p>Ringkasan transaksi dan aktivitas pencatatan keuangan Anda.</p>
+    </div>
+    {% if user.phone_number %}
+    <button class="btn-connect" onclick="openPhoneModal()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text-main);">
+        <i class='bx bxl-whatsapp' style="color: #25D366; font-size: 1.1rem;"></i> WA: {{ user.phone_number }}
+    </button>
+    {% endif %}
+</div>
+
+<!-- Ringkasan Statistik -->
+<div class="summary-grid">
+    <div class="stat-card">
+        <div class="stat-icon green"><i class='bx bx-receipt'></i></div>
+        <div class="stat-info">
+            <span>Total Transaksi</span>
+            <h3>{{ transactions|length }}</h3>
         </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class='bx bx-wallet'></i></div>
+        <div class="stat-info">
+            <span>Status WhatsApp</span>
+            <h3>{% if user.phone_number %}Terhubung{% else %}Belum{% endif %}</h3>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple"><i class='bx bx-bot'></i></div>
+        <div class="stat-info">
+            <span>Metode Catat</span>
+            <h3>WhatsApp AI</h3>
+        </div>
+    </div>
+</div>
 
-        <h3>Daftar Transaksi</h3>
-        <table>
+<!-- Tabel Transaksi -->
+<div class="card-panel">
+    <div class="panel-header">
+        <h2>Riwayat Transaksi Harian</h2>
+    </div>
+
+    <div class="table-responsive">
+        <table class="custom-table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Deskripsi</th>
-                    <th>Jumlah (Rp)</th>
-                    <th>Waktu</th>
+                    <th>Deskripsi Transaksi</th>
+                    <th>Nominal</th>
+                    <th>Waktu Pencatatan</th>
                 </tr>
             </thead>
             <tbody>
                 {% for txn in transactions %}
                 <tr>
-                    <td>{{ txn.id }}</td>
-                    <td>{{ txn.description }}</td>
-                    <td>Rp {{ "{:,.0f}".format(txn.amount) }}</td>
-                    <td>{{ txn.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
+                    <td><span style="font-weight: 600; color: var(--text-muted);">#{{ txn.id }}</span></td>
+                    <td>
+                        <strong style="display: block; font-size: 0.9rem;">{{ txn.description }}</strong>
+                    </td>
+                    <td>
+                        <span class="badge badge-expense">
+                            Rp {{ "{:,.0f}".format(txn.amount) }}
+                        </span>
+                    </td>
+                    <td style="color: var(--text-muted);">
+                        {{ txn.created_at.strftime("%d %b %Y, %H:%M") }}
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="4" style="text-align: center; color: #888;">Belum ada transaksi. Kirim pesan ke WhatsApp untuk mencatat otomatis!</td>
+                    <td colspan="4">
+                        <div class="empty-state">
+                            <i class='bx bx-data'></i>
+                            <strong style="display: block; color: var(--text-main); margin-bottom: 4px;">Belum Ada Transaksi</strong>
+                            <span>Kirim pesan singkat ke WhatsApp Bot untuk mulai mencatat keuangan secara otomatis!</span>
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
