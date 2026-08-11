@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Request, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -43,9 +43,15 @@ def check_db_connection(db: Session = Depends(get_db)):
 
 @app.exception_handler(HTTPException)
 async def custom_http_exception_handler(request: Request, exc: HTTPException):
-    if exc.status_code == status.HTTP_401_UNAUTHORIZED:
-        accept = request.headers.get("accept", "")
-        if "text/html" in accept:
-            return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
-            
-    return RedirectResponse(url="/login")
+    accept = request.headers.get("accept", "")
+
+    # Jika request meminta halaman HTML (misal user buka URL /dashboard di browser tanpa login)
+    if "text/html" in accept and exc.status_code == status.HTTP_401_UNAUTHORIZED:
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+
+    # Untuk request API/JSON (AJAX fetch), kembalikan response JSON asli dari FastAPI
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=exc.headers
+    )

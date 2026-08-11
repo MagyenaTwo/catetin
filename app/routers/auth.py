@@ -18,7 +18,7 @@ from app.schemas.auth import UserCreate, UserLogin
 from app.services.auth_service import create_user, authenticate_user, create_and_send_otp
 from fastapi.templating import Jinja2Templates
 
-router = APIRouter(tags=["Auth"])
+router = APIRouter(tags=["Auth"], redirect_slashes=False)
 templates = Jinja2Templates(directory="app/templates")
 
 limiter = Limiter(key_func=get_remote_address)
