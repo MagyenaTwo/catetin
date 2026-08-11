@@ -1,9 +1,9 @@
 import traceback
 
-from fastapi import APIRouter, Depends, Request, Form, responses, status, HTTPException
+from fastapi import APIRouter, Depends, Request, Form, Response, responses, status, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.schemas.auth import UserCreate
+from app.schemas.auth import UserCreate, UserLogin
 from app.services.auth_service import create_user, authenticate_user, create_and_send_otp
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, EmailStr
@@ -63,22 +63,19 @@ def login_page(request: Request):
 
 @router.post("/login")
 def login(
-    request: Request,
-    username: str = Form(...),
-    password: str = Form(...),
+    data: UserLogin,
+    response: Response,
     db: Session = Depends(get_db)
 ):
-    user = authenticate_user(db, username, password)
+    user = authenticate_user(db, data.username, data.password)
     if not user:
-        return templates.TemplateResponse(
-            request=request,
-            name="index.html",
-            context={"error": "Username atau password salah."}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Username atau password salah."
         )
     
-    response = responses.RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(key="user_id", value=str(user.id))
-    return response
+    response.set_cookie(key="user_id", value=str(user.id), httponly=True)
+    return {"message": "Login berhasil", "redirect_url": "/dashboard"}
 
 @router.get("/logout")
 def logout():
