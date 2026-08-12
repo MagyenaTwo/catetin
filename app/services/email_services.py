@@ -5,7 +5,7 @@ resend.api_key = os.getenv("RESEND_API_KEY")
 def send_otp_email(to_email: str, otp_code: str):
     try:
         resend.Emails.send({
-            "from": "Catetin <onboarding@resend.dev>", # Ganti domain terverifikasi kamu
+            "from": "Catetin <noreply@kafastore.my.id>", # Diubah menggunakan domain terverifikasi
             "to": [to_email],
             "subject": f"Kode OTP Catetin Anda: {otp_code}",
             "html": f"""
