@@ -218,7 +218,7 @@
         }
 
         body.sidebar-minimized .brand-icon-img {
-            display: none; /* Sembunyikan logo kecil agar tombol toggle terpusat rapi */
+            display: none;
         }
 
         body.sidebar-minimized .nav-item {
@@ -284,8 +284,14 @@
             gap: 12px;
         }
 
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .btn-mobile-hamburger {
-            display: none; /* Hanya aktif di mobile */
+            display: none;
             background: none;
             border: none;
             font-size: 1.5rem;
@@ -340,6 +346,7 @@
             display: inline-flex; align-items: center; gap: 6px;
             transition: opacity 0.2s;
             white-space: nowrap;
+            text-decoration: none;
         }
 
         .btn-wa-connect:hover { opacity: 0.9; }
@@ -552,7 +559,6 @@
             <img src="/static/logo.png" alt="Catetin Logo" class="brand-logo-img">
             <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%231bb774'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' font-size='60' font-weight='bold' font-family='sans-serif' fill='%23ffffff'>C</text></svg>" alt="C Logo" class="brand-icon-img">
             
-            <!-- Tombol Toggle Menu Terintegrasi Dalam Sidebar Header -->
             <button class="btn-sidebar-toggle" onclick="handleMenuToggle()" title="Toggle Sidebar">
                 <i class='bx bx-chevrons-left' id="sidebarToggleIcon"></i>
             </button>
@@ -600,23 +606,29 @@
     <div class="main-wrapper">
         <header class="topbar">
             <div class="topbar-left">
-                <!-- Hamburger Khusus Mobile (buka drawer) -->
                 <button class="btn-mobile-hamburger" onclick="openSidebar()">
                     <i class='bx bx-menu'></i>
                 </button>
-               
+                
                 <div class="page-title">{% block header_title %}Ringkasan Transaksi{% endblock %}</div>
             </div>
 
-            {% if user.phone_number %}
-            <button class="btn-wa-connect" style="background: #f1f5f9; color: var(--dark-green); border: 1px solid var(--border);" onclick="openPhoneModal()">
-                <i class='bx bxl-whatsapp' style="color: #25d366; font-size: 1rem;"></i> {{ user.phone_number }}
-            </button>
-            {% else %}
-            <button class="btn-wa-connect" onclick="openPhoneModal()">
-                <i class='bx bxl-whatsapp' style="font-size: 1rem;"></i> Connect WA
-            </button>
-            {% endif %}
+            <div class="topbar-right">
+                <!-- Tombol Langsung Chat Bot WA -->
+                <a href="https://wa.me/628999239305?text=Halo%20AI%20Catetin,%20saya%20mau%20mulai%20catat%20keuangan" target="_blank" class="btn-wa-connect">
+                    <i class='bx bxl-whatsapp' style="font-size: 1rem;"></i> Mulai Chat Bot
+                </a>
+
+                {% if user.phone_number %}
+                <button class="btn-wa-connect" style="background: #f1f5f9; color: var(--dark-green); border: 1px solid var(--border);" onclick="openPhoneModal()">
+                    <i class='bx bxl-whatsapp' style="color: #25d366; font-size: 1rem;"></i> {{ user.phone_number }}
+                </button>
+                {% else %}
+                <button class="btn-wa-connect" onclick="openPhoneModal()">
+                    <i class='bx bxl-whatsapp' style="font-size: 1rem;"></i> Connect WA
+                </button>
+                {% endif %}
+            </div>
         </header>
 
         <main class="content-body">
@@ -668,6 +680,12 @@
                 </div>
                 <button type="submit" class="btn-submit" id="btn-save-phone">Simpan Nomor</button>
             </form>
+
+            <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center;">
+                <a href="https://wa.me/628999239305?text=Halo%20AI%20Catetin,%20saya%20mau%20mulai%20catat%20keuangan" target="_blank" class="btn-submit" style="background: #25d366; text-decoration: none;">
+                    <i class='bx bxl-whatsapp' style="font-size: 1.2rem;"></i> Mulai Chat Bot Sekarang
+                </a>
+            </div>
         </div>
     </div>
 
@@ -675,12 +693,12 @@
         function updateToggleIcon() {
             const icon = document.getElementById('sidebarToggleIcon');
             if (window.innerWidth <= 768) {
-                icon.className = 'bx bx-x'; // Ikon Silang untuk Tutup di Mobile
+                icon.className = 'bx bx-x';
             } else {
                 if (document.body.classList.contains('sidebar-minimized')) {
-                    icon.className = 'bx bx-menu'; // Ikon Hamburger saat Minimized di Desktop
+                    icon.className = 'bx bx-menu';
                 } else {
-                    icon.className = 'bx bx-chevrons-left'; // Ikon Lipat saat Expanded di Desktop
+                    icon.className = 'bx bx-chevrons-left';
                 }
             }
         }
@@ -739,7 +757,6 @@
             }
         }
 
-        // Inisialisasi ikon saat load & resize window
         window.addEventListener('DOMContentLoaded', updateToggleIcon);
         window.addEventListener('resize', updateToggleIcon);
     </script>
