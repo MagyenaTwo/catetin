@@ -6,12 +6,9 @@
     <title>{% block title %}Catetin - Solusi Catat Keuangan AI{% endblock %}</title>
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%231bb774'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' font-size='60' font-weight='bold' font-family='sans-serif' fill='%23ffffff'>C</text></svg>">
-    
-    <!-- Boxicons Icons -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
     <style>
-        /* CSS Utama */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,6 +33,8 @@
             --text-muted: #64748b;
             --border: #e2e8f0;
             --sidebar-width: 240px;
+            --sidebar-mini-width: 70px;
+            --bottom-nav-height: 60px;
         }
 
         body {
@@ -45,7 +44,7 @@
             display: flex;
         }
 
-        /* Sidebar Kiri */
+        /* --- SIDEBAR BASE --- */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--surface);
@@ -55,26 +54,54 @@
             position: fixed;
             top: 0; bottom: 0; left: 0;
             z-index: 40;
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease;
         }
 
-        /* Area Header Logo (Ditinggikan agar logo besar muat) */
         .brand-area {
-            height: 90px; /* Ditinggikan dari 64px ke 90px */
-            padding: 0.5rem 1rem;
+            height: 64px;
+            padding: 0 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .brand-logo-img {
+            height: 100px;
+            width: auto;
+            max-width: 140px;
+            object-fit: contain;
+            display: block;
+            transition: opacity 0.2s ease;
+        }
+
+        .brand-icon-img {
+            display: none;
+            height: 34px;
+            width: auto;
+        }
+
+        /* Tombol Toggle di dalam Sidebar */
+        .btn-sidebar-toggle {
+            background: transparent;
+            border: none;
+            font-size: 1.35rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid var(--border);
+            transition: all 0.2s ease;
             flex-shrink: 0;
         }
 
-        /* Ukuran Logo Dibuat Jauh Lebih Besar */
-        .brand-logo-img {
-            height: 75px; /* Naik signifikan dari 48px */
-            width: auto;
-            max-width: 100%;
-            object-fit: contain;
-            display: block;
+        .btn-sidebar-toggle:hover {
+            background: var(--primary-bg);
+            color: var(--dark-green);
         }
 
         .sidebar-menu {
@@ -83,12 +110,14 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             padding: 0.65rem 0.85rem;
             color: var(--text-muted);
             text-decoration: none;
@@ -96,6 +125,8 @@
             font-size: 0.875rem;
             font-weight: 600;
             transition: all 0.2s ease;
+            white-space: nowrap;
+            position: relative;
         }
 
         .nav-item:hover {
@@ -108,18 +139,25 @@
             color: #ffffff;
         }
 
-        .nav-item i { font-size: 1.2rem; }
+        .nav-item i { 
+            font-size: 1.25rem; 
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .sidebar-footer {
-            padding: 1rem;
+            padding: 0.85rem;
             border-top: 1px solid var(--border);
+            overflow: hidden;
         }
 
         .user-card {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.4rem;
+            padding: 0.2rem;
         }
 
         .user-details {
@@ -156,17 +194,76 @@
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             transition: background 0.2s;
+            flex-shrink: 0;
         }
 
         .btn-logout:hover { background: #fee2e2; }
 
-        /* Area Konten Utama */
+        /* --- MODE SIDEBAR MINIMIZED (DESKTOP) --- */
+        body.sidebar-minimized .sidebar {
+            width: var(--sidebar-mini-width);
+        }
+
+        body.sidebar-minimized .main-wrapper {
+            margin-left: var(--sidebar-mini-width);
+        }
+
+        body.sidebar-minimized .brand-area {
+            justify-content: center;
+            padding: 0;
+        }
+
+        body.sidebar-minimized .brand-logo-img {
+            display: none;
+        }
+
+        body.sidebar-minimized .brand-icon-img {
+            display: none; /* Sembunyikan logo kecil agar tombol toggle terpusat rapi */
+        }
+
+        body.sidebar-minimized .nav-item {
+            justify-content: center;
+            padding: 0.65rem 0;
+        }
+
+        body.sidebar-minimized .nav-item span,
+        body.sidebar-minimized .user-name,
+        body.sidebar-minimized .btn-logout {
+            display: none;
+        }
+
+        body.sidebar-minimized .user-card {
+            justify-content: center;
+        }
+
+        /* Tooltip saat Sidebar Minimized */
+        body.sidebar-minimized .nav-item:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--dark-green);
+            color: #ffffff;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            z-index: 50;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* --- MAIN WRAPPER & TOPBAR --- */
         .main-wrapper {
             margin-left: var(--sidebar-width);
             flex: 1;
             display: flex;
             flex-direction: column;
             min-width: 0;
+            width: 100%;
+            transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .topbar {
@@ -176,9 +273,35 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2rem;
+            padding: 0 1.5rem;
             position: sticky; top: 0;
             z-index: 30;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-mobile-hamburger {
+            display: none; /* Hanya aktif di mobile */
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-green);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .mobile-brand {
+            display: none;
+            align-items: center;
+        }
+
+        .mobile-brand img {
+            height: 36px;
+            width: auto;
         }
 
         .page-title {
@@ -188,18 +311,17 @@
         }
 
         .content-body {
-            padding: 2rem;
+            padding: 1.5rem;
             flex: 1;
         }
 
-        /* Banner Peringatan WA */
         .alert-banner {
             background: var(--primary-bg);
             border: 1px solid #a7f3d0;
             color: var(--dark-green);
             padding: 0.85rem 1.25rem;
             border-radius: 12px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -217,11 +339,28 @@
             cursor: pointer;
             display: inline-flex; align-items: center; gap: 6px;
             transition: opacity 0.2s;
+            white-space: nowrap;
         }
 
         .btn-wa-connect:hover { opacity: 0.9; }
 
-        /* Modal Popup */
+        .mobile-bottom-nav {
+            display: none;
+        }
+
+        .drawer-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 58, 40, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 35;
+            opacity: 0; visibility: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1; visibility: visible;
+        }
+
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(3, 58, 40, 0.4);
@@ -229,7 +368,7 @@
             display: flex; align-items: center; justify-content: center;
             z-index: 100;
             opacity: 0; visibility: hidden;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
         .modal-overlay.active { opacity: 1; visibility: visible; }
@@ -241,6 +380,7 @@
             width: 100%; max-width: 400px;
             border: 1px solid #a7f3d0;
             box-shadow: 0 10px 25px rgba(27, 183, 116, 0.08);
+            transition: transform 0.25s ease;
         }
 
         .form-group { margin-bottom: 1rem; text-align: left; }
@@ -250,7 +390,7 @@
             padding: 0.75rem 0.9rem;
             border: 1px solid var(--border);
             border-radius: 10px;
-            font-size: 0.9rem;
+            font-size: 16px;
             outline: none;
             background: #f8fafc;
             transition: border 0.2s;
@@ -272,13 +412,125 @@
         }
         .btn-submit:hover { background: var(--primary-dark); }
 
-        @media (max-width: 900px) {
-            .sidebar { width: 70px; }
-            .nav-item span, .user-name { display: none; }
-            .main-wrapper { margin-left: 70px; }
-            .brand-area { height: 64px; padding: 0 0.25rem; }
-            .brand-logo-img { height: 45px; }
-            .nav-item { justify-content: center; padding: 0.75rem; }
+        /* --- RESPONSIVE MOBILE --- */
+        @media (max-width: 768px) {
+            body.sidebar-minimized .main-wrapper {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width) !important;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .brand-area {
+                justify-content: space-between !important;
+                padding: 0 1rem !important;
+            }
+
+            .brand-logo-img {
+                display: block !important;
+            }
+
+            .nav-item {
+                justify-content: flex-start !important;
+                padding: 0.65rem 0.85rem !important;
+            }
+
+            .nav-item span, .user-name, .btn-logout {
+                display: block !important;
+            }
+
+            .nav-item:hover::after {
+                display: none !important;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+                padding-bottom: calc(var(--bottom-nav-height) + 10px);
+            }
+
+            .topbar {
+                padding: 0 1rem;
+                height: 56px;
+            }
+
+            .btn-mobile-hamburger {
+                display: flex;
+                align-items: center;
+            }
+
+            .page-title {
+                display: none;
+            }
+
+            .mobile-brand {
+                display: flex;
+            }
+
+            .content-body {
+                padding: 1rem 0.85rem;
+            }
+
+            .alert-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+                padding: 0.85rem 1rem;
+            }
+
+            .alert-banner .btn-wa-connect {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                height: var(--bottom-nav-height);
+                background: var(--surface);
+                border-top: 1px solid var(--border);
+                box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.04);
+                z-index: 30;
+                justify-content: space-around;
+                align-items: center;
+                padding: 0 0.25rem;
+            }
+
+            .b-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+                color: var(--text-muted);
+                text-decoration: none;
+                font-size: 0.68rem;
+                font-weight: 600;
+                flex: 1;
+                padding: 4px 0;
+                transition: color 0.15s ease;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+
+            .b-nav-item i { font-size: 1.35rem; }
+            .b-nav-item.active { color: var(--primary); }
+
+            .modal-overlay { align-items: flex-end; }
+            .modal-card {
+                border-radius: 20px 20px 0 0;
+                max-width: 100%;
+                padding: 1.5rem 1.25rem 2rem 1.25rem;
+                transform: translateY(100%);
+            }
+            .modal-overlay.active .modal-card { transform: translateY(0); }
         }
     </style>
 
@@ -286,20 +538,50 @@
 </head>
 <body>
 
-    <!-- Sidebar Kiri -->
-    <aside class="sidebar">
+    <script>
+        if (localStorage.getItem('sidebarMinimized') === 'true' && window.innerWidth > 768) {
+            document.body.classList.add('sidebar-minimized');
+        }
+    </script>
+
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
         <div class="brand-area">
             <img src="/static/logo.png" alt="Catetin Logo" class="brand-logo-img">
+            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%231bb774'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' font-size='60' font-weight='bold' font-family='sans-serif' fill='%23ffffff'>C</text></svg>" alt="C Logo" class="brand-icon-img">
+            
+            <!-- Tombol Toggle Menu Terintegrasi Dalam Sidebar Header -->
+            <button class="btn-sidebar-toggle" onclick="handleMenuToggle()" title="Toggle Sidebar">
+                <i class='bx bx-chevrons-left' id="sidebarToggleIcon"></i>
+            </button>
         </div>
 
         <nav class="sidebar-menu">
-            <a href="/dashboard" class="nav-item active">
+            <a href="/dashboard" class="nav-item active" data-tooltip="Dashboard">
                 <i class='bx bx-grid-alt'></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="nav-item" onclick="openPhoneModal(); return false;">
+            <a href="/transaksi" class="nav-item" data-tooltip="Transaksi">
+                <i class='bx bx-transfer-alt'></i>
+                <span>Transaksi</span>
+            </a>
+            <a href="/laporan" class="nav-item" data-tooltip="Laporan">
+                <i class='bx bx-pie-chart-alt-2'></i>
+                <span>Laporan</span>
+            </a>
+            <a href="/kategori" class="nav-item" data-tooltip="Kategori">
+                <i class='bx bx-category'></i>
+                <span>Kategori</span>
+            </a>
+            <a href="#" class="nav-item" data-tooltip="Bot WhatsApp" onclick="openPhoneModal(); closeSidebar(); return false;">
                 <i class='bx bxl-whatsapp'></i>
                 <span>Bot WhatsApp</span>
+            </a>
+            <a href="/pengaturan" class="nav-item" data-tooltip="Pengaturan">
+                <i class='bx bx-cog'></i>
+                <span>Pengaturan</span>
             </a>
         </nav>
 
@@ -314,10 +596,18 @@
         </div>
     </aside>
 
-    <!-- Content Utama -->
+    <!-- AREA UTAMA -->
     <div class="main-wrapper">
         <header class="topbar">
-            <div class="page-title">{% block header_title %}Ringkasan Transaksi{% endblock %}</div>
+            <div class="topbar-left">
+                <!-- Hamburger Khusus Mobile (buka drawer) -->
+                <button class="btn-mobile-hamburger" onclick="openSidebar()">
+                    <i class='bx bx-menu'></i>
+                </button>
+               
+                <div class="page-title">{% block header_title %}Ringkasan Transaksi{% endblock %}</div>
+            </div>
+
             {% if user.phone_number %}
             <button class="btn-wa-connect" style="background: #f1f5f9; color: var(--dark-green); border: 1px solid var(--border);" onclick="openPhoneModal()">
                 <i class='bx bxl-whatsapp' style="color: #25d366; font-size: 1rem;"></i> {{ user.phone_number }}
@@ -343,12 +633,32 @@
         </main>
     </div>
 
-    <!-- Modal Hubungkan WA -->
-    <div class="modal-overlay" id="phoneModal">
+    <!-- BOTTOM NAV MOBILE -->
+    <nav class="mobile-bottom-nav">
+        <a href="/dashboard" class="b-nav-item active">
+            <i class='bx bx-grid-alt'></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="/transaksi" class="b-nav-item">
+            <i class='bx bx-transfer-alt'></i>
+            <span>Transaksi</span>
+        </a>
+        <a href="/laporan" class="b-nav-item">
+            <i class='bx bx-pie-chart-alt-2'></i>
+            <span>Laporan</span>
+        </a>
+        <a href="#" class="b-nav-item" onclick="openPhoneModal(); return false;">
+            <i class='bx bxl-whatsapp'></i>
+            <span>Bot WA</span>
+        </a>
+    </nav>
+
+    <!-- MODAL PHONE -->
+    <div class="modal-overlay" id="phoneModal" onclick="if(event.target === this) closePhoneModal()">
         <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark-green);">Nomor WhatsApp</h3>
-                <button onclick="closePhoneModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+                <button onclick="closePhoneModal()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
             </div>
 
             <form id="updatePhoneForm" onsubmit="handleSavePhone(event)">
@@ -362,6 +672,40 @@
     </div>
 
     <script>
+        function updateToggleIcon() {
+            const icon = document.getElementById('sidebarToggleIcon');
+            if (window.innerWidth <= 768) {
+                icon.className = 'bx bx-x'; // Ikon Silang untuk Tutup di Mobile
+            } else {
+                if (document.body.classList.contains('sidebar-minimized')) {
+                    icon.className = 'bx bx-menu'; // Ikon Hamburger saat Minimized di Desktop
+                } else {
+                    icon.className = 'bx bx-chevrons-left'; // Ikon Lipat saat Expanded di Desktop
+                }
+            }
+        }
+
+        function handleMenuToggle() {
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            } else {
+                document.body.classList.toggle('sidebar-minimized');
+                const isMinimized = document.body.classList.contains('sidebar-minimized');
+                localStorage.setItem('sidebarMinimized', isMinimized);
+                updateToggleIcon();
+            }
+        }
+
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('active');
+            document.getElementById('drawerOverlay').classList.add('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('drawerOverlay').classList.remove('active');
+        }
+
         function openPhoneModal() { document.getElementById('phoneModal').classList.add('active'); }
         function closePhoneModal() { document.getElementById('phoneModal').classList.remove('active'); }
 
@@ -372,7 +716,7 @@
             if (!phone) return;
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Menyimpan...';
+            btn.innerHTML = 'Menyimpan...';
 
             try {
                 const response = await fetch('/user/update-phone', {
@@ -394,6 +738,10 @@
                 btn.textContent = 'Simpan Nomor';
             }
         }
+
+        // Inisialisasi ikon saat load & resize window
+        window.addEventListener('DOMContentLoaded', updateToggleIcon);
+        window.addEventListener('resize', updateToggleIcon);
     </script>
     {% block extra_js %}{% endblock %}
 </body>

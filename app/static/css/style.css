@@ -47,7 +47,7 @@ html, body {
 }
 
 .logo-img {
-    height: 100px;
+    height: 150px;
     width: auto;
     object-fit: contain;
 }
@@ -555,10 +555,11 @@ button:disabled {
         gap: 1.25rem;
         box-shadow: 0 4px 20px rgba(27, 183, 116, 0.08);
     }
-
-    .logo-img {
-        height: 80px; /* Ukuran logo disesuaikan agar proporsional */
-    }
+.logo-img {
+    height: 100px;
+    display: block;
+    margin: 0 auto;
+}
 
     .hero-title h1 {
         font-size: 1.6rem;
