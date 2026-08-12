@@ -58,7 +58,7 @@ function showForm(type) {
         registerForm.classList.add('hidden');
         navLogin.classList.add('active');
         navRegister.classList.remove('active');
-        formTitle.textContent = "Selamat Datang";
+        formTitle.textContent = "Masuk";
         formSub.textContent = "Masuk ke akun Anda untuk mulai mengelola pencatatan keuangan secara otomatis.";
         resetRegisterFormState();
     } else {

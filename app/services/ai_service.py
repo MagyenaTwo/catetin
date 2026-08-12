@@ -52,7 +52,7 @@ def get_smart_fallback(user_message: str, transaction_result: dict = None, is_re
                 "✅ *BERHASIL DICATAT*\n\n"
                 f"📝 {msg}\n\n"
                 "=========================\n"
-                "💾 _Tersimpan otomatis_"
+                "💾 _Autosaved_"
             )
 
         elif status == "error" and transaction_result.get("type") == "unregistered":
@@ -121,7 +121,7 @@ def generate_ai_reply(db: Session, phone_number: str, user_message: str, transac
             "3. Tampilkan detail dari database persis seperti ini: 📝 [detail dari database]. Dilarang mengubah nominal angka/deskripsi.\n"
             "4. Tutup dengan footer ini:\n"
             "=========================\n"
-            "💾 _Tersimpan otomatis_"
+            "💾 _Autosaved_"
         )
 
         user_prompt = (
