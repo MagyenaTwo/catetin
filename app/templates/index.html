@@ -9,6 +9,9 @@
 </head>
 <body>
 
+    <!-- Overlay Latar Belakang untuk Mobile Modal -->
+    <div class="mobile-overlay" id="mobile-overlay" onclick="closeAuthModal()"></div>
+
     <div class="wrapper">
         <div class="hero-card">
             <div class="hero-header">
@@ -63,6 +66,9 @@
                 </div>
             </div>
 
+            <!-- Tombol CTA khusus Mobile -->
+            <button class="btn-hero-cta" onclick="openAuthModal()">Coba Sekarang</button>
+
             <div class="hero-footer">
                 <div class="divider-text"><span>Catatan Keuangan Otomatis via WhatsApp</span></div>
                 <div class="family-logos">
@@ -75,7 +81,10 @@
             </div>
         </div>
 
-        <div class="auth-container">
+        <div class="auth-container" id="auth-container">
+            <!-- Tombol Close independen dari top-nav -->
+            <button class="mobile-close-btn" onclick="closeAuthModal()" aria-label="Tutup">&times;</button>
+            
             <div class="top-nav">
                 <button class="nav-btn active" id="nav-login" onclick="showForm('login')">Masuk</button>
                 <button class="nav-btn" id="nav-register" onclick="showForm('register')">Mendaftar</button>
@@ -158,8 +167,6 @@
                     </button>
                 </form>
             </div>
-
-            <div></div>
         </div>
     </div>
 

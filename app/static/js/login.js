@@ -346,3 +346,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+function openAuthModal() {
+    const authContainer = document.getElementById('auth-container');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    if (authContainer) authContainer.classList.add('active');
+    if (overlay) overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAuthModal() {
+    const authContainer = document.getElementById('auth-container');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    if (authContainer) authContainer.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
