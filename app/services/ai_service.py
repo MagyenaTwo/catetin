@@ -155,7 +155,7 @@ def generate_ai_reply(db: Session, phone_number: str, user_message: str, transac
     }
 
     payload = {
-        "model": "mistral-large",
+        "model": "agnes-2.5-flash",
         "messages": [
             {
                 "role": "system",

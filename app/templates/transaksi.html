@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Riwayat Transaksi - Catetin{% endblock %}
+{% block header_title %}Riwayat Transaksi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .transaksi-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .summary-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.1rem;
+    }
+
+    .summary-card.in { border-left: 4px solid var(--primary); }
+    .summary-card.out { border-left: 4px solid #ef4444; }
+
+    .summary-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .summary-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-top: 4px;
+    }
+
+    .text-in { color: var(--primary-dark); }
+    .text-out { color: #dc2626; }
+
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--dark-green);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 6px;
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 10px;
+    }
+
+    .filter-btn {
+        background: transparent;
+        border: none;
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+        background: var(--surface);
+        color: var(--dark-green);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .table-transaksi {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+        text-align: left;
+    }
+
+    .table-transaksi th {
+        padding: 0.85rem 1rem;
+        background: #f8fafc;
+        color: var(--text-muted);
+        font-weight: 600;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .table-transaksi td {
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    .table-transaksi tr:last-child td {
+        border-bottom: none;
+    }
+
+    .badge-tipe {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0.25rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.725rem;
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
+    .badge-tipe.pemasukan {
+        background: var(--primary-bg);
+        color: var(--dark-green);
+    }
+
+    .badge-tipe.pengeluaran {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .badge-kategori {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 600px) {
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .filter-btn {
+            flex: 1;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="transaksi-container">
+    {% set ns = namespace(total_masuk=0, total_keluar=0) %}
+    {% for tx in transactions %}
+        {% if tx.tipe == 'pemasukan' %}
+            {% set ns.total_masuk = ns.total_masuk + tx.nominal %}
+        {% elif tx.tipe == 'pengeluaran' %}
+            {% set ns.total_keluar = ns.total_keluar + tx.nominal %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="summary-cards">
+        <div class="summary-card in">
+            <div class="summary-label">TOTAL PEMASUKAN</div>
+            <div class="summary-value text-in">
+                Rp {{ "{:,.0f}".format(ns.total_masuk).replace(',', '.') }}
+            </div>
+        </div>
+        <div class="summary-card out">
+            <div class="summary-label">TOTAL PENGELUARAN</div>
+            <div class="summary-value text-out">
+                Rp {{ "{:,.0f}".format(ns.total_keluar).replace(',', '.') }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                <i class='bx bx-list-ul' style="color: var(--primary); font-size: 1.25rem;"></i>
+                Daftar Transaksi
+            </div>
+
+            <div class="filter-group">
+                <button class="filter-btn active" onclick="filterTable('all', this)">Semua</button>
+                <button class="filter-btn" onclick="filterTable('pemasukan', this)">Masuk</button>
+                <button class="filter-btn" onclick="filterTable('pengeluaran', this)">Keluar</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="table-transaksi">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Jenis</th>
+                        <th>Kategori</th>
+                        <th>Keterangan</th>
+                        <th style="text-align: right;">Nominal</th>
+                    </tr>
+                </thead>
+               <tbody>
+    {% for tx in transactions %}
+    {# Pastikan tx berbentuk dict atau object #}
+    {% set tipe_tx = tx.tipe if tx.tipe else 'pemasukan' %}
+    {% set nominal_tx = tx.nominal if tx.nominal is number else 0 %}
+    
+    <tr class="tx-row" data-tipe="{{ tipe_tx }}">
+        <td style="white-space: nowrap; color: var(--text-muted);">
+            {# Pengecekan aman untuk format tanggal #}
+            {% if tx.tanggal and tx.tanggal.strftime is defined %}
+                {{ tx.tanggal.strftime('%d/%m/%Y') }}
+            {% else %}
+                {{ tx.tanggal or '-' }}
+            {% endif %}
+        </td>
+        <td>
+            <span class="badge-tipe {{ tipe_tx }}">
+                <i class='bx {% if tipe_tx == "pemasukan" %}bx-down-arrow-alt{% else %}bx-up-arrow-alt{% endif %}'></i>
+                {{ tipe_tx }}
+            </span>
+        </td>
+        <td>
+            <span class="badge-kategori">{{ tx.kategori if tx.kategori is string else 'Umum' }}</span>
+        </td>
+        <td>
+            <strong>{{ tx.catatan if tx.catatan is string else '-' }}</strong>
+        </td>
+        <td style="text-align: right; white-space: nowrap;" class="{% if tipe_tx == 'pemasukan' %}text-in{% else %}text-out{% endif %}">
+            <strong>
+                {% if tipe_tx == 'pemasukan' %}+{% else %}-{% endif %}
+                Rp {{ "{:,.0f}".format(nominal_tx).replace(',', '.') }}
+            </strong>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="5">
+            <div class="empty-state">
+                <i class='bx bx-receipt'></i>
+                <p>Belum ada riwayat transaksi yang tercatat.</p>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterTable(type, btnElement) {
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        const rows = document.querySelectorAll('.tx-row');
+        rows.forEach(row => {
+            const tipe = row.getAttribute('data-tipe');
+            if (type === 'all' || tipe === type) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}
