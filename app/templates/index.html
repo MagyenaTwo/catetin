@@ -25,6 +25,58 @@
 
     <link rel="icon" type="image/png" href="/static/logo3.png">
     <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Tambahan CSS Khusus untuk Tampilan Sharp (No-Rounded) & Toggle Password -->
+    <style>
+        /* Paksa semua elemen form & tombol tanpa rounded */
+        .auth-container,
+        .nav-btn,
+        .form-group input,
+        .btn-submit,
+        .btn-secondary,
+        .method-btn,
+        .otp-digit,
+        .feature-item,
+        .chat-preview-card {
+            border-radius: 0px !important;
+        }
+
+        /* Container input password dengan icon mata */
+        .input-password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-password-wrapper input {
+            width: 100%;
+            padding-right: 42px; /* Space agar teks tidak tertutup ikon */
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-password-btn:hover {
+            color: #111;
+        }
+
+        .toggle-password-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
 </head>
 <body>
 
@@ -72,7 +124,7 @@
                         </div>
 
                         <div class="chat-bubble in highlight">
-                            <div class="ai-banner">BERAHAIL DICATAT</div>
+                            <div class="ai-banner">BERHASIL DICATAT</div>
                             <ul class="chat-list">
                                 <li><strong>Pengeluaran:</strong> Beli baju kemeja</li>
                                 <li><strong>Nominal:</strong> Rp 290.000</li>
@@ -85,46 +137,46 @@
             </div>
 
             <!-- Feature Cards - Modern Bento Style (Sharp & Clean) -->
-<div class="feature-cards">
-    <div class="feature-item">
-        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-        </svg>
-        <div class="feature-text">
-            <h4>WhatsApp Native</h4>
-            <p>Tanpa install app</p>
-        </div>
-    </div>
+            <div class="feature-cards">
+                <div class="feature-item">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                    </svg>
+                    <div class="feature-text">
+                        <h4>WhatsApp Native</h4>
+                        <p>Tanpa install app</p>
+                    </div>
+                </div>
 
-    <div class="feature-item">
-        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-        </svg>
-        <div class="feature-text">
-            <h4>AI Auto-Detect</h4>
-            <p>Ekstraksi otomatis</p>
-        </div>
-    </div>
+                <div class="feature-item">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                    <div class="feature-text">
+                        <h4>AI Auto-Detect</h4>
+                        <p>Ekstraksi otomatis</p>
+                    </div>
+                </div>
 
-    <div class="feature-item">
-        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
-        </svg>
-        <div class="feature-text">
-            <h4>Laporan Excel</h4>
-            <p>Grafik & rekapan</p>
-        </div>
-    </div>
-</div>
+                <div class="feature-item">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                    <div class="feature-text">
+                        <h4>Laporan Excel</h4>
+                        <p>Grafik & rekapan</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Tombol CTA khusus Mobile -->
             <button class="btn-hero-cta" onclick="openAuthModal()">Mulai Sekarang</button>
 
-         <!-- Hero Footer Ultra Minimalist -->
-<div class="hero-footer">
-    <p>&copy; 2026 Catetin AI. All rights reserved.</p>
-</div>
-</div>
+            <!-- Hero Footer Ultra Minimalist -->
+            <div class="hero-footer">
+                <p>&copy; 2026 Catetin AI. All rights reserved.</p>
+            </div>
+        </div>
 
         <!-- Form Autentikasi / Kanan -->
         <div class="auth-container" id="auth-container">
@@ -141,21 +193,34 @@
                 <h2 id="form-title">Selamat Datang Kembali</h2>
                 <p class="sub" id="form-sub">Masuk ke akun Anda untuk melihat dashboard keuangan.</p>
 
+                <!-- FORM LOGIN -->
                 <form id="loginForm" action="/login" method="POST">
                     <div class="form-group">
                         <label for="login-identifier">Username / Email / No. WhatsApp</label>
                         <input type="text" id="login-identifier" name="username" placeholder="Masukkan ID Anda" required autocomplete="username">
                     </div>
+
                     <div class="form-group">
                         <label for="login-password">Password</label>
-                        <input type="password" id="login-password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                        <div class="input-password-wrapper">
+                            <input type="password" id="login-password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('login-password', this)" aria-label="Tampilkan Password">
+                                <!-- Eye Icon (Default Close) -->
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
+
                     <button type="submit" class="btn-submit">
                         <span class="btn-text">Masuk ke Dashboard</span>
                         <span class="spinner hidden"></span>
                     </button>
                 </form>
 
+                <!-- FORM REGISTER -->
                 <form id="registerForm" action="/register" method="POST" class="hidden">
                     <div class="form-group">
                         <label for="reg-username">Username</label>
@@ -203,9 +268,18 @@
 
                     <div class="form-group">
                         <label for="reg-password">Password</label>
-                        <input type="password" id="reg-password" name="password" placeholder="Buat password aman" required>
+                        <div class="input-password-wrapper">
+                            <input type="password" id="reg-password" name="password" placeholder=" password " required>
+                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('reg-password', this)" aria-label="Tampilkan Password">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
                         <span class="hint">Min. 8 karakter (kombinasi huruf & angka).</span>
                     </div>
+
                     <button type="submit" class="btn-submit">
                         <span class="btn-text">Buat Akun Sekarang</span>
                         <span class="spinner hidden"></span>
@@ -216,5 +290,32 @@
     </div>
 
     <script src="/static/js/login.js"></script>
+
+    <!-- Script Tambahan untuk Fungsi Toggle Show/Hide Password -->
+    <script>
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const isPassword = input.type === 'password';
+            
+            input.type = isPassword ? 'text' : 'password';
+
+            // Ganti ikon mata terbuka / tercoret
+            if (isPassword) {
+                btn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                `;
+            } else {
+                btn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                `;
+            }
+        }
+    </script>
 </body>
 </html>
