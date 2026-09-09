@@ -5,43 +5,145 @@
 
 {% block extra_css %}
 <style>
-    /* Stats Grid */
+    :root {
+        --primary: #047857;
+        --primary-dark: #064e3b;
+        --primary-light: #ecfdf5;
+        --accent: #10b981;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --bg-surface: #ffffff;
+        --border-color: #e2e8f0;
+        --radius-lg: 16px;
+        --radius-md: 10px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    }
+
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Top Stats Grid */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 1.25rem;
-        margin-bottom: 1.5rem;
     }
 
-    .stat-box {
-        background: #ffffff;
-        border: 1px solid #a7f3d0;
-        border-radius: 16px;
-        padding: 1.25rem 1.5rem;
-        box-shadow: 0 8px 20px rgba(3, 58, 40, 0.03);
+    .stat-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .stat-label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
-    .stat-value { font-size: 1.6rem; font-weight: 700; color: #033a28; margin-top: 4px; }
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
 
-    /* Card Table Panel */
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-label {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-main);
+        line-height: 1.2;
+        margin-top: 0.25rem;
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        width: fit-content;
+    }
+
+    .badge-success {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .badge-warning {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: currentColor;
+    }
+
+    /* Main Table Panel */
     .panel-card {
-        background: #ffffff;
-        border: 1px solid #a7f3d0;
-        border-radius: 16px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
         overflow: hidden;
-        box-shadow: 0 8px 20px rgba(3, 58, 40, 0.03);
     }
 
     .panel-header {
         padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        background-color: #f8fafc;
     }
 
-    .panel-header h3 { font-size: 1rem; font-weight: 700; color: #033a28; }
+    .panel-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
 
     .data-table {
         width: 100%;
@@ -51,80 +153,150 @@
     }
 
     .data-table th {
-        background: #e8f7f0;
-        padding: 0.85rem 1.5rem;
-        font-weight: 700;
-        color: #033a28;
-        border-bottom: 1px solid #a7f3d0;
+        background: #f1f5f9;
+        padding: 0.875rem 1.5rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .data-table td {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-        color: #1a1a1a;
+        padding: 1.125rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-main);
     }
 
-    .data-table tbody tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:hover { background-color: #f8fafc; }
+    .data-table tbody tr {
+        transition: background-color 0.15s ease;
+    }
 
-    .empty-row {
+    .data-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .data-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .txn-desc {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .txn-amount {
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .txn-date {
+        color: var(--text-muted);
+        font-size: 0.8125rem;
+    }
+
+    /* Empty State */
+    .empty-state {
         text-align: center;
-        padding: 3rem 1rem;
-        color: #64748b;
+        padding: 3.5rem 1.5rem;
+        color: var(--text-muted);
+    }
+
+    .empty-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+        opacity: 0.6;
+    }
+
+    .empty-text {
+        font-size: 0.95rem;
+        max-width: 400px;
+        margin: 0 auto;
+        line-height: 1.5;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="stats-grid">
-    <div class="stat-box">
-        <div class="stat-label">Total Transaksi</div>
-        <div class="stat-value">{{ transactions|length }}</div>
-    </div>
-    <div class="stat-box">
-        <div class="stat-label">Status WhatsApp</div>
-        <div class="stat-value" style="font-size: 1.15rem; margin-top: 8px;">
-            {% if user.phone_number %}
-                <span class="status-pill">Terhubung</span>
-            {% else %}
-                <span style="color: #d97706; font-weight: 600;">Belum Set</span>
-            {% endif %}
+<div class="dashboard-container">
+    <!-- Stat Cards Section -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-info">
+                <span class="stat-label">Total Transaksi</span>
+                <span class="stat-value">{{ transactions|length }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">💬</div>
+            <div class="stat-info">
+                <span class="stat-label">Status WhatsApp</span>
+                <div style="margin-top: 0.35rem;">
+                    {% if user.phone_number %}
+                        <span class="badge badge-success">
+                            <span class="badge-dot"></span> Terhubung
+                        </span>
+                    {% else %}
+                        <span class="badge badge-warning">
+                            <span class="badge-dot"></span> Belum Set
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="panel-card">
-    <div class="panel-header">
-        <h3>Daftar Transaksi Saya</h3>
-    </div>
+    <!-- Transaction Table Panel -->
+    <div class="panel-card">
+        <div class="panel-header">
+            <h3 class="panel-title">
+                <span>📝</span> Daftar Transaksi Saya
+            </h3>
+        </div>
 
-    <div style="overflow-x: auto;">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th style="width: 60px;">No</th>
-                    <th>Deskripsi</th>
-                    <th>Nominal</th>
-                    <th>Tanggal & Waktu</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for txn in transactions %}
-                <tr>
-                    <td style="color: #64748b; font-weight: 600;">{{ loop.index }}</td>
-                    <td><strong style="color: #033a28;">{{ txn.description }}</strong></td>
-                    <td style="font-weight: 700; color: #033a28;">Rp {{ "{:,.0f}".format(txn.amount) }}</td>
-                    <td style="color: #64748b;">{{ txn.created_at.strftime("%d/%m/%Y %H:%M") }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="4" class="empty-row">
-                        Belum ada transaksi recorded. Kirim pesan ke WhatsApp Bot untuk mulai mencatat.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">No</th>
+                        <th>Deskripsi</th>
+                        <th>Nominal</th>
+                        <th>Tanggal & Waktu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for txn in transactions %}
+                    <tr>
+                        <td style="color: var(--text-muted); font-weight: 600;">{{ loop.index }}</td>
+                        <td>
+                            <span class="txn-desc">{{ txn.description }}</span>
+                        </td>
+                        <td>
+                            <span class="txn-amount">Rp {{ "{:,.0f}".format(txn.amount) }}</span>
+                        </td>
+                        <td>
+                            <span class="txn-date">{{ txn.created_at.strftime("%d/%m/%Y %H:%M") }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <div class="empty-icon">📥</div>
+                                <div class="empty-text">
+                                    Belum ada transaksi tercatat.<br>
+                                    Kirim pesan ke <strong>WhatsApp Bot</strong> untuk mulai mencatat secara otomatis.
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

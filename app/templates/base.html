@@ -91,7 +91,7 @@
             color: var(--text-muted);
             cursor: pointer;
             padding: 6px;
-            border-radius: 8px;
+            border-radius: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -121,7 +121,7 @@
             padding: 0.65rem 0.85rem;
             color: var(--text-muted);
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 0;
             font-size: 0.875rem;
             font-weight: 600;
             transition: all 0.2s ease;
@@ -171,10 +171,11 @@
             width: 34px; height: 34px;
             background: var(--primary-bg);
             color: var(--dark-green);
-            border-radius: 50%;
+            border-radius: 0;
             display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 0.85rem;
             flex-shrink: 0;
+            border: 1px solid var(--border);
         }
 
         .user-name {
@@ -191,7 +192,7 @@
             text-decoration: none;
             font-size: 1.2rem;
             padding: 6px;
-            border-radius: 8px;
+            border-radius: 0;
             display: flex; align-items: center; justify-content: center;
             transition: background 0.2s;
             flex-shrink: 0;
@@ -246,13 +247,13 @@
             background: var(--dark-green);
             color: #ffffff;
             padding: 0.4rem 0.75rem;
-            border-radius: 6px;
+            border-radius: 0;
             font-size: 0.75rem;
             font-weight: 600;
             white-space: nowrap;
             z-index: 50;
             pointer-events: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         /* --- MAIN WRAPPER & TOPBAR --- */
@@ -326,7 +327,7 @@
             border: 1px solid #a7f3d0;
             color: var(--dark-green);
             padding: 0.85rem 1.25rem;
-            border-radius: 12px;
+            border-radius: 0;
             margin-bottom: 1.25rem;
             display: flex;
             justify-content: space-between;
@@ -339,7 +340,7 @@
             color: #ffffff;
             border: none;
             padding: 0.5rem 0.9rem;
-            border-radius: 20px;
+            border-radius: 0;
             font-size: 0.775rem;
             font-weight: 600;
             cursor: pointer;
@@ -358,7 +359,6 @@
         .drawer-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(3, 58, 40, 0.4);
-            backdrop-filter: blur(4px);
             z-index: 35;
             opacity: 0; visibility: hidden;
             transition: all 0.25s ease;
@@ -371,7 +371,6 @@
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(3, 58, 40, 0.4);
-            backdrop-filter: blur(4px);
             display: flex; align-items: center; justify-content: center;
             z-index: 100;
             opacity: 0; visibility: hidden;
@@ -383,10 +382,10 @@
         .modal-card {
             background: #ffffff;
             padding: 1.75rem;
-            border-radius: 20px;
+            border-radius: 0;
             width: 100%; max-width: 400px;
-            border: 1px solid #a7f3d0;
-            box-shadow: 0 10px 25px rgba(27, 183, 116, 0.08);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             transition: transform 0.25s ease;
         }
 
@@ -396,7 +395,7 @@
             width: 100%;
             padding: 0.75rem 0.9rem;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 0;
             font-size: 16px;
             outline: none;
             background: #f8fafc;
@@ -410,7 +409,7 @@
             background: var(--primary);
             color: #ffffff;
             border: none;
-            border-radius: 10px;
+            border-radius: 0;
             font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
@@ -502,7 +501,7 @@
                 height: var(--bottom-nav-height);
                 background: var(--surface);
                 border-top: 1px solid var(--border);
-                box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.04);
+                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
                 z-index: 30;
                 justify-content: space-around;
                 align-items: center;
@@ -532,7 +531,7 @@
 
             .modal-overlay { align-items: flex-end; }
             .modal-card {
-                border-radius: 20px 20px 0 0;
+                border-radius: 0;
                 max-width: 100%;
                 padding: 1.5rem 1.25rem 2rem 1.25rem;
                 transform: translateY(100%);
@@ -557,7 +556,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="brand-area">
             <img src="/static/logo2.png" alt="Catetin Logo" class="brand-logo-img">
-            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%231bb774'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' font-size='60' font-weight='bold' font-family='sans-serif' fill='%23ffffff'>C</text></svg>" alt="C Logo" class="brand-icon-img">
+            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231bb774'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' font-size='60' font-weight='bold' font-family='sans-serif' fill='%23ffffff'>C</text></svg>" alt="C Logo" class="brand-icon-img">
             
             <button class="btn-sidebar-toggle" onclick="handleMenuToggle()" title="Toggle Sidebar">
                 <i class='bx bx-chevrons-left' id="sidebarToggleIcon"></i>
@@ -565,31 +564,31 @@
         </div>
 
         <nav class="sidebar-menu">
-    <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" data-tooltip="Dashboard">
-        <i class='bx bx-grid-alt'></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="/transaksi" class="nav-item {% if request.path == '/transaksi' %}active{% endif %}" data-tooltip="Transaksi">
-        <i class='bx bx-transfer-alt'></i>
-        <span>Transaksi</span>
-    </a>
-    <a href="/laporan" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan">
-        <i class='bx bx-pie-chart-alt-2'></i>
-        <span>Laporan</span>
-    </a>
-    <a href="/kategori" class="nav-item {% if request.path == '/kategori' %}active{% endif %}" data-tooltip="Kategori">
-        <i class='bx bx-category'></i>
-        <span>Kategori</span>
-    </a>
-    <a href="#" class="nav-item" data-tooltip="Bot WhatsApp" onclick="openPhoneModal(); closeSidebar(); return false;">
-        <i class='bx bxl-whatsapp'></i>
-        <span>Bot WhatsApp</span>
-    </a>
-    <a href="/pengaturan" class="nav-item {% if request.path == '/pengaturan' %}active{% endif %}" data-tooltip="Pengaturan">
-        <i class='bx bx-cog'></i>
-        <span>Pengaturan</span>
-    </a>
-</nav>
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" data-tooltip="Dashboard">
+                <i class='bx bx-grid-alt'></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/transaksi" class="nav-item {% if request.path == '/transaksi' %}active{% endif %}" data-tooltip="Transaksi">
+                <i class='bx bx-transfer-alt'></i>
+                <span>Transaksi</span>
+            </a>
+            <a href="/laporan" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan">
+                <i class='bx bx-pie-chart-alt-2'></i>
+                <span>Laporan</span>
+            </a>
+            <a href="/kategori" class="nav-item {% if request.path == '/kategori' %}active{% endif %}" data-tooltip="Kategori">
+                <i class='bx bx-category'></i>
+                <span>Kategori</span>
+            </a>
+            <a href="#" class="nav-item" data-tooltip="Bot WhatsApp" onclick="openPhoneModal(); closeSidebar(); return false;">
+                <i class='bx bxl-whatsapp'></i>
+                <span>Bot WhatsApp</span>
+            </a>
+            <a href="/pengaturan" class="nav-item {% if request.path == '/pengaturan' %}active{% endif %}" data-tooltip="Pengaturan">
+                <i class='bx bx-cog'></i>
+                <span>Pengaturan</span>
+            </a>
+        </nav>
 
         <div class="sidebar-footer">
             <div class="user-card">
@@ -647,30 +646,30 @@
 
     <!-- BOTTOM NAV MOBILE -->
     <nav class="mobile-bottom-nav">
-    <a href="/dashboard" class="b-nav-item {% if request.path == '/dashboard' %}active{% endif %}">
-        <i class='bx bx-grid-alt'></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="/transaksi" class="b-nav-item {% if request.path == '/transaksi' %}active{% endif %}">
-        <i class='bx bx-transfer-alt'></i>
-        <span>Transaksi</span>
-    </a>
-    <a href="/laporan" class="b-nav-item {% if request.path == '/laporan' %}active{% endif %}">
-        <i class='bx bx-pie-chart-alt-2'></i>
-        <span>Laporan</span>
-    </a>
-    <a href="#" class="b-nav-item" onclick="openPhoneModal(); return false;">
-        <i class='bx bxl-whatsapp'></i>
-        <span>Bot WA</span>
-    </a>
-</nav>
+        <a href="/dashboard" class="b-nav-item {% if request.path == '/dashboard' %}active{% endif %}">
+            <i class='bx bx-grid-alt'></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="/transaksi" class="b-nav-item {% if request.path == '/transaksi' %}active{% endif %}">
+            <i class='bx bx-transfer-alt'></i>
+            <span>Transaksi</span>
+        </a>
+        <a href="/laporan" class="b-nav-item {% if request.path == '/laporan' %}active{% endif %}">
+            <i class='bx bx-pie-chart-alt-2'></i>
+            <span>Laporan</span>
+        </a>
+        <a href="#" class="b-nav-item" onclick="openPhoneModal(); return false;">
+            <i class='bx bxl-whatsapp'></i>
+            <span>Bot WA</span>
+        </a>
+    </nav>
 
     <!-- MODAL PHONE -->
     <div class="modal-overlay" id="phoneModal" onclick="if(event.target === this) closePhoneModal()">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark-green);">Nomor WhatsApp</h3>
-                <button onclick="closePhoneModal()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+                <button onclick="closePhoneModal()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 0; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
             </div>
 
             <form id="updatePhoneForm" onsubmit="handleSavePhone(event)">
@@ -688,7 +687,6 @@
             </div>
         </div>
     </div>
-
     <script>
         function updateToggleIcon() {
             const icon = document.getElementById('sidebarToggleIcon');

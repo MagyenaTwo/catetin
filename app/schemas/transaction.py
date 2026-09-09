@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -14,7 +16,10 @@ class TransactionResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
+# --- TAMBAHKAN CLASS INI ---
+class TransactionUpdate(BaseModel):
+    description: Optional[str] = None
+    amount: Optional[float] = None
 class WhatsAppWebhookPayload(BaseModel):
     sender: str
     message: str
