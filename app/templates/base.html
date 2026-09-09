@@ -83,7 +83,6 @@
             width: auto;
         }
 
-        /* Tombol Toggle di dalam Sidebar */
         .btn-sidebar-toggle {
             background: transparent;
             border: none;
@@ -127,6 +126,11 @@
             transition: all 0.2s ease;
             white-space: nowrap;
             position: relative;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
         }
 
         .nav-item:hover {
@@ -145,6 +149,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .arrow-icon {
+            margin-left: auto;
+            transition: transform 0.2s ease;
+        }
+
+        /* Submenu Styling */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-left: 1rem;
+        }
+
+        .submenu.open {
+            max-height: 200px;
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        .submenu .nav-item {
+            font-size: 0.825rem;
+            padding: 0.5rem 0.85rem;
         }
 
         .sidebar-footer {
@@ -214,12 +245,11 @@
             padding: 0;
         }
 
-        body.sidebar-minimized .brand-logo-img {
-            display: none;
-        }
-
-        body.sidebar-minimized .brand-icon-img {
-            display: none;
+        body.sidebar-minimized .brand-logo-img,
+        body.sidebar-minimized .brand-icon-img,
+        body.sidebar-minimized .arrow-icon,
+        body.sidebar-minimized .submenu {
+            display: none !important;
         }
 
         body.sidebar-minimized .nav-item {
@@ -299,16 +329,6 @@
             color: var(--dark-green);
             cursor: pointer;
             padding: 4px;
-        }
-
-        .mobile-brand {
-            display: none;
-            align-items: center;
-        }
-
-        .mobile-brand img {
-            height: 36px;
-            width: auto;
         }
 
         .page-title {
@@ -418,6 +438,40 @@
         }
         .btn-submit:hover { background: var(--primary-dark); }
 
+        /* Popover Pilih Transaksi (Mobile) */
+        .mobile-transaksi-menu {
+            position: fixed;
+            bottom: var(--bottom-nav-height);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: #ffffff;
+            border: 1px solid var(--border);
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+            width: 200px;
+            z-index: 32;
+        }
+
+        .mobile-transaksi-menu.active {
+            display: flex;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .mobile-transaksi-menu a {
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-transaksi-menu a:last-child { border-bottom: none; }
+
         /* --- RESPONSIVE MOBILE --- */
         @media (max-width: 768px) {
             body.sidebar-minimized .main-wrapper {
@@ -447,12 +501,8 @@
                 padding: 0.65rem 0.85rem !important;
             }
 
-            .nav-item span, .user-name, .btn-logout {
+            .nav-item span, .user-name, .btn-logout, .arrow-icon {
                 display: block !important;
-            }
-
-            .nav-item:hover::after {
-                display: none !important;
             }
 
             .main-wrapper {
@@ -472,10 +522,6 @@
 
             .page-title {
                 display: none;
-            }
-
-            .mobile-brand {
-                display: flex;
             }
 
             .content-body {
@@ -550,14 +596,12 @@
         }
     </script>
 
-    <div class="drawer-overlay" id="drawerOverlay" onclick="closeSidebar()"></div>
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeSidebar(); closeMobileTxMenu();"></div>
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="brand-area">
             <img src="/static/logo2.png" alt="Catetin Logo" class="brand-logo-img">
-            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231bb774'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' font-size='60' font-weight='bold' font-family='sans-serif' fill='%23ffffff'>C</text></svg>" alt="C Logo" class="brand-icon-img">
-            
             <button class="btn-sidebar-toggle" onclick="handleMenuToggle()" title="Toggle Sidebar">
                 <i class='bx bx-chevrons-left' id="sidebarToggleIcon"></i>
             </button>
@@ -568,25 +612,34 @@
                 <i class='bx bx-grid-alt'></i>
                 <span>Dashboard</span>
             </a>
-            <a href="/transaksi" class="nav-item {% if request.path == '/transaksi' %}active{% endif %}" data-tooltip="Transaksi">
-                <i class='bx bx-transfer-alt'></i>
-                <span>Transaksi</span>
+
+            <!-- DROPDOWN TRANSAKSI -->
+            <div>
+                <button type="button" class="nav-item {% if '/transaksi' in request.path %}active{% endif %}" onclick="toggleTransaksiSubmenu()" data-tooltip="Transaksi">
+                    <i class='bx bx-transfer-alt'></i>
+                    <span>Transaksi</span>
+                    <i class='bx bx-chevron-down arrow-icon' id="txArrow"></i>
+                </button>
+                <div class="submenu {% if '/transaksi' in request.path %}open{% endif %}" id="transaksiSubmenu">
+                    <a href="/transaksi" class="nav-item {% if request.path == '/transaksi-masuk' or request.path == '/transaksi' %}active{% endif %}">
+                        <i class='bx bx-right-arrow-circle'></i>
+                        <span>Transaksi Masuk</span>
+                    </a>
+                    <a href="/transaksi-keluar" class="nav-item {% if request.path == '/transaksi-keluar' %}active{% endif %}">
+                        <i class='bx bx-left-arrow-circle'></i>
+                        <span>Transaksi Keluar</span>
+                    </a>
+                </div>
+            </div>
+
+            <a href="/stock" class="nav-item {% if request.path == '/stock' %}active{% endif %}" data-tooltip="Stock">
+                <i class='bx bx-package'></i>
+                <span>Stock</span>
             </a>
+            
             <a href="/laporan" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan">
                 <i class='bx bx-pie-chart-alt-2'></i>
                 <span>Laporan</span>
-            </a>
-            <a href="/kategori" class="nav-item {% if request.path == '/kategori' %}active{% endif %}" data-tooltip="Kategori">
-                <i class='bx bx-category'></i>
-                <span>Kategori</span>
-            </a>
-            <a href="#" class="nav-item" data-tooltip="Bot WhatsApp" onclick="openPhoneModal(); closeSidebar(); return false;">
-                <i class='bx bxl-whatsapp'></i>
-                <span>Bot WhatsApp</span>
-            </a>
-            <a href="/pengaturan" class="nav-item {% if request.path == '/pengaturan' %}active{% endif %}" data-tooltip="Pengaturan">
-                <i class='bx bx-cog'></i>
-                <span>Pengaturan</span>
             </a>
         </nav>
 
@@ -608,12 +661,10 @@
                 <button class="btn-mobile-hamburger" onclick="openSidebar()">
                     <i class='bx bx-menu'></i>
                 </button>
-                
                 <div class="page-title">{% block header_title %}Ringkasan Transaksi{% endblock %}</div>
             </div>
 
             <div class="topbar-right">
-                <!-- Tombol Langsung Chat Bot WA -->
                 <a href="https://wa.me/628999239305?text=Halo%20AI%20Catetin,%20saya%20mau%20mulai%20catat%20keuangan" target="_blank" class="btn-wa-connect">
                     <i class='bx bxl-whatsapp' style="font-size: 1rem;"></i> Mulai Chat Bot
                 </a>
@@ -644,23 +695,29 @@
         </main>
     </div>
 
+    <!-- POPOVER MENU TRANSAKSI MOBILE -->
+    <div class="mobile-transaksi-menu" id="mobileTxMenu">
+        <a href="/transaksi-masuk"><i class='bx bx-right-arrow-circle'></i> Transaksi Masuk</a>
+        <a href="/transaksi-keluar"><i class='bx bx-left-arrow-circle'></i> Transaksi Keluar</a>
+    </div>
+
     <!-- BOTTOM NAV MOBILE -->
     <nav class="mobile-bottom-nav">
         <a href="/dashboard" class="b-nav-item {% if request.path == '/dashboard' %}active{% endif %}">
             <i class='bx bx-grid-alt'></i>
             <span>Dashboard</span>
         </a>
-        <a href="/transaksi" class="b-nav-item {% if request.path == '/transaksi' %}active{% endif %}">
+        <button type="button" class="b-nav-item {% if '/transaksi' in request.path %}active{% endif %}" onclick="toggleMobileTxMenu()">
             <i class='bx bx-transfer-alt'></i>
             <span>Transaksi</span>
+        </button>
+        <a href="/stock" class="b-nav-item {% if request.path == '/stock' %}active{% endif %}">
+            <i class='bx bx-package'></i>
+            <span>Stock</span>
         </a>
         <a href="/laporan" class="b-nav-item {% if request.path == '/laporan' %}active{% endif %}">
             <i class='bx bx-pie-chart-alt-2'></i>
             <span>Laporan</span>
-        </a>
-        <a href="#" class="b-nav-item" onclick="openPhoneModal(); return false;">
-            <i class='bx bxl-whatsapp'></i>
-            <span>Bot WA</span>
         </a>
     </nav>
 
@@ -669,7 +726,7 @@
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark-green);">Nomor WhatsApp</h3>
-                <button onclick="closePhoneModal()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 0; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+                <button onclick="closePhoneModal()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
             </div>
 
             <form id="updatePhoneForm" onsubmit="handleSavePhone(event)">
@@ -687,7 +744,41 @@
             </div>
         </div>
     </div>
+
     <script>
+        function toggleTransaksiSubmenu() {
+            const submenu = document.getElementById('transaksiSubmenu');
+            const arrow = document.getElementById('txArrow');
+            
+            if (document.body.classList.contains('sidebar-minimized')) {
+                document.body.classList.remove('sidebar-minimized');
+                localStorage.setItem('sidebarMinimized', false);
+                updateToggleIcon();
+            }
+
+            submenu.classList.toggle('open');
+            if (submenu.classList.contains('open')) {
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function toggleMobileTxMenu() {
+            const menu = document.getElementById('mobileTxMenu');
+            const overlay = document.getElementById('drawerOverlay');
+            menu.classList.toggle('active');
+            if (menu.classList.contains('active')) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        function closeMobileTxMenu() {
+            document.getElementById('mobileTxMenu').classList.remove('active');
+        }
+
         function updateToggleIcon() {
             const icon = document.getElementById('sidebarToggleIcon');
             if (window.innerWidth <= 768) {
@@ -755,7 +846,14 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', updateToggleIcon);
+        window.addEventListener('DOMContentLoaded', () => {
+            updateToggleIcon();
+            const submenu = document.getElementById('transaksiSubmenu');
+            const arrow = document.getElementById('txArrow');
+            if (submenu.classList.contains('open') && arrow) {
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        });
         window.addEventListener('resize', updateToggleIcon);
     </script>
     {% block extra_js %}{% endblock %}
