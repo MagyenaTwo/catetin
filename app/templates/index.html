@@ -11,14 +11,13 @@
     <meta property="og:title" content="Catetin - Solusi Catat Keuangan AI">
     <meta property="og:description" content="Catat transaksi keuangan harian secara otomatis dan praktis lewat WhatsApp berbasis AI.">
     
-    <!-- URL Gambar Menggunakan subdomain 'www' agar konsisten -->
     <meta property="og:image" content="https://www.kafastore.my.id/static/logo3.png">
     <meta property="og:image:secure_url" content="https://www.kafastore.my.id/static/logo3.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="300">
     <meta property="og:image:height" content="300">
 
-    <!-- Twitter Card (WhatsApp sering membaca ini juga) -->
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Catetin - Solusi Catat Keuangan AI">
     <meta name="twitter:description" content="Catat transaksi keuangan harian secara otomatis dan praktis lewat WhatsApp berbasis AI.">
@@ -33,76 +32,102 @@
     <div class="mobile-overlay" id="mobile-overlay" onclick="closeAuthModal()"></div>
 
     <div class="wrapper">
+        <!-- Hero Section / Card Kiri -->
         <div class="hero-card">
             <div class="hero-header">
                 <img src="/static/logo2.png" alt="Catetin Logo" class="logo-img">
             </div>
 
             <div class="hero-title">
-                <h1>Solusi Catat Keuangan<br>WhatsApp Berbasis AI</h1>
+                <h1>Pencatatan Keuangan Otomatis <br><span>via WhatsApp AI</span></h1>
+                <p class="hero-subtitle">Kelola arus kas harian tanpa ribet buka aplikasi rumit. Cukup kirim pesan seperti biasa.</p>
             </div>
 
-            <div class="dashboard-preview-card">
-                <div class="preview-info">
-                    <span>Laporan Hari Ini</span>
-                    <strong>Rp 250.000 Tercatat</strong>
-                </div>
-                <div class="status-pill">● Realtime Sync</div>
-            </div>
-
-            <div class="feature-cards">
-                <div class="feature-item">
-                    <div class="card-graphic">
-                        <div class="wa-badge">
-                            <svg class="wa-icon" viewBox="0 0 24 24">
-                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
-                            </svg>
-                            WhatsApp Chat
+            <!-- Preview Chat WhatsApp Murni HTML & CSS -->
+            <div class="chat-preview-card">
+                <div class="wa-mockup">
+                    <!-- WA Header -->
+                    <div class="wa-header">
+                        <div class="wa-user-info">
+                            <div class="wa-avatar">
+                                <img src="/static/logo3.png" alt="Catetin Logo">
+                            </div>
+                            <div class="wa-user-details">
+                                <span class="wa-name">Catetin Assistant</span>
+                                <span class="wa-status">Online</span>
+                            </div>
                         </div>
                     </div>
-                    <h4>Ketik Bebas</h4>
-                    <p>Kirim pesan transaksi secara langsung lewat obrolan WhatsApp.</p>
-                </div>
 
-                <div class="feature-item">
-                    <div class="card-graphic">
-                        <div class="ai-badge">CATETIN AI</div>
-                    </div>
-                    <h4>Deteksi Otomatis</h4>
-                    <p>Sistem cerdas memilah nominal, tanggal, dan kategori pesan.</p>
-                </div>
+                    <!-- WA Chat Body -->
+                    <div class="wa-body">
+                        <div class="chat-bubble in">
+                            <p>Ada yang ingin dicatat hari ini? Kirim pesan pemasukan atau pengeluaranmu kapan saja.</p>
+                            <span class="chat-time">20:16</span>
+                        </div>
 
-                <div class="feature-item">
-                    <div class="card-graphic">
-                        <div class="mini-chart">
-                            <div class="chart-bar" style="height: 40%;"></div>
-                            <div class="chart-bar" style="height: 70%;"></div>
-                            <div class="chart-bar" style="height: 50%;"></div>
-                            <div class="chart-bar" style="height: 100%;"></div>
+                        <div class="chat-bubble out">
+                            <p>Beli baju kemeja 290rb</p>
+                            <span class="chat-time">20:17 <span class="ticks">✓✓</span></span>
+                        </div>
+
+                        <div class="chat-bubble in highlight">
+                            <div class="ai-banner">BERAHAIL DICATAT</div>
+                            <ul class="chat-list">
+                                <li><strong>Pengeluaran:</strong> Beli baju kemeja</li>
+                                <li><strong>Nominal:</strong> Rp 290.000</li>
+                                <li><strong>Kategori:</strong> Pakaian</li>
+                            </ul>
+                            <span class="chat-time">20:17</span>
                         </div>
                     </div>
-                    <h4>Laporan Rapi</h4>
-                    <p>Pantau rekapan arus kas harian dan bulanan secara visual.</p>
                 </div>
             </div>
+
+            <!-- Feature Cards - Modern Bento Style (Sharp & Clean) -->
+<div class="feature-cards">
+    <div class="feature-item">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+        <div class="feature-text">
+            <h4>WhatsApp Native</h4>
+            <p>Tanpa install app</p>
+        </div>
+    </div>
+
+    <div class="feature-item">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        <div class="feature-text">
+            <h4>AI Auto-Detect</h4>
+            <p>Ekstraksi otomatis</p>
+        </div>
+    </div>
+
+    <div class="feature-item">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        <div class="feature-text">
+            <h4>Laporan Excel</h4>
+            <p>Grafik & rekapan</p>
+        </div>
+    </div>
+</div>
 
             <!-- Tombol CTA khusus Mobile -->
-            <button class="btn-hero-cta" onclick="openAuthModal()">Coba Sekarang</button>
+            <button class="btn-hero-cta" onclick="openAuthModal()">Mulai Sekarang</button>
 
-            <div class="hero-footer">
-                <div class="divider-text"><span>Catatan Keuangan Otomatis via WhatsApp</span></div>
-                <div class="family-logos">
-                    <span>WhatsApp AI</span>
-                    <span>•</span>
-                    <span>Realtime Sync</span>
-                    <span>•</span>
-                    <span>Export Excel</span>
-                </div>
-            </div>
-        </div>
+         <!-- Hero Footer Ultra Minimalist -->
+<div class="hero-footer">
+    <p>&copy; 2026 Catetin AI. All rights reserved.</p>
+</div>
+</div>
 
+        <!-- Form Autentikasi / Kanan -->
         <div class="auth-container" id="auth-container">
-            <!-- Tombol Close independen dari top-nav -->
             <button class="mobile-close-btn" onclick="closeAuthModal()" aria-label="Tutup">&times;</button>
             
             <div class="top-nav">
@@ -113,13 +138,13 @@
             <div class="auth-content">
                 <div id="toast" class="toast hidden"></div>
 
-                <h2 id="form-title">Masuk</h2>
-                <p class="sub" id="form-sub">Masuk ke akun Anda untuk mulai mengelola pencatatan keuangan secara otomatis.</p>
+                <h2 id="form-title">Selamat Datang Kembali</h2>
+                <p class="sub" id="form-sub">Masuk ke akun Anda untuk melihat dashboard keuangan.</p>
 
                 <form id="loginForm" action="/login" method="POST">
                     <div class="form-group">
                         <label for="login-identifier">Username / Email / No. WhatsApp</label>
-                        <input type="text" id="login-identifier" name="username" placeholder="Masukkan username, email, atau no WA" required autocomplete="username">
+                        <input type="text" id="login-identifier" name="username" placeholder="Masukkan ID Anda" required autocomplete="username">
                     </div>
                     <div class="form-group">
                         <label for="login-password">Password</label>
@@ -134,12 +159,12 @@
                 <form id="registerForm" action="/register" method="POST" class="hidden">
                     <div class="form-group">
                         <label for="reg-username">Username</label>
-                        <input type="text" id="reg-username" name="username" placeholder="Masukkan username" required>
+                        <input type="text" id="reg-username" name="username" placeholder="Pilih username" required>
                     </div>
 
                     <div class="method-selector">
-                        <button type="button" class="method-btn active" id="btn-method-email" onclick="switchRegMethod('email')">Gunakan Email</button>
-                        <button type="button" class="method-btn" id="btn-method-phone" onclick="switchRegMethod('phone')">Gunakan Nomor</button>
+                        <button type="button" class="method-btn active" id="btn-method-email" onclick="switchRegMethod('email')">Email</button>
+                        <button type="button" class="method-btn" id="btn-method-phone" onclick="switchRegMethod('phone')">WhatsApp</button>
                     </div>
 
                     <div id="reg-email-section">
@@ -152,7 +177,7 @@
                                     <span class="spinner hidden"></span>
                                 </button>
                             </div>
-                            <span class="hint">Kode verifikasi akan dikirim ke email via Resend.</span>
+                            <span class="hint">Kode verifikasi dikirim via email.</span>
                         </div>
                         <div class="form-group hidden" id="otp-group">
                             <label>Kode OTP Email</label>
@@ -172,17 +197,17 @@
                         <div class="form-group">
                             <label for="reg-phone">Nomor WhatsApp</label>
                             <input type="tel" id="reg-phone" name="phone_number" placeholder="081234567890">
-                            <span class="hint">Pastikan nomor aktif dan terhubung ke WhatsApp.</span>
+                            <span class="hint">Gunakan nomor yang aktif terhubung ke WhatsApp.</span>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="reg-password">Password</label>
-                        <input type="password" id="reg-password" name="password" placeholder="Buat password" required>
-                        <span class="hint">Minimal 8 karakter, kombinasi huruf besar, huruf kecil, dan angka.</span>
+                        <input type="password" id="reg-password" name="password" placeholder="Buat password aman" required>
+                        <span class="hint">Min. 8 karakter (kombinasi huruf & angka).</span>
                     </div>
                     <button type="submit" class="btn-submit">
-                        <span class="btn-text">Daftar Sekarang</span>
+                        <span class="btn-text">Buat Akun Sekarang</span>
                         <span class="spinner hidden"></span>
                     </button>
                 </form>
