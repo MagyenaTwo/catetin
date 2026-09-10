@@ -13,6 +13,9 @@ class User(Base):
     is_verified = Column(Boolean, default=False)
 
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
+    
+    # PERBAIKAN: Gunakan string "Transaksi_Keluar" (pake underscore sesuai nama class-nya)
+    transaksi_keluar = relationship("Transaksi_Keluar", back_populates="user", cascade="all, delete-orphan")
 
 
 class OTPVerification(Base):

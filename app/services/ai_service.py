@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 
 
-
 BYNARA_API_KEY = os.getenv("BYNARA_API_KEY", "")
 BYNARA_URL = "https://router.bynara.id/v1/chat/completions"
 
@@ -43,13 +42,16 @@ def get_smart_fallback(user_message: str, transaction_result: dict = None, is_re
     if transaction_result:
         status = transaction_result.get("status")
         msg = transaction_result.get("message", "")
+        txn_type = transaction_result.get("type", "pemasukan")  # "pemasukan" atau "pengeluaran/transaksi_keluar"
 
         if status == "success":
+            type_label = "🔴 *PENGELUARAN DICATAT*" if txn_type in ["pengeluaran", "transaksi_keluar"] else "🟢 *PEMASUKAN DICATAT*"
+            
             return (
                 "=========================\n"
                 "🟢 *CATETIN FINANCIAL* 🟢\n"
                 "=========================\n\n"
-                "✅ *BERHASIL DICATAT*\n\n"
+                f"{type_label}\n\n"
                 f"📝 {msg}\n\n"
                 "=========================\n"
                 "💾 _Autosaved_"
@@ -73,11 +75,14 @@ def get_smart_fallback(user_message: str, transaction_result: dict = None, is_re
             "💡 *CATETIN HELPER*\n"
             "=========================\n\n"
             "⚠️ *FORMAT KURANG PAS*\n\n"
-            "Formatnya simpel kok, contoh:\n"
+            "Formatnya simpel kok, contoh:\n\n"
+            "🔴 *Pengeluaran:*\n"
             "• ☕ beli kopi 29k\n"
             "• 🍜 nasi goreng 15rb\n"
-            "• ⛽ bensin 50rb\n"
-            "• 💰 gaji 5jt"
+            "• ⛽ bensin 50rb\n\n"
+            "🟢 *Pemasukan:*\n"
+            "• 💰 gaji 5jt\n"
+            "• 💵 transferan 500rb"
         )
 
     return (
@@ -85,8 +90,11 @@ def get_smart_fallback(user_message: str, transaction_result: dict = None, is_re
         "🟢 *CATETIN ASSISTANT* 🟢\n"
         "=========================\n\n"
         "👋 *Halo! Mau catat transaksi apa hari ini?*\n\n"
-        "Langsung ketik aja, contoh:\n"
+        "Langsung ketik aja, contoh:\n\n"
+        "🔴 *Pengeluaran:*\n"
         "• ☕ beli kopi 29k\n"
+        "• 🍜 makan siang 25rb\n\n"
+        "🟢 *Pemasukan:*\n"
         "• 💰 gaji 5jt\n\n"
         "✨ _Nanti otomatis aku masukkan ke catatanmu._"
     )
@@ -109,15 +117,17 @@ def generate_ai_reply(db: Session, phone_number: str, user_message: str, transac
     )
 
     if is_success:
+        txn_type = transaction_result.get("type", "pemasukan")
+        
         system_prompt = (
             "Kamu adalah Catetin, asisten keuangan pribadi yang santai, ramah, dan solutif di WhatsApp.\n"
-            "Tugasmu: Mengonfirmasi pencatatan transaksi ke user dengan gaya bahasa Indonesia sehari-hari yang natural.\n\n"
+            "Tugasmu: Mengonfirmasi pencatatan transaksi (baik pemasukan maupun transaksi keluar/pengeluaran) ke user dengan gaya bahasa Indonesia sehari-hari yang natural.\n\n"
             "ATURAN FORMAT BALASAN:\n"
             "1. Selalu mulai dengan header ini:\n"
             "=========================\n"
             "🟢 *CATETIN FINANCIAL* 🟢\n"
             "=========================\n\n"
-            "2. Lalu konfirmasi transaksi secara singkat dan santai (contoh: 'Sip, transaksi kamu berhasil dicatat!').\n"
+            "2. Lalu konfirmasi transaksi secara singkat dan santai (contoh pengeluaran: 'Sip, pengeluaran kamu berhasil dicatat!', contoh pemasukan: 'Mantap, pemasukan baru tercatat!').\n"
             "3. Tampilkan detail dari database persis seperti ini: 📝 [detail dari database]. Dilarang mengubah nominal angka/deskripsi.\n"
             "4. Tutup dengan footer ini:\n"
             "=========================\n"
@@ -126,6 +136,7 @@ def generate_ai_reply(db: Session, phone_number: str, user_message: str, transac
 
         user_prompt = (
             f"Pesan User: '{user_message}'\n"
+            f"Jenis Transaksi: {txn_type}\n"
             f"Hasil Database: {transaction_result.get('message')}\n\n"
             "Buatkan pesan konfirmasi yang ramah dan luwes."
         )
@@ -133,15 +144,18 @@ def generate_ai_reply(db: Session, phone_number: str, user_message: str, transac
     else:
         system_prompt = (
             "Kamu adalah Catetin, asisten keuangan pribadi di WhatsApp yang ramah, gaul tapi sopan, dan responsive.\n"
-            "Tugasmu: Membalas sapaan dengan format yang bagus beraturan teksnya, pertanyaaan, atau membantu user yang bingung cara pakai.\n\n"
+            "Tugasmu: Membalas sapaan dengan format yang bagus beraturan teksnya, pertanyaan, atau membantu user yang bingung cara pakai.\n\n"
             "ATURAN FORMAT BALASAN:\n"
             "1. Selalu mulai dengan header ini:\n"
             "=========================\n"
             "🟢 *CATETIN ASSISTANT* 🟢\n"
             "=========================\n\n"
             "2. Jawab pesan user secara santai dan natural.\n"
-            "3. Jika user kelihatan bingung atau bertanya cara mencatat, berikan contoh format singkat seperti:\n"
+            "3. Jika user kelihatan bingung atau bertanya cara mencatat, berikan contoh format pemasukan & transaksi keluar secara jelas:\n"
+            "🔴 Transaksi Keluar:\n"
             "• ☕ beli kopi 29k\n"
+            "• ⛽ isi bensin 50rb\n\n"
+            "🟢 Pemasukan:\n"
             "• 💰 gaji 5jt\n"
             "4. Dilarang menggunakan backtick (`) pada teks contoh. Dilarang menggunakan box/frame garis kotak."
         )

@@ -301,6 +301,13 @@
             align-items: center;
         }
     }
+    .nominal-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'SF Mono', Consolas, monospace;
+    font-weight: 600;
+}
 </style>
 {% endblock %}
 
@@ -414,10 +421,12 @@
                                     {{ tx.description or tx.keterangan or '-' }}
                                 </strong>
                             </td>
-                            <td class="nominal-val text-in">
-                                {% set amt = (tx.amount or 0) | float %}
-                                + Rp {{ "{:,.0f}".format(amt).replace(',', '.') }}
-                            </td>
+                           <td class="text-in">
+    <div class="nominal-cell">
+        <span>+ Rp</span>
+        <span>{{ "{:,.0f}".format((tx.amount or 0) | float).replace(',', '.') }}</span>
+    </div>
+</td>
                         </tr>
                     {% else %}
                         <tr>

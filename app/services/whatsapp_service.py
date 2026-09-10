@@ -4,7 +4,7 @@ import requests
 from typing import Tuple, Optional
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.services.transaction_service import create_transaction
+from app.services.transaction_service import create_transaction, create_transaksi_keluar
 
 LOGO_URL = "https://0259-125-167-191-40.ngrok-free.app/static/logo-catetin.png"
 
@@ -76,13 +76,26 @@ def process_whatsapp_payload(db: Session, sender: str, message: str):
             "message": "Pengguna tidak mengirimkan format transaksi."
         }
 
-    txn = create_transaction(db, user_id=user.id, description=desc, amount=amount)
+    # --- LOGIKA MEMBEDAKAN PENGELUARAN & PEMASUKAN ---
+    text_lower = message.lower()
+    keywords_keluar = ["beli", "bayar", "isi", "makan", "minum", "keluar", "parkir", "sewa", "topup", "ongkir"]
+    
+    is_pengeluaran = any(word in text_lower for word in keywords_keluar)
+
+    if is_pengeluaran:
+        # Masuk ke tabel transaksi_keluar
+        txn = create_transaksi_keluar(db, user_id=user.id, description=desc, amount=amount)
+        txn_type = "transaksi_keluar"
+    else:
+        # Masuk ke tabel transaction (pemasukan)
+        txn = create_transaction(db, user_id=user.id, description=desc, amount=amount)
+        txn_type = "pemasukan"
+
     return {
         "status": "success",
-        "type": "transaction",
+        "type": txn_type,
         "message": f"Berhasil mencatat '{desc}' sebesar Rp {amount:,.0f}"
     }
-
 
 def sanitize_text_for_fonnte(text: str) -> str:
     sensitive_words = ["anjing", "babi", "kuntul", "monyet", "bangsat", "kontol", "memek"]
