@@ -12,10 +12,14 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_verified = Column(Boolean, default=False)
 
+    # Relasi yang sudah ada
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
-    
-    # PERBAIKAN: Gunakan string "Transaksi_Keluar" (pake underscore sesuai nama class-nya)
     transaksi_keluar = relationship("Transaksi_Keluar", back_populates="user", cascade="all, delete-orphan")
+
+    # TAMBAHKAN RELASI STOK DI SINI:
+    products = relationship("Product", back_populates="user", cascade="all, delete-orphan")
+    barang_masuk = relationship("BarangMasuk", back_populates="user", cascade="all, delete-orphan")
+    barang_keluar = relationship("BarangKeluar", back_populates="user", cascade="all, delete-orphan")
 
 
 class OTPVerification(Base):
