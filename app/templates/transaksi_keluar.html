@@ -1,0 +1,512 @@
+{% extends "base.html" %}
+
+{% block title %}Transaksi Keluar - Catetin{% endblock %}
+{% block header_title %}Transaksi Keluar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .transaksi-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        width: 100%;
+    }
+
+    /* Summary Mini Cards */
+    .summary-grid {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .summary-card {
+        background: var(--surface, #ffffff);
+        border: 1px solid var(--border, #e2e8f0);
+        border-radius: 12px;
+        padding: 0.85rem 1.15rem;
+        flex: 1;
+        max-width: 280px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .summary-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted, #64748b);
+        font-weight: 600;
+    }
+
+    .summary-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-top: 0.2rem;
+        font-family: 'SF Mono', Consolas, monospace;
+    }
+
+    /* Warna Akses Pengeluaran (Merah/Rose) */
+    .text-out { color: #e11d48; }
+
+    /* Card Panel */
+    .card-panel {
+        background: var(--surface, #ffffff);
+        border: 1px solid var(--border, #e2e8f0);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Modern Filter Toolbar */
+    .filter-wrapper {
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid var(--border, #e2e8f0);
+        background: #ffffff;
+    }
+
+    .filter-form-container {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+    }
+
+    /* Grouping Input dengan Look & Feel Modern */
+    .filter-pill {
+        display: inline-flex;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0 0.75rem;
+        height: 38px;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .filter-pill:focus-within {
+        border-color: #6366f1;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .filter-pill i {
+        color: #94a3b8;
+        font-size: 1rem;
+    }
+
+    .filter-pill label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .pill-input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 0.825rem;
+        color: #1e293b;
+        padding: 0;
+        font-weight: 400;
+    }
+
+    .search-input-field {
+        width: 160px;
+    }
+
+    .category-input-field {
+        width: 110px;
+    }
+
+    .date-input-field {
+        width: 110px;
+        cursor: pointer;
+        color: #475569;
+    }
+
+    /* Custom Design untuk Tombol Filter Baru */
+    .btn-filter-modern {
+        background: #0f172a;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 0 1rem;
+        height: 38px;
+        font-size: 0.825rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        transition: all 0.2s ease;
+        margin-top: 0 !important;
+        width: auto !important;
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-filter-modern:hover {
+        background: #334155;
+        transform: translateY(-1px);
+    }
+
+    .btn-filter-modern:active {
+        transform: translateY(0);
+    }
+
+    /* Tombol Reset yang Minimalis & Bersih */
+    .btn-reset-modern {
+        color: #64748b;
+        background: #f1f5f9;
+        font-size: 0.825rem;
+        font-weight: 500;
+        text-decoration: none;
+        padding: 0 0.85rem;
+        height: 38px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .btn-reset-modern:hover {
+        background: #fef2f2;
+        color: #ef4444;
+        border-color: #fecaca;
+    }
+
+    /* Table Styling */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .table-transaksi {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+
+    .table-transaksi th {
+        background: #f8fafc;
+        color: #475569;
+        font-weight: 600;
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .table-transaksi td {
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        vertical-align: middle;
+    }
+
+    .table-transaksi tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .badge-category {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        font-size: 0.725rem;
+        font-weight: 600;
+        border-radius: 6px;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2.5rem 1rem;
+        color: #64748b;
+    }
+
+    /* Modern Pagination Bar */
+    .pagination-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1.25rem;
+        border-top: 1px solid #e2e8f0;
+        background: #ffffff;
+        font-size: 0.825rem;
+        color: #64748b;
+    }
+
+    .pagination-info {
+        font-weight: 500;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 0.35rem;
+        align-items: center;
+    }
+
+    .page-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #334155;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.15s ease;
+    }
+
+    .page-btn:hover:not(.disabled):not(.active) {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #0f172a;
+    }
+
+    .page-btn.active {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+        font-weight: 600;
+    }
+
+    .page-btn.disabled {
+        color: #cbd5e1;
+        cursor: not-allowed;
+        background: #f8fafc;
+        border-color: #f1f5f9;
+    }
+
+    @media (max-width: 640px) {
+        .filter-pill, .btn-filter-modern, .btn-reset-modern {
+            width: 100% !important;
+        }
+        .search-input-field, .category-input-field, .date-input-field {
+            width: 100% !important;
+        }
+        .summary-grid {
+            flex-direction: column;
+        }
+        .summary-card {
+            max-width: 100%;
+        }
+        .pagination-wrapper {
+            flex-direction: column;
+            gap: 0.85rem;
+            align-items: center;
+        }
+    }
+
+    .nominal-cell {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'SF Mono', Consolas, monospace;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="transaksi-container">
+    <!-- Ringkasan Singkat -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <span class="summary-label">Total Pengeluaran</span>
+            <div class="summary-value text-out">
+                {% set total = (total_keluar or 0) | float %}
+                Rp {{ "{:,.0f}".format(total).replace(',', '.') }}
+            </div>
+        </div>
+        <div class="summary-card">
+            <span class="summary-label">Total Transaksi</span>
+            <div class="summary-value">
+                {{ total_count if total_count is defined else (transactions | length if transactions else 0) }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Tabel & Filter Bar -->
+    <div class="card-panel">
+        <div class="filter-wrapper">
+            <form method="GET" action="" class="filter-form-container">
+                {% set req_search = request.query_params.get('search', '') if request.query_params else (request.args.get('search', '') if request.args else '') %}
+                {% set req_category = request.query_params.get('category', '') if request.query_params else (request.args.get('category', '') if request.args else '') %}
+                {% set req_start = request.query_params.get('start_date', '') if request.query_params else (request.args.get('start_date', '') if request.args else '') %}
+                {% set req_end = request.query_params.get('end_date', '') if request.query_params else (request.args.get('end_date', '') if request.args else '') %}
+
+                <!-- Search Box Pill -->
+                <div class="filter-pill">
+                    <i class='bx bx-search'></i>
+                    <input 
+                        type="text" 
+                        name="search" 
+                        class="pill-input search-input-field" 
+                        placeholder="Cari transaksi..." 
+                        value="{{ req_search }}"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <!-- Category Pill -->
+                <div class="filter-pill">
+                    <i class='bx bx-category'></i>
+                    <input 
+                        type="text" 
+                        name="category" 
+                        class="pill-input category-input-field" 
+                        placeholder="Kategori..." 
+                        value="{{ req_category }}"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <!-- Start Date Pill -->
+                <div class="filter-pill">
+                    <label for="start_date">Dari:</label>
+                    <input 
+                        type="date" 
+                        id="start_date"
+                        name="start_date" 
+                        class="pill-input date-input-field"
+                        value="{{ req_start }}"
+                    >
+                </div>
+
+                <!-- End Date Pill -->
+                <div class="filter-pill">
+                    <label for="end_date">Sampai:</label>
+                    <input 
+                        type="date" 
+                        id="end_date"
+                        name="end_date" 
+                        class="pill-input date-input-field"
+                        value="{{ req_end }}"
+                    >
+                </div>
+
+                <!-- Tombol Filter -->
+                <button type="submit" class="btn-filter-modern">
+                    <i class='bx bx-filter-alt'></i> Filter
+                </button>
+                
+                {% if req_search or req_category or req_start or req_end %}
+                    <a href="{{ request.path if request.path else '#' }}" class="btn-reset-modern" title="Reset Filter">
+                        <i class='bx bx-x'></i> Reset
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Logic Pagination (10 Data/Halaman) -->
+        {% set page_size = 10 %}
+        {% set current_page = (request.query_params.get('page', 1) if request.query_params else (request.args.get('page', 1) if request.args else 1)) | int %}
+        {% set total_items = transactions | length if transactions else 0 %}
+        {% set total_pages = ((total_items + page_size - 1) // page_size) if total_items > 0 else 1 %}
+        {% set start_idx = (current_page - 1) * page_size %}
+        {% set end_idx = start_idx + page_size %}
+        {% set paged_transactions = transactions[start_idx:end_idx] if transactions else [] %}
+
+        <div class="table-responsive">
+            <table class="table-transaksi">
+                <thead>
+                    <tr>
+                        <th style="width: 18%;">Tanggal</th>
+                        <th style="width: 15%;">Kategori</th>
+                        <th>Keterangan</th>
+                        <th style="text-align: right; width: 22%;">Nominal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in paged_transactions %}
+                        <tr>
+                            <td style="white-space: nowrap; color: #64748b;">
+                                {% if tx.created_at and tx.created_at.strftime is defined %}
+                                    {{ tx.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                {% else %}
+                                    {{ tx.created_at or '-' }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge-category">{{ tx.category or 'Umum' }}</span>
+                            </td>
+                            <td>
+                                <strong style="font-weight: 500; color: #0f172a;">
+                                    {{ tx.description or tx.keterangan or '-' }}
+                                </strong>
+                            </td>
+                            <td class="text-out">
+                                <div class="nominal-cell">
+                                    <span>- Rp</span>
+                                    <span>{{ "{:,.0f}".format((tx.amount or 0) | float).replace(',', '.') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <p>Tidak ada transaksi keluar ditemukan.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bar Pagination -->
+        {% if total_items > 0 %}
+        <div class="pagination-wrapper">
+            <div class="pagination-info">
+                Menampilkan {{ start_idx + 1 }}-{{ end_idx if end_idx < total_items else total_items }} dari {{ total_items }} data
+            </div>
+
+            <div class="pagination-controls">
+                {# Prev Button #}
+                {% if current_page > 1 %}
+                    <a href="?search={{ req_search }}&category={{ req_category }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page - 1 }}" class="page-btn">
+                        <i class='bx bx-chevron-left'></i>
+                    </a>
+                {% else %}
+                    <span class="page-btn disabled"><i class='bx bx-chevron-left'></i></span>
+                {% endif %}
+
+                {# Page Numbers #}
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == current_page %}
+                        <span class="page-btn active">{{ p }}</span>
+                    {% else %}
+                        <a href="?search={{ req_search }}&category={{ req_category }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ p }}" class="page-btn">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {# Next Button #}
+                {% if current_page < total_pages %}
+                    <a href="?search={{ req_search }}&category={{ req_category }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page + 1 }}" class="page-btn">
+                        <i class='bx bx-chevron-right'></i>
+                    </a>
+                {% else %}
+                    <span class="page-btn disabled"><i class='bx bx-chevron-right'></i></span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

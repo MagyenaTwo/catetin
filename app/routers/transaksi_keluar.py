@@ -75,11 +75,8 @@ def render_expense_transactions_page(
 
     transactions = query.order_by(Transaksi_Keluar.created_at.desc()).all()
 
-    total_keluar = (
-        db.query(func.coalesce(func.sum(Transaksi_Keluar.amount), 0))
-        .filter(Transaksi_Keluar.user_id == current_user.id)
-        .scalar()
-    )
+    # Menghitung total keluar sesuai filter aktif
+    total_keluar = sum(t.amount for t in transactions if t.amount)
 
     return templates.TemplateResponse(
         request=request,
@@ -88,6 +85,7 @@ def render_expense_transactions_page(
             "user": current_user,
             "transactions": transactions,
             "total_keluar": total_keluar,
+            "total_count": len(transactions),
         },
     )
 
