@@ -3,187 +3,390 @@
 {% block title %}Manajemen Stok Barang - Catetin{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto space-y-6 pb-12 relative">
-    <!-- Toast Notification Container -->
+<style>
+    .action-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+    }
+    .btn-icon {
+    background: transparent;
+    border: none;
+    color: #6b7280; /* menggantikan var(--text-muted) jika variabel tidak terdefinisi */
+    cursor: pointer;
+    padding: 0.35rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+/* Hover untuk tombol Edit */
+.btn-icon.btn-edit:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+/* Hover untuk tombol Delete */
+.btn-icon.delete:hover {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+    
+    /* Modal Component */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 1rem;
+    }
+
+    .modal-backdrop.active {
+        display: flex;
+    }
+
+    .modal-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .modal-header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .modal-close {
+        background: transparent;
+        border: none;
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        cursor: pointer;
+    }
+
+    .modal-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .form-group label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .form-control {
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: #0f172a;
+    }
+
+    .file-input-wrapper {
+        border: 1px dashed var(--border-color);
+        border-radius: 6px;
+        padding: 1rem;
+        text-align: center;
+        background: #f8fafc;
+        cursor: pointer;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        display: none;
+    }
+
+    .modal-footer {
+        padding: 0.85rem 1.25rem;
+        border-top: 1px solid var(--border-color);
+        background: #f8fafc;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+        position: fixed;
+        top: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1200;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
+    }
+
+    .toast {
+        background: #0f172a;
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 0.85rem 1.25rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-width: 300px;
+        justify-content: center;
+        pointer-events: auto;
+        animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.success { background: #0f766e; }
+    .toast.error { background: #e11d48; }
+
+    @keyframes slideDown {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 640px) {
+        .filter-wrapper { flex-direction: column; align-items: stretch; }
+        .filter-form-container { flex-direction: column; }
+        .filter-pill, .btn-solid, .btn-outline { width: 100% !important; }
+        .search-input-field, .date-input-field { width: 100% !important; }
+        .summary-grid { flex-direction: column; }
+        .summary-card { max-width: 100%; }
+        .toast-container { width: 90%; }
+        .toast { min-width: auto; width: 100%; }
+    }
+</style>
+<div class="max-w-7xl mx-auto space-y-4 pb-12 relative text-xs">
     <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Header Page -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-gray-200 pb-3">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Stok & Inventaris</h1>
-            <p class="text-sm text-gray-500 mt-1">Kelola daftar barang, pantau sisa unit, dan catat riwayat mutasi.</p>
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Stok & Inventaris</h1>
+            <p class="text-xs text-gray-500 mt-0.5">Kelola daftar barang, pantau sisa unit, dan catat riwayat mutasi.</p>
         </div>
         
         <div class="flex items-center gap-2">
-            <button onclick="openModal('modalBarangMasuk')" class="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition shadow-sm">
-                + Barang Masuk
+            <button onclick="openModal('modalBarangMasuk')" class="px-3 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition shadow-sm flex items-center gap-1.5">
+                <span>+</span> Barang Masuk
             </button>
-            <button onclick="openModal('modalBarangKeluar')" class="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition shadow-sm">
-                - Barang Keluar
+            <button onclick="openModal('modalBarangKeluar')" class="px-3 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition shadow-sm flex items-center gap-1.5">
+                <span>-</span> Barang Keluar
             </button>
-            <button onclick="openModal('modalTambahProduk')" class="px-4 py-2.5 text-sm font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition shadow-sm">
-                + Produk Baru
+            <button onclick="openModal('modalTambahProduk')" class="px-3 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition shadow-sm flex items-center gap-1.5">
+                <span>+</span> Produk Baru
             </button>
         </div>
     </div>
 
-    <!-- Stat Ringkasan -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="p-5 bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-between">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="p-4 bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-between">
             <div>
-                <span class="text-sm font-medium text-gray-500">Total Jenis Produk</span>
-                <p class="text-3xl font-bold text-gray-900 mt-1">{{ total_produk }} <span class="text-sm font-normal text-gray-400">SKU</span></p>
+                <span class="text-xs font-medium text-gray-500">Total Jenis Produk</span>
+                <p class="text-xl font-bold text-gray-900 mt-0.5">{{ total_produk }} <span class="text-xs font-normal text-gray-400">SKU</span></p>
             </div>
-            <div class="w-12 h-12 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600">
+                <i class='bx bx-package text-xl'></i>
             </div>
         </div>
 
-        <div class="p-5 bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-between">
+        <div class="p-4 bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-between">
             <div>
-                <span class="text-sm font-medium text-gray-500">Total Keseluruhan Stok</span>
-                <p class="text-3xl font-bold text-gray-900 mt-1">{{ total_stok }} <span class="text-sm font-normal text-gray-400">Unit</span></p>
+                <span class="text-xs font-medium text-gray-500">Total Keseluruhan Stok</span>
+                <p class="text-xl font-bold text-gray-900 mt-0.5">{{ total_stok }} <span class="text-xs font-normal text-gray-400">Unit</span></p>
             </div>
-            <div class="w-12 h-12 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600">
+                <i class='bx bx-layer text-xl'></i>
             </div>
         </div>
     </div>
 
-    <!-- Table Card & Filter -->
     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <!-- Filter Toolbar -->
-        <div class="p-4 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="p-3 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <form method="GET" action="/stock" class="flex items-center gap-2 w-full sm:w-auto">
-                <div class="relative w-full sm:w-80">
-                    <input type="text" id="searchInput" name="search" placeholder="Cari berdasarkan nama barang atau SKU..." value="{{ request.query_params.get('search', '') }}" 
-                           class="w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-900 transition">
-                    <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <div class="relative w-full sm:w-72">
+                    <input type="text" id="searchInput" name="search" placeholder="Cari nama barang / SKU..." value="{{ request.query_params.get('search', '') }}" 
+                           class="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-gray-900 transition">
+                    <i class='bx bx-search text-gray-400 text-base absolute left-2.5 top-2.5'></i>
                 </div>
-                <button type="submit" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition shadow-sm">
+                <button type="submit" class="px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition shadow-sm">
                     Filter
                 </button>
                 {% if request.query_params.get('search') %}
-                <a href="/stock" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-900 transition">Reset</a>
+                <a href="/stock" class="px-2 py-1.5 text-xs text-gray-500 hover:text-gray-900 transition">Reset</a>
                 {% endif %}
             </form>
-            <div class="text-sm text-gray-500 font-medium">
+            <div class="text-xs text-gray-500 font-medium">
                 Menampilkan <span id="startCount">1</span> - <span id="endCount">10</span> dari <span id="totalItems">{{ products|length }}</span> barang
             </div>
         </div>
 
-        <!-- Main Table -->
         <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left text-gray-600">
-                <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-xs">
+            <table class="w-full text-xs text-left text-gray-600">
+                <thead class="bg-gray-50 text-gray-500 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
                     <tr>
-                        <th class="px-5 py-3.5">SKU</th>
-                        <th class="px-5 py-3.5">Nama Barang</th>
-                        <th class="px-5 py-3.5 text-center">Sisa Stok</th>
-                        <th class="px-5 py-3.5">Satuan</th>
-                        <th class="px-5 py-3.5">Harga Beli</th>
-                        <th class="px-5 py-3.5">Harga Jual</th>
-                        <th class="px-5 py-3.5 text-right">Opsi</th>
+                        <th class="px-4 py-3">SKU</th>
+                        <th class="px-4 py-3">Nama Barang</th>
+                        <th class="px-4 py-3 text-center">Sisa Stok</th>
+                        <th class="px-4 py-3">Satuan</th>
+                        <th class="px-4 py-3">Harga Beli</th>
+                        <th class="px-4 py-3">Harga Jual</th>
+                        <th class="px-4 py-3 text-center">Opsi</th>
                     </tr>
                 </thead>
                 <tbody id="productTableBody" class="divide-y divide-gray-100">
                     {% for item in products %}
                     <tr class="product-row hover:bg-gray-50/80 transition" data-name="{{ item.name|lower }}" data-sku="{{ (item.sku or '')|lower }}">
-                        <td class="px-5 py-4 font-mono text-gray-400">{{ item.sku if item.sku else '-' }}</td>
-                        <td class="px-5 py-4 font-medium text-gray-900 product-name">{{ item.name }}</td>
-                        <td class="px-5 py-4 text-center font-medium">
+                        <td class="px-4 py-3 font-mono text-gray-400">{{ item.sku if item.sku else '-' }}</td>
+                        <td class="px-4 py-3 font-medium text-gray-900 product-name">{{ item.name }}</td>
+                        <td class="px-4 py-3 text-center font-medium">
                             {% if item.min_stock and item.stock <= item.min_stock %}
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-full">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-full">
                                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                     {{ item.stock }} (Menipis)
                                 </span>
                             {% else %}
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-full">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-full">
                                     {{ item.stock }}
                                 </span>
                             {% endif %}
                         </td>
-                        <td class="px-5 py-4 text-gray-500 uppercase">{{ item.unit }}</td>
-                        <td class="px-5 py-4 text-gray-500">Rp {{ "{:,.0f}".format(item.buy_price) }}</td>
-                        <td class="px-5 py-4 font-medium text-gray-900">Rp {{ "{:,.0f}".format(item.sell_price) }}</td>
-                        <td class="px-5 py-4 text-right">
-                            <button data-id="{{ item.id }}" onclick="deleteProduct(this)" class="text-gray-400 hover:text-red-600 font-medium transition px-2.5 py-1 rounded hover:bg-red-50">
-                                Hapus
-                            </button>
+                        <td class="px-4 py-3 text-gray-500 uppercase">{{ item.unit }}</td>
+                        <td class="px-4 py-3 text-gray-500">Rp {{ "{:,.0f}".format(item.buy_price or 0).replace(',', '.') }}</td>
+                        <td class="px-4 py-3 font-medium text-gray-900">Rp {{ "{:,.0f}".format(item.sell_price or 0).replace(',', '.') }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <div class="action-cell">
+                                <button 
+                                    type="button" 
+                                    class="btn-icon btn-edit"  
+                                    title="Edit Produk"
+                                    data-id="{{ item.id }}"
+                                    data-name="{{ item.name|e }}"
+                                    data-sku="{{ item.sku or '' }}"
+                                    data-unit="{{ item.unit }}"
+                                    data-stock="{{ item.stock }}"
+                                    data-minstock="{{ item.min_stock or 0 }}"
+                                    data-buyprice="{{ item.buy_price or 0 }}"
+                                    data-sellprice="{{ item.sell_price or 0 }}"
+                                    onclick="handleEditClick(this)"
+                                >
+                                    <i class='bx bx-edit-alt'></i>
+                                </button>
+                                <button 
+                                        type="button" 
+                                        class="btn-icon delete" 
+                                        title="Hapus Produk"
+                                        onclick="openDeleteModal('{{ item.id }}')"
+                                    >
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
                     <tr id="emptyRow">
-                        <td colspan="7" class="px-5 py-12 text-center text-gray-400 text-sm">Data barang belum tersedia.</td>
+                        <td colspan="7" class="px-4 py-10 text-center text-gray-400 text-xs">Data barang belum tersedia.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <!-- Pagination Bar (10 Item/Halaman) -->
-        <div id="paginationContainer" class="p-4 border-t border-gray-200 bg-gray-50/30 flex items-center justify-between">
-            <button id="prevBtn" onclick="changePage(-1)" class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
+        <div id="paginationContainer" class="p-3 border-t border-gray-200 bg-gray-50/30 flex items-center justify-between">
+            <button id="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
                 &larr; Sebelumnya
             </button>
-            <span id="pageIndicator" class="text-sm font-semibold text-gray-700">Halaman 1</span>
-            <button id="nextBtn" onclick="changePage(1)" class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
+            <span id="pageIndicator" class="text-xs font-semibold text-gray-700">Halaman 1</span>
+            <button id="nextBtn" onclick="changePage(1)" class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
                 Berikutnya &rarr;
             </button>
         </div>
     </div>
 </div>
 
-<!-- Modal Component Header -->
 {% macro modal_header(title, id) %}
-<div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-    <h3 class="text-base font-bold text-gray-900">{{ title }}</h3>
-    <button type="button" onclick="closeModal('{{ id }}')" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+<div class="flex items-center justify-between border-b border-gray-100 px-5 py-3.5">
+    <h3 class="text-sm font-bold text-gray-900">{{ title }}</h3>
+    <button type="button" onclick="closeModal('{{ id }}')" class="text-gray-400 hover:text-gray-600 text-lg leading-none">&times;</button>
 </div>
 {% endmacro %}
 
-<!-- MODAL TAMBAH PRODUK -->
+<!-- Modal Tambah Produk -->
 <div id="modalTambahProduk" class="fixed inset-0 bg-gray-900/40 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden border border-gray-100">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden border border-gray-100 text-xs">
         {{ modal_header('Tambah Produk Baru', 'modalTambahProduk') }}
-        <form id="formTambahProduk" onsubmit="submitForm(event, '/api/v1/stock/products', this)" class="p-6 space-y-4">
+        <form id="formTambahProduk" onsubmit="submitForm(event, '/api/v1/stock/products', this)" class="p-5 space-y-3">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang *</label>
-                <input type="text" name="name" required class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                <label class="block font-medium text-gray-700 mb-1">Nama Barang *</label>
+                <input type="text" name="name" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-2.5">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
-                    <input type="text" name="sku" class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                    <label class="block font-medium text-gray-700 mb-1">SKU</label>
+                    <input type="text" name="sku" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Satuan</label>
-                    <input type="text" name="unit" value="pcs" required class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Stok Awal</label>
-                    <input type="number" name="stock" value="0" min="0" class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Min. Stok Warning</label>
-                    <input type="number" name="min_stock" value="5" min="0" class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                    <label class="block font-medium text-gray-700 mb-1">Satuan</label>
+                    <input type="text" name="unit" value="pcs" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-2.5">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Harga Beli</label>
-                    <input type="number" name="buy_price" value="0" min="0" class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                    <label class="block font-medium text-gray-700 mb-1">Stok Awal</label>
+                    <input type="number" name="stock" value="0" min="0" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Harga Jual</label>
-                    <input type="number" name="sell_price" value="0" min="0" class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                    <label class="block font-medium text-gray-700 mb-1">Min. Stok Warning</label>
+                    <input type="number" name="min_stock" value="5" min="0" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
                 </div>
             </div>
-            <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                <button type="button" onclick="closeModal('modalTambahProduk')" class="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
-                <button type="submit" class="submit-btn px-4 py-2 text-sm text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 font-medium inline-flex items-center gap-2">
+            <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Harga Beli (Rp)</label>
+                    <input type="text" name="buy_price" value="0" onkeyup="formatCurrency(this)" class="currency-input w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Harga Jual (Rp)</label>
+                    <input type="text" name="sell_price" value="0" onkeyup="formatCurrency(this)" class="currency-input w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                <button type="button" onclick="closeModal('modalTambahProduk')" class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
+                <button type="submit" class="submit-btn px-3 py-1.5 text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 font-medium inline-flex items-center gap-1.5">
                     <span class="btn-text">Simpan</span>
                 </button>
             </div>
@@ -191,14 +394,64 @@
     </div>
 </div>
 
-<!-- MODAL BARANG MASUK -->
+<!-- Modal Edit Produk -->
+<div id="modalEditProduk" class="fixed inset-0 bg-gray-900/40 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden border border-gray-100 text-xs">
+        {{ modal_header('Edit Produk', 'modalEditProduk') }}
+        <form id="formEditProduk" onsubmit="submitEditForm(event, this)" class="p-5 space-y-3">
+            <input type="hidden" id="edit_product_id" name="id">
+            <div>
+                <label class="block font-medium text-gray-700 mb-1">Nama Barang *</label>
+                <input type="text" id="edit_name" name="name" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">SKU</label>
+                    <input type="text" id="edit_sku" name="sku" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Satuan</label>
+                    <input type="text" id="edit_unit" name="unit" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Sisa Stok Saat Ini</label>
+                    <input type="number" id="edit_stock" name="stock" min="0" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Min. Stok Warning</label>
+                    <input type="number" id="edit_min_stock" name="min_stock" min="0" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Harga Beli (Rp)</label>
+                    <input type="text" id="edit_buy_price" name="buy_price" onkeyup="formatCurrency(this)" class="currency-input w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Harga Jual (Rp)</label>
+                    <input type="text" id="edit_sell_price" name="sell_price" onkeyup="formatCurrency(this)" class="currency-input w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                <button type="button" onclick="closeModal('modalEditProduk')" class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
+                <button type="submit" class="submit-btn px-3 py-1.5 text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 font-medium inline-flex items-center gap-1.5">
+                    <span class="btn-text">Update</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Barang Masuk -->
 <div id="modalBarangMasuk" class="fixed inset-0 bg-gray-900/40 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden border border-gray-100">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden border border-gray-100 text-xs">
         {{ modal_header('Catat Barang Masuk', 'modalBarangMasuk') }}
-        <form id="formBarangMasuk" onsubmit="submitForm(event, '/api/v1/stock/in', this)" class="p-6 space-y-4">
+        <form id="formBarangMasuk" onsubmit="submitForm(event, '/api/v1/stock/in', this)" class="p-5 space-y-3">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Produk *</label>
-                <select name="product_id" required class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                <label class="block font-medium text-gray-700 mb-1">Pilih Produk *</label>
+                <select name="product_id" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
                     <option value="">-- Pilih Barang --</option>
                     {% for item in products %}
                     <option value="{{ item.id }}">{{ item.name }} (Sisa: {{ item.stock }})</option>
@@ -206,16 +459,16 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Masuk *</label>
-                <input type="number" name="quantity" min="1" required class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                <label class="block font-medium text-gray-700 mb-1">Jumlah Masuk *</label>
+                <input type="number" name="quantity" min="1" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
-                <input type="text" name="notes" placeholder="Restock supplier..." class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                <label class="block font-medium text-gray-700 mb-1">Catatan</label>
+                <input type="text" name="notes" placeholder="Restock supplier..." class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
             </div>
-            <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                <button type="button" onclick="closeModal('modalBarangMasuk')" class="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
-                <button type="submit" class="submit-btn px-4 py-2 text-sm text-white bg-gray-900 rounded-lg hover:bg-gray-800 font-medium inline-flex items-center gap-2">
+            <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                <button type="button" onclick="closeModal('modalBarangMasuk')" class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
+                <button type="submit" class="submit-btn px-3 py-1.5 text-white bg-gray-900 rounded-lg hover:bg-gray-800 font-medium inline-flex items-center gap-1.5">
                     <span class="btn-text">Simpan</span>
                 </button>
             </div>
@@ -223,14 +476,14 @@
     </div>
 </div>
 
-<!-- MODAL BARANG KELUAR -->
+<!-- Modal Barang Keluar -->
 <div id="modalBarangKeluar" class="fixed inset-0 bg-gray-900/40 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden border border-gray-100">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden border border-gray-100 text-xs">
         {{ modal_header('Catat Barang Keluar', 'modalBarangKeluar') }}
-        <form id="formBarangKeluar" onsubmit="submitForm(event, '/api/v1/stock/out', this)" class="p-6 space-y-4">
+        <form id="formBarangKeluar" onsubmit="submitForm(event, '/api/v1/stock/out', this)" class="p-5 space-y-3">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Produk *</label>
-                <select name="product_id" required class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                <label class="block font-medium text-gray-700 mb-1">Pilih Produk *</label>
+                <select name="product_id" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
                     <option value="">-- Pilih Barang --</option>
                     {% for item in products %}
                     <option value="{{ item.id }}">{{ item.name }} (Sisa: {{ item.stock }})</option>
@@ -238,28 +491,121 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Keluar *</label>
-                <input type="number" name="quantity" min="1" required class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                <label class="block font-medium text-gray-700 mb-1">Jumlah Keluar *</label>
+                <input type="number" name="quantity" min="1" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
-                <input type="text" name="notes" placeholder="Penjualan toko..." class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                <label class="block font-medium text-gray-700 mb-1">Catatan</label>
+                <input type="text" name="notes" placeholder="Penjualan toko..." class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
             </div>
-            <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                <button type="button" onclick="closeModal('modalBarangKeluar')" class="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
-                <button type="submit" class="submit-btn px-4 py-2 text-sm text-white bg-gray-900 rounded-lg hover:bg-gray-800 font-medium inline-flex items-center gap-2">
+            <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                <button type="button" onclick="closeModal('modalBarangKeluar')" class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
+                <button type="submit" class="submit-btn px-3 py-1.5 text-white bg-gray-900 rounded-lg hover:bg-gray-800 font-medium inline-flex items-center gap-1.5">
                     <span class="btn-text">Simpan</span>
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus (Disesuaikan ke Tailwind) -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-900/40 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-xl shadow-xl overflow-hidden border border-gray-100 text-xs">
+        {{ modal_header('Hapus Produk', 'deleteModal') }}
+        <div class="p-5 space-y-4">
+            <p class="text-gray-600 leading-relaxed">
+                Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                <button type="button" onclick="closeModal('deleteModal')" class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
+                <button type="button" id="confirmDeleteBtn" onclick="executeDelete()" class="px-3 py-1.5 text-white bg-red-600 rounded-lg hover:bg-red-700 font-medium">
+                    <span id="deleteBtnText">Hapus</span>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
+let selectedDeleteProductId = null;
+
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-// State Management Pagination & Filter
+function formatCurrency(input) {
+    let value = input.value.replace(/\D/g, "");
+    if (value === "") {
+        input.value = "0";
+    } else {
+        input.value = new Intl.NumberFormat('id-ID').format(value);
+    }
+}
+
+function cleanCurrency(val) {
+    if (!val) return 0;
+    return parseFloat(val.toString().replace(/\./g, '').replace(/,/g, '.')) || 0;
+}
+
+function handleEditClick(buttonElement) {
+    const dataset = buttonElement.dataset;
+    openEditModal(
+        dataset.id,
+        dataset.name,
+        dataset.sku,
+        dataset.unit,
+        dataset.stock,
+        dataset.minstock,
+        dataset.buyprice,
+        dataset.sellprice
+    );
+}
+
+function openEditModal(id, name, sku, unit, stock, min_stock, buy_price, sell_price) {
+    document.getElementById('edit_product_id').value = id;
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_sku').value = sku;
+    document.getElementById('edit_unit').value = unit;
+    document.getElementById('edit_stock').value = stock;
+    document.getElementById('edit_min_stock').value = min_stock;
+    
+    document.getElementById('edit_buy_price').value = new Intl.NumberFormat('id-ID').format(buy_price);
+    document.getElementById('edit_sell_price').value = new Intl.NumberFormat('id-ID').format(sell_price);
+    
+    openModal('modalEditProduk');
+}
+
+function openDeleteModal(productId) {
+    selectedDeleteProductId = productId;
+    openModal('deleteModal');
+}
+
+async function executeDelete() {
+    if (!selectedDeleteProductId) return;
+
+    const btn = document.getElementById('confirmDeleteBtn');
+    const btnText = document.getElementById('deleteBtnText');
+    btn.disabled = true;
+    btnText.innerText = 'Menghapus...';
+
+    try {
+        const response = await fetch(`/api/v1/stock/products/${selectedDeleteProductId}`, { method: 'DELETE' });
+        if (response.ok) {
+            showToast('Produk berhasil dihapus', 'success');
+            closeModal('deleteModal');
+            setTimeout(() => window.location.reload(), 600);
+        } else {
+            const err = await response.json();
+            showToast('Gagal menghapus: ' + (err.detail || 'Terjadi kesalahan.'), 'error');
+            btn.disabled = false;
+            btnText.innerText = 'Hapus';
+        }
+    } catch (error) {
+        showToast('Terjadi kesalahan koneksi.', 'error');
+        btn.disabled = false;
+        btnText.innerText = 'Hapus';
+    }
+}
+
 let currentPage = 1;
 const itemsPerPage = 10;
 let allRows = [];
@@ -280,20 +626,14 @@ function renderTable() {
     const endIdx = startIdx + itemsPerPage;
 
     allRows.forEach((row, idx) => {
-        if (idx >= startIdx && idx < endIdx) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
+        row.style.display = (idx >= startIdx && idx < endIdx) ? '' : 'none';
     });
 
-    // Update Counter Text
     document.getElementById('startCount').innerText = totalItems === 0 ? 0 : startIdx + 1;
     document.getElementById('endCount').innerText = Math.min(endIdx, totalItems);
     document.getElementById('totalItems').innerText = totalItems;
     document.getElementById('pageIndicator').innerText = `Halaman ${currentPage} dari ${totalPages}`;
 
-    // Update Button Disabled State
     document.getElementById('prevBtn').disabled = currentPage === 1;
     document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
 }
@@ -303,19 +643,18 @@ function changePage(direction) {
     renderTable();
 }
 
-// Toast Notification
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
     
     const isSuccess = type === 'success';
-    const bgClass = isSuccess ? 'bg-gray-900 text-white' : 'bg-red-600 text-white';
+    const bgClass = isSuccess ? 'bg-gray-900 text-white' : 'bg-gray-800 text-white';
     
-    toast.className = `pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium ${bgClass} transition-all duration-300 transform translate-y-2 opacity-0`;
+    toast.className = `pointer-events-auto flex items-center gap-2 px-3.5 py-2.5 rounded-lg shadow-lg text-xs font-medium ${bgClass} transition-all duration-300 transform translate-y-2 opacity-0`;
     
     const icon = isSuccess 
-        ? `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`
-        : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+        ? `<i class='bx bx-check-circle text-emerald-400 text-base'></i>`
+        : `<i class='bx bx-x-circle text-amber-400 text-base'></i>`;
 
     toast.innerHTML = `${icon} <span>${message}</span>`;
     container.appendChild(toast);
@@ -330,30 +669,29 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// Set Loading state di Tombol Submit
-function setButtonLoading(btn, isLoading) {
+function setButtonLoading(btn, isLoading, defaultText = 'Simpan') {
     const btnText = btn.querySelector('.btn-text');
     if (isLoading) {
         btn.disabled = true;
         btn.classList.add('opacity-75', 'cursor-not-allowed');
-        btnText.innerText = 'Menyimpan...';
-        btn.insertAdjacentHTML('afterbegin', `<svg class="spinner w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`);
+        if (btnText) btnText.innerText = 'Menyimpan...';
     } else {
         btn.disabled = false;
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        btnText.innerText = 'Simpan';
-        const spinner = btn.querySelector('.spinner');
-        if (spinner) spinner.remove();
+        if (btnText) btnText.innerText = defaultText;
     }
 }
 
 async function submitForm(event, url, formElement) {
     event.preventDefault();
     const btn = formElement.querySelector('.submit-btn');
-    setButtonLoading(btn, true);
+    setButtonLoading(btn, true, 'Simpan');
 
     const formData = new FormData(formElement);
     const data = Object.fromEntries(formData.entries());
+
+    if (data.buy_price) data.buy_price = cleanCurrency(data.buy_price);
+    if (data.sell_price) data.sell_price = cleanCurrency(data.sell_price);
 
     try {
         const response = await fetch(url, {
@@ -364,38 +702,48 @@ async function submitForm(event, url, formElement) {
 
         if (response.ok) {
             showToast('Data berhasil disimpan!', 'success');
-            setTimeout(() => window.location.reload(), 800);
+            setTimeout(() => window.location.reload(), 600);
         } else {
             const err = await response.json();
             showToast('Gagal: ' + (err.detail || 'Terjadi kesalahan.'), 'error');
-            setButtonLoading(btn, false);
+            setButtonLoading(btn, false, 'Simpan');
         }
     } catch (error) {
         showToast('Terjadi kesalahan koneksi jaringan.', 'error');
-        setButtonLoading(btn, false);
+        setButtonLoading(btn, false, 'Simpan');
     }
 }
 
-async function deleteProduct(buttonElement) {
-    const productId = buttonElement.dataset.id;
-    buttonElement.innerText = 'Menghapus...';
-    buttonElement.disabled = true;
+async function submitEditForm(event, formElement) {
+    event.preventDefault();
+    const btn = formElement.querySelector('.submit-btn');
+    setButtonLoading(btn, true, 'Update');
+
+    const formData = new FormData(formElement);
+    const data = Object.fromEntries(formData.entries());
+    const productId = data.id;
+
+    data.buy_price = cleanCurrency(data.buy_price);
+    data.sell_price = cleanCurrency(data.sell_price);
 
     try {
-        const response = await fetch(`/api/v1/stock/products/${productId}`, { method: 'DELETE' });
+        const response = await fetch(`/api/v1/stock/products/${productId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
         if (response.ok) {
-            showToast('Produk berhasil dihapus', 'success');
-            setTimeout(() => window.location.reload(), 800);
+            showToast('Produk berhasil diperbarui!', 'success');
+            setTimeout(() => window.location.reload(), 600);
         } else {
             const err = await response.json();
-            showToast('Gagal menghapus: ' + (err.detail || 'Terjadi kesalahan.'), 'error');
-            buttonElement.innerText = 'Hapus';
-            buttonElement.disabled = false;
+            showToast('Gagal update: ' + (err.detail || 'Terjadi kesalahan.'), 'error');
+            setButtonLoading(btn, false, 'Update');
         }
     } catch (error) {
-        showToast('Terjadi kesalahan koneksi.', 'error');
-        buttonElement.innerText = 'Hapus';
-        buttonElement.disabled = false;
+        showToast('Terjadi kesalahan koneksi jaringan.', 'error');
+        setButtonLoading(btn, false, 'Update');
     }
 }
 </script>
