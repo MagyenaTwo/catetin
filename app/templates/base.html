@@ -584,6 +584,53 @@
             }
             .modal-overlay.active .modal-card { transform: translateY(0); }
         }
+        /* Badge SOON Kecil di Sidebar */
+.badge-soon {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    color: #b02a37;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: auto;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Custom Style SweetAlert */
+.custom-swal-popup {
+    border-radius: 20px !important;
+    padding: 2em !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+}
+
+.custom-swal-button {
+    border-radius: 12px !important;
+    padding: 10px 24px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}
+
+.swal-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    background: #e0e7ff;
+    color: #4f46e5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px auto;
+    font-size: 38px;
+    animation: pulseIcon 1.8s infinite;
+}
+
+@keyframes pulseIcon {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(79, 70, 229, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+}
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -637,10 +684,10 @@
                 <span>Stock</span>
             </a>
             
-            <a href="/laporan" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan">
-                <i class='bx bx-pie-chart-alt-2'></i>
-                <span>Laporan</span>
-            </a>
+<a href="javascript:void(0)" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan" onclick="showDevAlert(event)">
+    <i class='bx bx-pie-chart-alt-2'></i>
+    <span>Laporan</span>
+</a>
         </nav>
 
         <div class="sidebar-footer">
@@ -744,7 +791,7 @@
             </div>
         </div>
     </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function toggleTransaksiSubmenu() {
             const submenu = document.getElementById('transaksiSubmenu');
@@ -855,6 +902,31 @@
             }
         });
         window.addEventListener('resize', updateToggleIcon);
+function showDevAlert(e) {
+    e.preventDefault();
+
+    Swal.fire({
+        title: 'Segera Hadir!',
+        text: 'Fitur Laporan sedang dalam pengembangan.',
+        icon: 'info',
+        iconColor: '#3b82f6',
+        confirmButtonText: 'Oke, Paham',
+        confirmButtonColor: '#3b82f6',
+        width: '360px',
+        padding: '1.5rem',
+        background: '#ffffff',
+        backdrop: `rgba(15, 23, 42, 0.4)`, // efek gelap blur di latar belakang
+        showClass: {
+            popup: 'animate__animated animate__zoomIn animate__faster'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__zoomOut animate__faster'
+        },
+        customClass: {
+            popup: 'rounded-modal'
+        }
+    });
+}
     </script>
     {% block extra_js %}{% endblock %}
 </body>
