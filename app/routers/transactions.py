@@ -2,26 +2,34 @@ from datetime import datetime
 import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+import cloudinary.uploader
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.config import settings  # <-- DITAMBAHKAN: Memastikan Cloudinary terkonfigurasi saat router dimuat
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.transaction import Transaction
 from app.models.user import User
-from app.schemas.transaction import (
-    TransactionCreate,
-    TransactionResponse,
-    TransactionUpdate,
-)
+from app.schemas.transaction import TransactionResponse
 
 logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------------------
-# 1. WEB ROUTER (Khusus Rendering Tampilan HTML / Frontend)
+# 1. WEB ROUTER
 # --------------------------------------------------------------------------
 web_router = APIRouter(prefix="/transaksi", tags=["Web Pages"])
 
@@ -48,9 +56,7 @@ def render_transactions_page(
     )
 
     if search and search.strip():
-        query = query.filter(
-            Transaction.description.ilike(f"%{search.strip()}%")
-        )
+        query = query.filter(Transaction.description.ilike(f"%{search.strip()}%"))
 
     if start_date and start_date.strip():
         try:
@@ -76,10 +82,9 @@ def render_transactions_page(
         .scalar()
     )
 
-    # Kirim user ke context agar base.html tidak error
     return templates.TemplateResponse(
         request=request,
-        name="transaksi.html",  # sesuaikan dengan nama template HTML kamu
+        name="transaksi.html",
         context={
             "user": current_user,
             "transactions": transactions,
@@ -89,7 +94,7 @@ def render_transactions_page(
 
 
 # --------------------------------------------------------------------------
-# 2. REST API ROUTER (Khusus Endpoint JSON Data)
+# 2. REST API ROUTER
 # --------------------------------------------------------------------------
 api_router = APIRouter(prefix="/api/v1/transaksi", tags=["Transactions API"])
 
@@ -105,18 +110,13 @@ def get_user_transactions(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """API JSON yang dipanggil via Fetch/Axios dari FE"""
-    query = db.query(Transaction).filter(
-        Transaction.user_id == current_user.id
-    )
+    query = db.query(Transaction).filter(Transaction.user_id == current_user.id)
 
     if only_income:
         query = query.filter(Transaction.amount > 0)
 
     if search and search.strip():
-        query = query.filter(
-            Transaction.description.ilike(f"%{search.strip()}%")
-        )
+        query = query.filter(Transaction.description.ilike(f"%{search.strip()}%"))
 
     if start_date and start_date.strip():
         try:
@@ -157,15 +157,36 @@ def get_user_transactions(
     response_model=TransactionResponse,
     status_code=status.HTTP_201_CREATED,
 )
-def create_transaction(
-    data: TransactionCreate,
+async def create_transaction(
+    description: str = Form(...),
+    amount: float = Form(...),
+    image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    image_url = None
+    image_public_id = None
+
+    if image and image.filename:
+        try:
+            upload_result = cloudinary.uploader.upload(
+                image.file, folder="transactions"
+            )
+            image_url = upload_result.get("secure_url")
+            image_public_id = upload_result.get("public_id")
+        except Exception as e:
+            logger.error(f"Gagal mengunggah gambar ke Cloudinary: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Gagal mengunggah gambar.",
+            )
+
     new_txn = Transaction(
         user_id=current_user.id,
-        description=data.description,
-        amount=data.amount,
+        description=description,
+        amount=amount,
+        image_url=image_url,
+        image_public_id=image_public_id,
     )
     db.add(new_txn)
     db.commit()
@@ -197,9 +218,11 @@ def get_transaction_by_id(
 
 
 @api_router.put("/{transaction_id}", response_model=TransactionResponse)
-def update_transaction(
+async def update_transaction(
     transaction_id: int,
-    data: TransactionUpdate,
+    description: Optional[str] = Form(None),
+    amount: Optional[float] = Form(None),
+    image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -218,10 +241,29 @@ def update_transaction(
             detail="Transaksi tidak ditemukan.",
         )
 
-    if data.description is not None:
-        txn.description = data.description
-    if data.amount is not None:
-        txn.amount = data.amount
+    if description is not None:
+        txn.description = description
+    if amount is not None:
+        txn.amount = amount
+
+    # Jika mengunggah gambar baru
+    if image and image.filename:
+        try:
+            # Hapus gambar lama di Cloudinary jika ada
+            if txn.image_public_id:
+                cloudinary.uploader.destroy(txn.image_public_id)
+
+            upload_result = cloudinary.uploader.upload(
+                image.file, folder="transactions"
+            )
+            txn.image_url = upload_result.get("secure_url")
+            txn.image_public_id = upload_result.get("public_id")
+        except Exception as e:
+            logger.error(f"Gagal memperbarui gambar di Cloudinary: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Gagal memperbarui gambar.",
+            )
 
     db.commit()
     db.refresh(txn)
@@ -248,6 +290,13 @@ def delete_transaction(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Transaksi tidak ditemukan.",
         )
+
+    # Hapus file dari Cloudinary
+    if txn.image_public_id:
+        try:
+            cloudinary.uploader.destroy(txn.image_public_id)
+        except Exception as e:
+            logger.error(f"Gagal menghapus gambar dari Cloudinary: {str(e)}")
 
     db.delete(txn)
     db.commit()

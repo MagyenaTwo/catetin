@@ -10,17 +10,25 @@ from app.models.transaction import Transaksi_Keluar  # Sesuaikan nama file/class
 
 def get_user_transactions(db: Session, user_id: int):
     return db.query(Transaction).filter(Transaction.user_id == user_id).order_by(Transaction.created_at.desc()).all()
-
-def create_transaction(db: Session, user_id: int, description: str, amount: float) -> Transaction:
-    new_txn = Transaction(
-        user_id=user_id,
-        description=description,
-        amount=amount
-    )
-    db.add(new_txn)
-    db.commit()
-    db.refresh(new_txn)
-    return new_txn
+def create_transaction(
+    db: Session,
+    user_id: int,
+    description: str,
+    amount: float,
+    image_url: Optional[str] = None,
+    image_public_id: Optional[str] = None,
+) -> Transaction:
+  new_txn = Transaction(
+      user_id=user_id,
+      description=description,
+      amount=amount,
+      image_url=image_url,
+      image_public_id=image_public_id,
+  )
+  db.add(new_txn)
+  db.commit()
+  db.refresh(new_txn)
+  return new_txn
 
 
 # ==========================================

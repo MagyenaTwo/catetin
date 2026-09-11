@@ -5,14 +5,24 @@
 
 {% block extra_css %}
 <style>
+    :root {
+        --mono-font: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+        --border-color: #e2e8f0;
+        --bg-hover: #f8fafc;
+        --text-primary: #0f172a;
+        --text-muted: #64748b;
+        --success-color: #0f766e;
+        --danger-color: #e11d48;
+    }
+
     .transaksi-container {
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 1rem;
         width: 100%;
     }
 
-    /* Summary Mini Cards */
+    /* Summary Bar */
     .summary-grid {
         display: flex;
         gap: 1rem;
@@ -20,83 +30,84 @@
     }
 
     .summary-card {
-        background: var(--surface, #ffffff);
-        border: 1px solid var(--border, #e2e8f0);
-        border-radius: 12px;
-        padding: 0.85rem 1.15rem;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.85rem 1.25rem;
         flex: 1;
         max-width: 280px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
 
     .summary-label {
-        font-size: 0.7rem;
+        font-size: 0.6875rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--text-muted, #64748b);
+        color: var(--text-muted);
         font-weight: 600;
+        display: block;
     }
 
     .summary-value {
-        font-size: 1.3rem;
+        font-size: 1.25rem;
         font-weight: 700;
-        margin-top: 0.2rem;
-        font-family: 'SF Mono', Consolas, monospace;
+        margin-top: 0.25rem;
+        font-family: var(--mono-font);
+        color: var(--text-primary);
     }
 
-    .text-in { color: #0f766e; }
+    .text-in { color: var(--success-color); }
 
     /* Card Panel */
     .card-panel {
-        background: var(--surface, #ffffff);
-        border: 1px solid var(--border, #e2e8f0);
-        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    /* Modern Filter Toolbar */
+    /* Filter Toolbar Header */
     .filter-wrapper {
         padding: 0.85rem 1.25rem;
-        border-bottom: 1px solid var(--border, #e2e8f0);
+        border-bottom: 1px solid var(--border-color);
         background: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
     }
 
     .filter-form-container {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.5rem;
         flex-wrap: wrap;
     }
 
-    /* Grouping Input dengan Look & Feel Modern */
     .filter-pill {
         display: inline-flex;
         align-items: center;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 0 0.75rem;
-        height: 38px;
-        gap: 0.5rem;
-        transition: all 0.2s ease;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 0 0.65rem;
+        height: 36px;
+        gap: 0.4rem;
     }
 
     .filter-pill:focus-within {
-        border-color: #6366f1;
-        background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        border-color: #0f172a;
     }
 
     .filter-pill i {
         color: #94a3b8;
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .filter-pill label {
-        font-size: 0.75rem;
+        font-size: 0.725rem;
         font-weight: 600;
-        color: #64748b;
+        color: var(--text-muted);
         white-space: nowrap;
     }
 
@@ -104,76 +115,124 @@
         border: none;
         outline: none;
         background: transparent;
-        font-size: 0.825rem;
-        color: #1e293b;
+        font-size: 0.8125rem;
+        color: var(--text-primary);
         padding: 0;
-        font-weight: 400;
     }
 
-    .search-input-field {
-        width: 170px;
-    }
+    .search-input-field { width: 160px; }
+    .date-input-field { width: 110px; cursor: pointer; }
 
-    .date-input-field {
-        width: 110px;
-        cursor: pointer;
-        color: #475569;
-    }
-
-    /* Custom Design untuk Tombol Filter Baru */
-    .btn-filter-modern {
+    /* Buttons */
+    .btn-solid {
         background: #0f172a;
         color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        padding: 0 1rem;
-        height: 38px;
-        font-size: 0.825rem;
+        border: 1px solid #0f172a;
+        border-radius: 6px;
+        padding: 0 0.85rem;
+        height: 36px;
+        font-size: 0.8125rem;
         font-weight: 600;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.4rem;
-        transition: all 0.2s ease;
-        margin-top: 0 !important; /* Menimpa margin bawaan .btn-submit global */
-        width: auto !important;
-        white-space: nowrap;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    }
-
-    .btn-filter-modern:hover {
-        background: #334155;
-        transform: translateY(-1px);
-    }
-
-    .btn-filter-modern:active {
-        transform: translateY(0);
-    }
-
-    /* Tombol Reset yang Minimalis & Bersih */
-    .btn-reset-modern {
-        color: #64748b;
-        background: #f1f5f9;
-        font-size: 0.825rem;
-        font-weight: 500;
         text-decoration: none;
+        white-space: nowrap;
+        transition: background-color 0.15s ease;
+    }
+
+    .btn-solid:hover:not(:disabled) {
+        background: #334155;
+        border-color: #334155;
+    }
+
+    .btn-solid:disabled {
+        opacity: 0.75;
+        cursor: not-allowed;
+    }
+
+    .btn-outline {
+        background: #ffffff;
+        color: #334155;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
         padding: 0 0.85rem;
-        height: 38px;
-        border-radius: 8px;
+        height: 36px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.3rem;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
+        text-decoration: none;
         white-space: nowrap;
     }
 
-    .btn-reset-modern:hover {
-        background: #fef2f2;
-        color: #ef4444;
-        border-color: #fecaca;
+    .btn-outline:hover:not(:disabled) {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    .btn-danger {
+        background: var(--danger-color);
+        color: #ffffff;
+        border: 1px solid var(--danger-color);
+        border-radius: 6px;
+        padding: 0 0.85rem;
+        height: 36px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+        background: #be123c;
+    }
+
+    .btn-icon {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.35rem;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: background-color 0.15s, color 0.15s;
+    }
+
+    .btn-icon:hover {
+        background: #f1f5f9;
+        color: var(--text-primary);
+    }
+
+    .btn-icon.delete:hover {
+        background: #ffe4e6;
+        color: var(--danger-color);
+    }
+
+    /* Spinner Loader */
+    .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: spin 0.8s linear infinite;
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 
     /* Table Styling */
@@ -185,63 +244,92 @@
     .table-transaksi {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.85rem;
+        font-size: 0.8125rem;
         text-align: left;
     }
 
     .table-transaksi th {
         background: #f8fafc;
-        color: #475569;
+        color: var(--text-muted);
         font-weight: 600;
-        padding: 0.85rem 1.25rem;
-        border-bottom: 1px solid #e2e8f0;
-        font-size: 0.7rem;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.6875rem;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
     }
 
     .table-transaksi td {
-        padding: 0.85rem 1.25rem;
+        padding: 0.75rem 1.25rem;
         border-bottom: 1px solid #f1f5f9;
         color: #334155;
         vertical-align: middle;
     }
 
     .table-transaksi tbody tr:hover {
-        background-color: #f8fafc;
+        background-color: var(--bg-hover);
     }
 
-    .nominal-val {
-        font-family: 'SF Mono', Consolas, monospace;
+    .img-thumbnail-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .img-thumbnail-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .img-thumbnail-placeholder {
+        color: #cbd5e1;
+        font-size: 1.2rem;
+    }
+
+    .nominal-cell {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--mono-font);
         font-weight: 600;
-        text-align: right;
+    }
+
+    .action-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
     }
 
     .empty-state {
         text-align: center;
-        padding: 2.5rem 1rem;
-        color: #64748b;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
     }
 
-    /* Modern Pagination Bar */
+    /* Pagination Bar */
     .pagination-wrapper {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.85rem 1.25rem;
-        border-top: 1px solid #e2e8f0;
+        padding: 0.75rem 1.25rem;
+        border-top: 1px solid var(--border-color);
         background: #ffffff;
-        font-size: 0.825rem;
-        color: #64748b;
-    }
-
-    .pagination-info {
-        font-weight: 500;
+        font-size: 0.8125rem;
+        color: var(--text-muted);
     }
 
     .pagination-controls {
         display: flex;
-        gap: 0.35rem;
+        gap: 0.25rem;
         align-items: center;
     }
 
@@ -249,22 +337,20 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 32px;
-        height: 32px;
-        padding: 0 0.5rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
+        min-width: 30px;
+        height: 30px;
+        padding: 0 0.4rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
         background: #ffffff;
         color: #334155;
         text-decoration: none;
-        font-size: 0.8rem;
+        font-size: 0.785rem;
         font-weight: 500;
-        transition: all 0.15s ease;
     }
 
     .page-btn:hover:not(.disabled):not(.active) {
         background: #f8fafc;
-        border-color: #cbd5e1;
         color: #0f172a;
     }
 
@@ -279,41 +365,168 @@
         color: #cbd5e1;
         cursor: not-allowed;
         background: #f8fafc;
-        border-color: #f1f5f9;
+    }
+
+    /* Modal Component */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 1rem;
+    }
+
+    .modal-backdrop.active {
+        display: flex;
+    }
+
+    .modal-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .modal-header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .modal-close {
+        background: transparent;
+        border: none;
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        cursor: pointer;
+    }
+
+    .modal-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .form-group label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .form-control {
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: #0f172a;
+    }
+
+    .file-input-wrapper {
+        border: 1px dashed var(--border-color);
+        border-radius: 6px;
+        padding: 1rem;
+        text-align: center;
+        background: #f8fafc;
+        cursor: pointer;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        display: none;
+    }
+
+    .modal-footer {
+        padding: 0.85rem 1.25rem;
+        border-top: 1px solid var(--border-color);
+        background: #f8fafc;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+        position: fixed;
+        top: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1200;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
+    }
+
+    .toast {
+        background: #0f172a;
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 0.85rem 1.25rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-width: 300px;
+        justify-content: center;
+        pointer-events: auto;
+        animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.success { background: #0f766e; }
+    .toast.error { background: #e11d48; }
+
+    @keyframes slideDown {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 
     @media (max-width: 640px) {
-        .filter-pill, .btn-filter-modern, .btn-reset-modern {
-            width: 100% !important;
-        }
-        .search-input-field, .date-input-field {
-            width: 100% !important;
-        }
-        .summary-grid {
-            flex-direction: column;
-        }
-        .summary-card {
-            max-width: 100%;
-        }
-        .pagination-wrapper {
-            flex-direction: column;
-            gap: 0.85rem;
-            align-items: center;
-        }
+        .filter-wrapper { flex-direction: column; align-items: stretch; }
+        .filter-form-container { flex-direction: column; }
+        .filter-pill, .btn-solid, .btn-outline { width: 100% !important; }
+        .search-input-field, .date-input-field { width: 100% !important; }
+        .summary-grid { flex-direction: column; }
+        .summary-card { max-width: 100%; }
+        .toast-container { width: 90%; }
+        .toast { min-width: auto; width: 100%; }
     }
-    .nominal-cell {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: 'SF Mono', Consolas, monospace;
-    font-weight: 600;
-}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="transaksi-container">
-    <!-- Ringkasan Singkat -->
+    <!-- Ringkasan -->
     <div class="summary-grid">
         <div class="summary-card">
             <span class="summary-label">Total Pemasukan</span>
@@ -330,7 +543,7 @@
         </div>
     </div>
 
-    <!-- Panel Tabel & Filter Bar -->
+    <!-- Panel Tabel & Filter -->
     <div class="card-panel">
         <div class="filter-wrapper">
             <form method="GET" action="" class="filter-form-container">
@@ -338,7 +551,6 @@
                 {% set req_start = request.query_params.get('start_date', '') if request.query_params else (request.args.get('start_date', '') if request.args else '') %}
                 {% set req_end = request.query_params.get('end_date', '') if request.query_params else (request.args.get('end_date', '') if request.args else '') %}
 
-                <!-- Search Box Pill -->
                 <div class="filter-pill">
                     <i class='bx bx-search'></i>
                     <input 
@@ -351,7 +563,6 @@
                     >
                 </div>
 
-                <!-- Start Date Pill -->
                 <div class="filter-pill">
                     <label for="start_date">Dari:</label>
                     <input 
@@ -363,7 +574,6 @@
                     >
                 </div>
 
-                <!-- End Date Pill -->
                 <div class="filter-pill">
                     <label for="end_date">Sampai:</label>
                     <input 
@@ -375,20 +585,22 @@
                     >
                 </div>
 
-                <!-- Tombol Filter Baru dengan Class .btn-filter-modern -->
-                <button type="submit" class="btn-filter-modern">
+                <button type="submit" class="btn-solid">
                     <i class='bx bx-filter-alt'></i> Filter
                 </button>
                 
                 {% if req_search or req_start or req_end %}
-                    <a href="{{ request.path if request.path else '#' }}" class="btn-reset-modern" title="Reset Filter">
+                    <a href="{{ request.path if request.path else '#' }}" class="btn-outline" title="Reset Filter">
                         <i class='bx bx-x'></i> Reset
                     </a>
                 {% endif %}
             </form>
+
+            <button type="button" class="btn-solid" onclick="openCreateModal()">
+                <i class='bx bx-plus'></i> Tambah Transaksi
+            </button>
         </div>
 
-        <!-- Logic Pagination (10 Data/Halaman) -->
         {% set page_size = 10 %}
         {% set current_page = (request.query_params.get('page', 1) if request.query_params else (request.args.get('page', 1) if request.args else 1)) | int %}
         {% set total_items = transactions | length if transactions else 0 %}
@@ -401,38 +613,78 @@
             <table class="table-transaksi">
                 <thead>
                     <tr>
-                        <th style="width: 20%;">Tanggal</th>
+                        <th style="width: 50px; text-align: center;">Gambar</th>
+                        <th style="width: 15%;">Tanggal</th>
                         <th>Keterangan</th>
-                        <th style="text-align: right; width: 25%;">Nominal</th>
+                        <th style="text-align: right; width: 20%;">Nominal</th>
+                        <th style="text-align: center; width: 90px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for tx in paged_transactions %}
                         <tr>
-                            <td style="white-space: nowrap; color: #64748b;">
+                            <td style="text-align: center;">
+                                {% if tx.image_url %}
+                                    <div class="img-thumbnail-wrapper" onclick="openImagePreview('{{ tx.image_url }}')">
+                                        <img src="{{ tx.image_url }}" alt="Bukti">
+                                    </div>
+                                {% else %}
+                                    <div class="img-thumbnail-wrapper" style="cursor: default;">
+                                        <i class='bx bx-image-alt img-thumbnail-placeholder'></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+
+                            <td style="white-space: nowrap; color: #64748b; font-family: var(--mono-font); font-size: 0.785rem;">
                                 {% if tx.created_at and tx.created_at.strftime is defined %}
-                                    {{ tx.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                    {{ tx.created_at.strftime('%d/%m/%Y') }}
                                 {% else %}
                                     {{ tx.created_at or '-' }}
                                 {% endif %}
                             </td>
+
                             <td>
                                 <strong style="font-weight: 500; color: #0f172a;">
                                     {{ tx.description or tx.keterangan or '-' }}
                                 </strong>
                             </td>
-                           <td class="text-in">
-    <div class="nominal-cell">
-        <span>+ Rp</span>
-        <span>{{ "{:,.0f}".format((tx.amount or 0) | float).replace(',', '.') }}</span>
-    </div>
-</td>
+
+                            <td class="text-in">
+                                <div class="nominal-cell">
+                                    <span>+ Rp</span>
+                                    <span>{{ "{:,.0f}".format((tx.amount or 0) | float).replace(',', '.') }}</span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="action-cell">
+                                   <button 
+    type="button" 
+    class="btn-icon btn-edit" 
+    title="Edit Transaksi"
+    data-id="{{ tx.id }}"
+    data-description="{{ tx.description or tx.keterangan or '' }}"
+    data-amount="{{ (tx.amount or 0) | int }}"
+    onclick="handleEditClick(this)"
+>
+    <i class='bx bx-edit-alt'></i>
+</button>
+                                    <button 
+                                        type="button" 
+                                        class="btn-icon delete" 
+                                        title="Hapus Transaksi"
+                                        onclick="openDeleteModal('{{ tx.id }}')"
+                                    >
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="3">
+                            <td colspan="5">
                                 <div class="empty-state">
-                                    <p>Tidak ada transaksi masuk ditemukan.</p>
+                                    <p>Tidak ada transaksi ditemukan.</p>
                                 </div>
                             </td>
                         </tr>
@@ -441,15 +693,13 @@
             </table>
         </div>
 
-        <!-- Bar Pagination -->
         {% if total_items > 0 %}
         <div class="pagination-wrapper">
-            <div class="pagination-info">
+            <div>
                 Menampilkan {{ start_idx + 1 }}-{{ end_idx if end_idx < total_items else total_items }} dari {{ total_items }} data
             </div>
 
             <div class="pagination-controls">
-                {# Prev Button #}
                 {% if current_page > 1 %}
                     <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page - 1 }}" class="page-btn">
                         <i class='bx bx-chevron-left'></i>
@@ -458,7 +708,6 @@
                     <span class="page-btn disabled"><i class='bx bx-chevron-left'></i></span>
                 {% endif %}
 
-                {# Page Numbers #}
                 {% for p in range(1, total_pages + 1) %}
                     {% if p == current_page %}
                         <span class="page-btn active">{{ p }}</span>
@@ -467,7 +716,6 @@
                     {% endif %}
                 {% endfor %}
 
-                {# Next Button #}
                 {% if current_page < total_pages %}
                     <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page + 1 }}" class="page-btn">
                         <i class='bx bx-chevron-right'></i>
@@ -480,4 +728,251 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Modal Form Tambah / Edit Transaksi -->
+<div class="modal-backdrop" id="transactionModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">Tambah Transaksi Masuk</h3>
+            <button class="modal-close" onclick="closeTransactionModal()">&times;</button>
+        </div>
+        <form id="transactionForm" onsubmit="handleTransactionSubmit(event)">
+            <input type="hidden" id="edit_id" name="edit_id">
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="description">Keterangan</label>
+                    <input type="text" id="description" name="description" class="form-control" placeholder="Contoh: Pembayaran Invoice #102" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Nominal (Rp)</label>
+                    <input type="text" id="amount" class="form-control" placeholder="0" oninput="formatRupiahInput(this)" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Bukti Transaksi (Opsional)</label>
+                    <label class="file-input-wrapper">
+                        <i class='bx bx-cloud-upload' style="font-size: 1.5rem; color: #94a3b8;"></i>
+                        <span id="fileNameLabel" style="display: block; font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                            Pilih file gambar
+                        </span>
+                        <input type="file" id="image" name="image" accept="image/*" onchange="handleFileSelect(this)">
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline" id="cancelBtn" onclick="closeTransactionModal()">Batal</button>
+                <button type="submit" class="btn-solid" id="submitBtn">
+                    <span id="btnText">Simpan</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal-backdrop" id="deleteModal">
+    <div class="modal-card" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Hapus Transaksi</h3>
+            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 0.875rem; color: #334155; margin: 0;">
+                Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-outline" id="cancelDeleteBtn" onclick="closeDeleteModal()">Batal</button>
+            <button type="button" class="btn-danger" id="confirmDeleteBtn" onclick="executeDelete()">
+                <span id="deleteBtnText">Hapus</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Preview Gambar -->
+<div class="modal-backdrop" id="imagePreviewModal" onclick="closeImagePreview()">
+    <div style="max-width: 90vw; max-height: 90vh;">
+        <img id="previewImageSrc" src="" alt="Preview Bukti" style="max-width: 100%; max-height: 85vh; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+    </div>
+</div>
+
+<!-- Container Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    let selectedDeleteId = null;
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        const icon = type === 'success' ? 'bx-check-circle' : 'bx-error-circle';
+        
+        toast.innerHTML = `<i class='bx ${icon}' style="font-size: 1.25rem;"></i> <span>${message}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    function formatRupiahInput(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value) {
+            input.value = new Intl.NumberFormat('id-ID').format(value);
+        } else {
+            input.value = '';
+        }
+    }
+
+    /* Modal Handler: Create & Edit */
+    function openCreateModal() {
+        document.getElementById('edit_id').value = '';
+        document.getElementById('modalTitle').innerText = 'Tambah Transaksi Masuk';
+        document.getElementById('btnText').innerText = 'Simpan';
+        document.getElementById('transactionForm').reset();
+        document.getElementById('fileNameLabel').innerText = 'Pilih file gambar';
+        document.getElementById('transactionModal').classList.add('active');
+    }
+
+    function openEditModal(id, description, amount) {
+        document.getElementById('edit_id').value = id;
+        document.getElementById('modalTitle').innerText = 'Edit Transaksi';
+        document.getElementById('btnText').innerText = 'Update';
+        document.getElementById('description').value = description;
+        
+        const amountInput = document.getElementById('amount');
+        amountInput.value = amount;
+        formatRupiahInput(amountInput);
+
+        document.getElementById('fileNameLabel').innerText = 'Pilih file gambar baru (opsional)';
+        document.getElementById('transactionModal').classList.add('active');
+    }
+
+    function closeTransactionModal() {
+        document.getElementById('transactionModal').classList.remove('active');
+        document.getElementById('transactionForm').reset();
+    }
+
+    function handleFileSelect(input) {
+        if (input.files && input.files[0]) {
+            document.getElementById('fileNameLabel').innerText = input.files[0].name;
+        }
+    }
+
+    /* Modal Handler: Delete */
+    function openDeleteModal(id) {
+        selectedDeleteId = id;
+        document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+        selectedDeleteId = null;
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    /* Modal Handler: Image Preview */
+    function openImagePreview(url) {
+        document.getElementById('previewImageSrc').src = url;
+        document.getElementById('imagePreviewModal').classList.add('active');
+    }
+
+    function closeImagePreview() {
+        document.getElementById('imagePreviewModal').classList.remove('active');
+    }
+
+    /* Submit Form (Create / Edit) */
+    async function handleTransactionSubmit(event) {
+        event.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        const editId = document.getElementById('edit_id').value;
+        const amountInput = document.getElementById('amount');
+        const rawAmount = amountInput.value.replace(/\./g, '');
+
+        if (!rawAmount || isNaN(rawAmount) || parseFloat(rawAmount) <= 0) {
+            showToast('Nominal harus diisi dengan angka valid', 'error');
+            return;
+        }
+
+        btn.disabled = true;
+        cancelBtn.disabled = true;
+        const defaultText = editId ? 'Update' : 'Simpan';
+        btnText.innerHTML = `<span class="spinner"></span> <span>Memproses...</span>`;
+
+        const formData = new FormData(event.target);
+        formData.append('amount', rawAmount);
+
+        const url = editId ? `/api/v1/transaksi/${editId}` : '/api/v1/transaksi/';
+        const method = editId ? 'PUT' : 'POST';
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Gagal memproses transaksi. Silakan coba lagi.');
+            }
+
+            showToast(editId ? 'Transaksi berhasil diperbarui!' : 'Transaksi berhasil disimpan!', 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch (error) {
+            showToast(error.message, 'error');
+            btn.disabled = false;
+            cancelBtn.disabled = false;
+            btnText.innerText = defaultText;
+        }
+    }
+
+    /* Execute Delete Transaksi */
+    async function executeDelete() {
+        if (!selectedDeleteId) return;
+
+        const btn = document.getElementById('confirmDeleteBtn');
+        const btnText = document.getElementById('deleteBtnText');
+        const cancelBtn = document.getElementById('cancelDeleteBtn');
+
+        btn.disabled = true;
+        cancelBtn.disabled = true;
+        btnText.innerHTML = `<span class="spinner"></span> <span>Menghapus...</span>`;
+
+        try {
+            const response = await fetch(`/api/v1/transaksi/${selectedDeleteId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('Gagal menghapus transaksi. Silakan coba lagi.');
+            }
+
+            showToast('Transaksi berhasil dihapus!', 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch (error) {
+            showToast(error.message, 'error');
+            btn.disabled = false;
+            cancelBtn.disabled = false;
+            btnText.innerText = 'Hapus';
+        }
+    }
+    function handleEditClick(btn) {
+    const id = btn.getAttribute('data-id');
+    const description = btn.getAttribute('data-description');
+    const amount = btn.getAttribute('data-amount');
+
+    // Panggil fungsi modal utama Anda
+    openEditModal(id, description, amount);
+}
+</script>
 {% endblock %}

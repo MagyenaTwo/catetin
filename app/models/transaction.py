@@ -3,17 +3,22 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
 
-
 class Transaction(Base):
-    __tablename__ = "transactions"
+  __tablename__ = "transactions"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    description = Column(String, nullable=False)
-    amount = Column(Float, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+  id = Column(Integer, primary_key=True, index=True)
+  user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+  description = Column(String, nullable=False)
+  amount = Column(Float, nullable=False)
 
-    user = relationship("User", back_populates="transactions")
+  # Kolom baru untuk menyalankan URL & Public ID Cloudinary
+  image_url = Column(String, nullable=True)
+  image_public_id = Column(String, nullable=True)
+
+  created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+  user = relationship("User", back_populates="transactions")
+
 
 
 class Transaksi_Keluar(Base):
