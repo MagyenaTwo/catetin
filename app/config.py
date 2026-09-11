@@ -17,7 +17,6 @@ possible_env_paths = [
 env_found = False
 for env_path in possible_env_paths:
     if env_path.exists():
-        print(f"🔍 Ditemukan file .env di: {env_path}")
         load_dotenv(dotenv_path=env_path, override=True)
         env_found = True
         break

@@ -10,7 +10,7 @@ from app.models.transaction import Transaction, Transaksi_Keluar  # Import model
 # from app.models.stock import Stock  # Import model Stok/Produk kamu jika ada
 from app.services.transaction_service import get_user_transactions
 from app.schemas.auth import PhoneUpdateSchema
-
+from app.models.stock import Product
 router = APIRouter(tags=["Dashboard"])
 templates = Jinja2Templates(directory="app/templates")
 
@@ -52,15 +52,11 @@ def dashboard(
     total_transaksi = count_masuk + count_keluar
 
     # 5. Hitung Total Stok
-    # Sesuaikan 'Stock' dan nama kolomnya (misal: Stock.quantity atau Stock.stock) dengan model kamu
-    # Jika stok belum ada modelnya/belum dipakai, set default ke 0
-    total_stock = 0
-    # Contoh jika ada model Stock:
-    # total_stock = (
-    #     db.query(func.coalesce(func.sum(Stock.quantity), 0))
-    #     .filter(Stock.user_id == current_user.id)
-    #     .scalar()
-    # )
+    total_stock = (
+        db.query(func.coalesce(func.sum(Product.stock), 0))
+        .filter(Product.user_id == current_user.id)
+        .scalar()
+    )
 
     # Ambil transaksi terbaru jika masih dibutuhkan
     transactions = get_user_transactions(db, user_id=current_user.id)
