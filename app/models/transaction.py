@@ -19,8 +19,6 @@ class Transaction(Base):
 
   user = relationship("User", back_populates="transactions")
 
-
-
 class Transaksi_Keluar(Base):
     __tablename__ = "transaksi_keluar"
 
@@ -29,7 +27,12 @@ class Transaksi_Keluar(Base):
     description = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
     category = Column(String, nullable=True)
+
+    # Kolom baru ditambahkan untuk menyalankan URL & Public ID Cloudinary
+    image_url = Column(String, nullable=True)
+    image_public_id = Column(String, nullable=True)
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # Sudah diperbaiki ke 'transaksi_keluar' agar cocok dengan model User
+    # Relationship ke model User
     user = relationship("User", back_populates="transaksi_keluar")

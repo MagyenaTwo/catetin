@@ -2,21 +2,20 @@ from datetime import datetime
 import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+import cloudinary.uploader
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+# Mengimpor settings/config agar Cloudinary terkonfigurasi saat app di-load
+from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.transaction import Transaksi_Keluar
 from app.models.user import User
-from app.schemas.transaksi_keluar import (
-    Transaksi_KeluarCreate,
-    Transaksi_KeluarResponse,
-    Transaksi_KeluarUpdate,
-)
+from app.schemas.transaksi_keluar import Transaksi_KeluarResponse
 
 logger = logging.getLogger(__name__)
 
@@ -162,15 +161,32 @@ def get_user_expense_transactions(
     status_code=status.HTTP_201_CREATED,
 )
 def create_expense_transaction(
-    data: Transaksi_KeluarCreate,
+    description: str = Form(...),
+    amount: float = Form(...),
+    category: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    image_url = None
+    image_public_id = None
+
+    # Upload ke Cloudinary langsung pakai SDK
+    if image and image.filename:
+        try:
+            upload_result = cloudinary.uploader.upload(image.file)
+            image_url = upload_result.get("secure_url") or upload_result.get("url")
+            image_public_id = upload_result.get("public_id")
+        except Exception as e:
+            logger.error(f"Gagal mengunggah gambar ke Cloudinary: {e}")
+
     new_txn = Transaksi_Keluar(
         user_id=current_user.id,
-        description=data.description,
-        amount=data.amount,
-        category=data.category,
+        description=description,
+        amount=amount,
+        category=category,
+        image_url=image_url,
+        image_public_id=image_public_id,
     )
     db.add(new_txn)
     db.commit()
@@ -204,7 +220,10 @@ def get_expense_transaction_by_id(
 @api_router.put("/{transaction_id}", response_model=Transaksi_KeluarResponse)
 def update_expense_transaction(
     transaction_id: int,
-    data: Transaksi_KeluarUpdate,
+    description: Optional[str] = Form(None),
+    amount: Optional[float] = Form(None),
+    category: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -223,12 +242,29 @@ def update_expense_transaction(
             detail="Transaksi keluar tidak ditemukan.",
         )
 
-    if data.description is not None:
-        txn.description = data.description
-    if data.amount is not None:
-        txn.amount = data.amount
-    if data.category is not None:
-        txn.category = data.category
+    if description is not None:
+        txn.description = description
+    if amount is not None:
+        txn.amount = amount
+    if category is not None:
+        txn.category = category
+
+    # Jika ada gambar baru yang diunggah
+    if image and image.filename:
+        # Hapus gambar lama dari Cloudinary jika ada public_id
+        if txn.image_public_id:
+            try:
+                cloudinary.uploader.destroy(txn.image_public_id)
+            except Exception as e:
+                logger.error(f"Gagal menghapus gambar lama dari Cloudinary: {e}")
+
+        # Upload gambar baru
+        try:
+            upload_result = cloudinary.uploader.upload(image.file)
+            txn.image_url = upload_result.get("secure_url") or upload_result.get("url")
+            txn.image_public_id = upload_result.get("public_id")
+        except Exception as e:
+            logger.error(f"Gagal mengunggah gambar baru ke Cloudinary: {e}")
 
     db.commit()
     db.refresh(txn)
@@ -255,6 +291,13 @@ def delete_expense_transaction(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Transaksi keluar tidak ditemukan.",
         )
+
+    # Hapus gambar dari Cloudinary menggunakan SDK
+    if txn.image_public_id:
+        try:
+            cloudinary.uploader.destroy(txn.image_public_id)
+        except Exception as e:
+            logger.error(f"Gagal menghapus gambar Cloudinary: {e}")
 
     db.delete(txn)
     db.commit()

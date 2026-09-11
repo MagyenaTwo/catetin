@@ -30,7 +30,6 @@ def create_transaction(
   db.refresh(new_txn)
   return new_txn
 
-
 # ==========================================
 # TRANSAKSI KELUAR
 # ==========================================
@@ -38,12 +37,22 @@ def create_transaction(
 def get_user_transaksi_keluar(db: Session, user_id: int):
     return db.query(Transaksi_Keluar).filter(Transaksi_Keluar.user_id == user_id).order_by(Transaksi_Keluar.created_at.desc()).all()
 
-def create_transaksi_keluar(db: Session, user_id: int, description: str, amount: float, category: Optional[str] = None) -> Transaksi_Keluar:
+def create_transaksi_keluar(
+    db: Session, 
+    user_id: int, 
+    description: str, 
+    amount: float, 
+    category: Optional[str] = None,
+    image_url: Optional[str] = None,
+    image_public_id: Optional[str] = None
+) -> Transaksi_Keluar:
     new_txn = Transaksi_Keluar(
         user_id=user_id,
         description=description,
         amount=amount,
-        category=category
+        category=category,
+        image_url=image_url,
+        image_public_id=image_public_id
     )
     db.add(new_txn)
     db.commit()
