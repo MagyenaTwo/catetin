@@ -24,35 +24,46 @@ def normalize_phone_number(phone: str) -> list[str]:
 def parse_whatsapp_message(text: str) -> Tuple[Optional[str], Optional[float]]:
     text = text.strip()
     
-    pattern = r"^(.*?)\s+(\d+(?:\.\d+)?)\s*(puluhan\s*ribu|ratusan\s*ribu|puluhan\s*juta|ratusan\s*juta|ratusan|ribu|rb|k|juta|jt|miliar|milyar|m)?$"
-    match = re.search(pattern, text, re.IGNORECASE)
+    # Normalisasi koma desimal menjadi titik (misal: 1,7 -> 1.7)
+    normalized_text = re.sub(r"(\d+),(\d+)", r"\1.\2", text)
+    
+    # Regex fleksibel untuk menangkap nominal & satuan di mana saja dalam kalimat
+    pattern = r"(\d+(?:\.\d+)?)\s*(puluhan\s*ribu|ratusan\s*ribu|puluhan\s*juta|ratusan\s*juta|ratusan|ribu|rb|k|juta|jt|miliar|milyar|m)\b"
+    match = re.search(pattern, normalized_text, re.IGNORECASE)
     
     if not match:
         return None, None
 
-    desc = match.group(1).strip()
-    amount_num = float(match.group(2))
-    unit = match.group(3)
+    amount_num = float(match.group(1))
+    unit = match.group(2)
 
     if unit:
-        unit = re.sub(r"\s+", "", unit.lower())
+        unit_clean = re.sub(r"\s+", "", unit.lower())
         
-        if unit == "ratusan":
+        if unit_clean == "ratusan":
             amount_num *= 100
-        elif unit in ["k", "rb", "ribu"]:
+        elif unit_clean in ["k", "rb", "ribu"]:
             amount_num *= 1000
-        elif unit == "puluhanribu":
+        elif unit_clean == "puluhanribu":
             amount_num *= 10000
-        elif unit == "ratusanribu":
+        elif unit_clean == "ratusanribu":
             amount_num *= 100000
-        elif unit in ["jt", "juta"]:
+        elif unit_clean in ["jt", "juta"]:
             amount_num *= 1000000
-        elif unit == "puluhanjuta":
+        elif unit_clean == "puluhanjuta":
             amount_num *= 10000000
-        elif unit == "ratusanjuta":
+        elif unit_clean == "ratusanjuta":
             amount_num *= 100000000
-        elif unit in ["m", "miliar", "milyar"]:
+        elif unit_clean in ["m", "miliar", "milyar"]:
             amount_num *= 1000000000
+
+    # Ambil sisa teks sebagai deskripsi, lalu bersihkan dari noise tanggal/kata ganti
+    desc = re.sub(pattern, "", normalized_text, flags=re.IGNORECASE).strip()
+    desc = re.sub(r"\b(tanggal|\d{1,2}|januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember|\d{4}|gua|saya|aku)\b", "", desc, flags=re.IGNORECASE)
+    desc = re.sub(r"\s+", " ", desc).strip()
+
+    if not desc:
+        desc = "Transaksi"
 
     return desc, amount_num
 
