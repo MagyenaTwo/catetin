@@ -644,9 +644,7 @@
     </script>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeSidebar(); closeMobileTxMenu();"></div>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar">
         <div class="brand-area">
             <img src="/static/logo2.png" alt="Catetin Logo" class="brand-logo-img">
             <button class="btn-sidebar-toggle" onclick="handleMenuToggle()" title="Toggle Sidebar">
@@ -659,35 +657,54 @@
                 <i class='bx bx-grid-alt'></i>
                 <span>Dashboard</span>
             </a>
+<div>
+    <button type="button" class="nav-item {% if '/transaksi' in request.path %}active{% endif %}" onclick="toggleTransaksiSubmenu()" data-tooltip="Transaksi">
+        <i class='bx bx-transfer-alt'></i>
+        <span>Transaksi</span>
+        <i class='bx bx-chevron-down arrow-icon' id="txArrow"></i>
+    </button>
 
-            <!-- DROPDOWN TRANSAKSI -->
+    <div class="submenu {% if request.path.startswith('/transaksi') %}open{% endif %}" id="transaksiSubmenu">
+    <a href="/transaksi"
+       class="nav-item {% if request.path.rstrip('/') == '/transaksi' %}active{% endif %}">
+        <i class="ri-arrow-down-line"></i>
+        <span>Transaksi Masuk</span>
+    </a>
+
+    <a href="/transaksi-keluar"
+       class="nav-item {% if request.path.rstrip('/') == '/transaksi-keluar' %}active{% endif %}">
+        <i class="ri-arrow-up-line"></i>
+        <span>Transaksi Keluar</span>
+    </a>
+</div>
+</div>
+
             <div>
-                <button type="button" class="nav-item {% if '/transaksi' in request.path %}active{% endif %}" onclick="toggleTransaksiSubmenu()" data-tooltip="Transaksi">
-                    <i class='bx bx-transfer-alt'></i>
-                    <span>Transaksi</span>
-                    <i class='bx bx-chevron-down arrow-icon' id="txArrow"></i>
+                <button type="button" class="nav-item {% if '/stock' in request.path %}active{% endif %}" onclick="toggleStockSubmenu()" data-tooltip="Stock">
+                    <i class='bx bx-package'></i>
+                    <span>Stock</span>
+                    <i class='bx bx-chevron-down arrow-icon' id="stockArrow"></i>
                 </button>
-                <div class="submenu {% if '/transaksi' in request.path %}open{% endif %}" id="transaksiSubmenu">
-                    <a href="/transaksi" class="nav-item {% if request.path == '/transaksi-masuk' or request.path == '/transaksi' %}active{% endif %}">
-                        <i class='bx bx-right-arrow-circle'></i>
-                        <span>Transaksi Masuk</span>
+                <div class="submenu {% if '/stock' in request.path %}open{% endif %}" id="stockSubmenu">
+                    <a href="/stock" class="nav-item {% if request.path == '/stock' %}active{% endif %}">
+                        <i class='bx bx-list-ul'></i>
+                        <span>Daftar Stock</span>
                     </a>
-                    <a href="/transaksi-keluar" class="nav-item {% if request.path == '/transaksi-keluar' %}active{% endif %}">
-                        <i class='bx bx-left-arrow-circle'></i>
-                        <span>Transaksi Keluar</span>
+                    <a href="/stock-masuk" class="nav-item {% if request.path == '/stock-masuk' %}active{% endif %}">
+                        <i class='bx bx-log-in-circle'></i>
+                        <span>Stock Masuk</span>
+                    </a>
+                    <a href="/stock-keluar" class="nav-item {% if request.path == '/stock-keluar' %}active{% endif %}">
+                        <i class='bx bx-log-out-circle'></i>
+                        <span>Stock Keluar</span>
                     </a>
                 </div>
             </div>
-
-            <a href="/stock" class="nav-item {% if request.path == '/stock' %}active{% endif %}" data-tooltip="Stock">
-                <i class='bx bx-package'></i>
-                <span>Stock</span>
-            </a>
             
-<a href="javascript:void(0)" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan" onclick="showDevAlert(event)">
-    <i class='bx bx-pie-chart-alt-2'></i>
-    <span>Laporan</span>
-</a>
+            <a href="javascript:void(0)" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan" onclick="showDevAlert(event)">
+                <i class='bx bx-pie-chart-alt-2'></i>
+                <span>Laporan</span>
+            </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -701,7 +718,6 @@
         </div>
     </aside>
 
-    <!-- AREA UTAMA -->
     <div class="main-wrapper">
         <header class="topbar">
             <div class="topbar-left">
@@ -742,13 +758,17 @@
         </main>
     </div>
 
-    <!-- POPOVER MENU TRANSAKSI MOBILE -->
     <div class="mobile-transaksi-menu" id="mobileTxMenu">
         <a href="/transaksi-masuk"><i class='bx bx-right-arrow-circle'></i> Transaksi Masuk</a>
         <a href="/transaksi-keluar"><i class='bx bx-left-arrow-circle'></i> Transaksi Keluar</a>
     </div>
 
-    <!-- BOTTOM NAV MOBILE -->
+    <div class="mobile-transaksi-menu" id="mobileStockMenu">
+        <a href="/stock"><i class='bx bx-list-ul'></i> Daftar Stock</a>
+        <a href="/stock-masuk"><i class='bx bx-log-in-circle'></i> Stock Masuk</a>
+        <a href="/stock-keluar"><i class='bx bx-log-out-circle'></i> Stock Keluar</a>
+    </div>
+
     <nav class="mobile-bottom-nav">
         <a href="/dashboard" class="b-nav-item {% if request.path == '/dashboard' %}active{% endif %}">
             <i class='bx bx-grid-alt'></i>
@@ -758,17 +778,16 @@
             <i class='bx bx-transfer-alt'></i>
             <span>Transaksi</span>
         </button>
-        <a href="/stock" class="b-nav-item {% if request.path == '/stock' %}active{% endif %}">
+        <button type="button" class="b-nav-item {% if '/stock' in request.path %}active{% endif %}" onclick="toggleMobileStockMenu()">
             <i class='bx bx-package'></i>
             <span>Stock</span>
-        </a>
+        </button>
         <a href="/laporan" class="b-nav-item {% if request.path == '/laporan' %}active{% endif %}">
             <i class='bx bx-pie-chart-alt-2'></i>
             <span>Laporan</span>
         </a>
     </nav>
 
-    <!-- MODAL PHONE -->
     <div class="modal-overlay" id="phoneModal" onclick="if(event.target === this) closePhoneModal()">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
@@ -791,7 +810,7 @@
             </div>
         </div>
     </div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function toggleTransaksiSubmenu() {
             const submenu = document.getElementById('transaksiSubmenu');
@@ -811,9 +830,31 @@
             }
         }
 
+        function toggleStockSubmenu() {
+            const submenu = document.getElementById('stockSubmenu');
+            const arrow = document.getElementById('stockArrow');
+
+            if (document.body.classList.contains('sidebar-minimized')) {
+                document.body.classList.remove('sidebar-minimized');
+                localStorage.setItem('sidebarMinimized', false);
+                updateToggleIcon();
+            }
+
+            submenu.classList.toggle('open');
+            if (submenu.classList.contains('open')) {
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
         function toggleMobileTxMenu() {
             const menu = document.getElementById('mobileTxMenu');
+            const stockMenu = document.getElementById('mobileStockMenu');
             const overlay = document.getElementById('drawerOverlay');
+
+            if (stockMenu) stockMenu.classList.remove('active');
+
             menu.classList.toggle('active');
             if (menu.classList.contains('active')) {
                 overlay.classList.add('active');
@@ -822,8 +863,29 @@
             }
         }
 
+        function toggleMobileStockMenu() {
+            const stockMenu = document.getElementById('mobileStockMenu');
+            const txMenu = document.getElementById('mobileTxMenu');
+            const overlay = document.getElementById('drawerOverlay');
+
+            if (txMenu) txMenu.classList.remove('active');
+
+            stockMenu.classList.toggle('active');
+            if (stockMenu.classList.contains('active')) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
         function closeMobileTxMenu() {
-            document.getElementById('mobileTxMenu').classList.remove('active');
+            const txMenu = document.getElementById('mobileTxMenu');
+            const stockMenu = document.getElementById('mobileStockMenu');
+            const overlay = document.getElementById('drawerOverlay');
+
+            if (txMenu) txMenu.classList.remove('active');
+            if (stockMenu) stockMenu.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
         }
 
         function updateToggleIcon() {
@@ -895,38 +957,46 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             updateToggleIcon();
-            const submenu = document.getElementById('transaksiSubmenu');
-            const arrow = document.getElementById('txArrow');
-            if (submenu.classList.contains('open') && arrow) {
-                arrow.style.transform = 'rotate(180deg)';
+            const txSubmenu = document.getElementById('transaksiSubmenu');
+            const txArrow = document.getElementById('txArrow');
+            if (txSubmenu && txSubmenu.classList.contains('open') && txArrow) {
+                txArrow.style.transform = 'rotate(180deg)';
+            }
+
+            const stockSubmenu = document.getElementById('stockSubmenu');
+            const stockArrow = document.getElementById('stockArrow');
+            if (stockSubmenu && stockSubmenu.classList.contains('open') && stockArrow) {
+                stockArrow.style.transform = 'rotate(180deg)';
             }
         });
-        window.addEventListener('resize', updateToggleIcon);
-function showDevAlert(e) {
-    e.preventDefault();
 
-    Swal.fire({
-        title: 'Segera Hadir!',
-        text: 'Fitur Laporan sedang dalam pengembangan.',
-        icon: 'info',
-        iconColor: '#3b82f6',
-        confirmButtonText: 'Oke, Paham',
-        confirmButtonColor: '#3b82f6',
-        width: '360px',
-        padding: '1.5rem',
-        background: '#ffffff',
-        backdrop: `rgba(15, 23, 42, 0.4)`, // efek gelap blur di latar belakang
-        showClass: {
-            popup: 'animate__animated animate__zoomIn animate__faster'
-        },
-        hideClass: {
-            popup: 'animate__animated animate__zoomOut animate__faster'
-        },
-        customClass: {
-            popup: 'rounded-modal'
+        window.addEventListener('resize', updateToggleIcon);
+
+        function showDevAlert(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Segera Hadir!',
+                text: 'Fitur Laporan sedang dalam pengembangan.',
+                icon: 'info',
+                iconColor: '#3b82f6',
+                confirmButtonText: 'Oke, Paham',
+                confirmButtonColor: '#3b82f6',
+                width: '360px',
+                padding: '1.5rem',
+                background: '#ffffff',
+                backdrop: `rgba(15, 23, 42, 0.4)`,
+                showClass: {
+                    popup: 'animate__animated animate__zoomIn animate__faster'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__zoomOut animate__faster'
+                },
+                customClass: {
+                    popup: 'rounded-modal'
+                }
+            });
         }
-    });
-}
     </script>
     {% block extra_js %}{% endblock %}
 </body>
