@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Log & Riwayat Stok Masuk{% endblock %}
+
+{% block content %}
+<div class="space-y-4">
+
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-gray-200 pb-3">
+        <div>
+            <div class="flex items-center gap-2">
+                <h1 class="text-xl font-bold text-gray-900 tracking-tight">Log Stok Masuk</h1>
+                <span class="text-xs font-mono text-gray-600 bg-gray-100 border border-gray-300 px-1.5 py-0.5 rounded">
+                    READ-ONLY
+                </span>
+            </div>
+            <p class="text-sm text-gray-500 mt-0.5">Riwayat penerimaan dan penambahan pasokan stok barang.</p>
+        </div>
+        <div class="text-xs font-mono text-gray-500 self-start sm:self-center">
+            Terakhir diperbarui: {{ request.state.now if request.state.now else 'Hari ini' }}
+        </div>
+    </div>
+
+    <!-- Ringkasan Statistik -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <!-- Card 1 -->
+        <div class="p-3 bg-white border border-gray-200 rounded">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Entri Log</p>
+            <div class="flex items-baseline justify-between mt-1">
+                <p class="text-2xl font-bold text-gray-900 font-mono">
+                    {{ total_items|default(stok_masuk_list|length if stok_masuk_list else barang_masuk_list|length) }}
+                </p>
+                <span class="text-xs text-gray-500">Transaksi</span>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="p-3 bg-white border border-gray-200 rounded">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Akumulasi Barang Masuk</p>
+            <div class="flex items-baseline justify-between mt-1">
+                <p class="text-2xl font-bold text-gray-900 font-mono">
+                    +{{ (stok_masuk_list or barang_masuk_list)|sum(attribute='quantity') }}
+                </p>
+                <span class="text-xs text-gray-500">Unit</span>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="p-3 bg-white border border-gray-200 rounded">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Nilai Pembelian</p>
+            <div class="flex items-baseline justify-between mt-1">
+                <p class="text-2xl font-bold text-gray-900 font-mono">
+                    {% set total_cost = namespace(value=0) %}
+                    {% for item in (stok_masuk_list or barang_masuk_list) %}
+                        {% if item.unit_cost %}
+                            {% set total_cost.value = total_cost.value + (item.quantity * item.unit_cost) %}
+                        {% endif %}
+                    {% endfor %}
+                    Rp {{ "{:,.0f}".format(total_cost.value).replace(',', '.') }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Filter & Pencarian -->
+    <div class="p-2.5 bg-gray-50 border border-gray-200 rounded">
+        <form method="GET" class="flex flex-col sm:flex-row items-center gap-2">
+            <div class="relative w-full sm:w-72">
+                <input type="text" 
+                       id="searchInput"
+                       name="search" 
+                       value="{{ request.query_params.get('search', '') }}" 
+                       placeholder="Cari barang atau keterangan..." 
+                       class="w-full px-3 py-1.5 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-500 transition-colors placeholder-gray-400">
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 text-sm font-medium text-gray-800 bg-gray-200 hover:bg-gray-300 border border-gray-300 rounded transition-colors">
+                    Cari
+                </button>
+                {% if request.query_params.get('search') %}
+                    <a href="{{ url_for('render_stok_masuk_page') }}" class="px-2 py-1.5 text-sm text-gray-500 hover:text-black hover:underline">
+                        Reset
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabel History Log -->
+    <div class="bg-white border border-gray-200 rounded overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-gray-50 border-b border-gray-200 text-gray-700 font-semibold uppercase tracking-wider text-xs">
+                    <tr>
+                        <th scope="col" class="px-3.5 py-2.5 border-r border-gray-100">Tanggal</th>
+                        <th scope="col" class="px-3.5 py-2.5 border-r border-gray-100">Nama Barang</th>
+                        <th scope="col" class="px-3.5 py-2.5 text-center border-r border-gray-100">Jumlah</th>
+                        <th scope="col" class="px-3.5 py-2.5 text-right border-r border-gray-100">Harga Unit</th>
+                        <th scope="col" class="px-3.5 py-2.5 text-right border-r border-gray-100">Subtotal</th>
+                        <th scope="col" class="px-3.5 py-2.5">Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody id="logTableBody" class="divide-y divide-gray-100 text-gray-800">
+                    {% for item in (stok_masuk_list or barang_masuk_list) %}
+                    <tr class="log-row hover:bg-gray-50 transition-colors">
+                        <!-- Tanggal -->
+                        <td class="px-3.5 py-2.5 whitespace-nowrap font-mono text-sm text-gray-600">
+                            {{ item.created_at.strftime('%Y-%m-%d') if item.created_at else '-' }}
+                        </td>
+
+                        <!-- Barang -->
+                        <td class="px-3.5 py-2.5 font-medium text-gray-900 whitespace-nowrap">
+                            {{ item.product.name if item.product else 'Barang Dihapus' }}
+                            {% if item.product and item.product.sku %}
+                                <span class="block text-xs font-mono text-gray-400">SKU: {{ item.product.sku }}</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Qty -->
+                        <td class="px-3.5 py-2.5 text-center whitespace-nowrap font-mono text-gray-900">
+                            +{{ item.quantity }}
+                        </td>
+
+                        <!-- Unit Cost -->
+                        <td class="px-3.5 py-2.5 text-right whitespace-nowrap font-mono text-gray-600">
+                            {% if item.unit_cost %}
+                                Rp {{ "{:,.0f}".format(item.unit_cost).replace(',', '.') }}
+                            {% else %}
+                                <span class="text-gray-300 font-sans italic">-</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Subtotal -->
+                        <td class="px-3.5 py-2.5 text-right whitespace-nowrap font-mono font-semibold text-gray-900">
+                            {% if item.unit_cost %}
+                                Rp {{ "{:,.0f}".format(item.quantity * item.unit_cost).replace(',', '.') }}
+                            {% else %}
+                                <span class="text-gray-300 font-sans italic font-normal">-</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Catatan -->
+                        <td class="px-3.5 py-2.5 text-gray-500 max-w-xs truncate">
+                            {{ item.notes if item.notes else '-' }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <!-- Empty State -->
+                    <tr id="emptyRow">
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                            Tidak ada riwayat stok masuk
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bottom Pagination Bar -->
+        <div class="px-3.5 py-2.5 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between text-sm text-gray-500 gap-2">
+            <div>
+                Menampilkan <span id="pageInfo" class="font-medium text-gray-800">0-0</span> dari <span id="totalDataCount" class="font-medium text-gray-800">0</span> data
+            </div>
+            
+            <div class="flex items-center gap-1" id="paginationControls">
+                <button id="prevBtn" onclick="changePage(-1)" class="px-2.5 py-1 border border-gray-300 rounded bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+                    &laquo; Prev
+                </button>
+                <span id="pageIndicator" class="px-2 font-mono text-gray-700">1 / 1</span>
+                <button id="nextBtn" onclick="changePage(1)" class="px-2.5 py-1 border border-gray-300 rounded bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+                    Next &raquo;
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- JavaScript Pagination Client-Side -->
+<script>
+    const ITEMS_PER_PAGE = 10;
+    let currentPage = 1;
+
+    function renderPagination() {
+        const rows = Array.from(document.querySelectorAll('.log-row'));
+        const totalItems = rows.length;
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIdx = startIdx + ITEMS_PER_PAGE;
+
+        rows.forEach((row, index) => {
+            if (index >= startIdx && index < endIdx) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update Text Info
+        document.getElementById('totalDataCount').innerText = totalItems;
+        if (totalItems > 0) {
+            const currentEnd = endIdx > totalItems ? totalItems : endIdx;
+            document.getElementById('pageInfo').innerText = `${startIdx + 1}-${currentEnd}`;
+        } else {
+            document.getElementById('pageInfo').innerText = '0-0';
+        }
+
+        document.getElementById('pageIndicator').innerText = `${currentPage} / ${totalPages}`;
+
+        // Disable / Enable Buttons
+        document.getElementById('prevBtn').disabled = (currentPage === 1 || totalItems === 0);
+        document.getElementById('nextBtn').disabled = (currentPage === totalPages || totalItems === 0);
+    }
+
+    function changePage(direction) {
+        currentPage += direction;
+        renderPagination();
+    }
+
+    // Inisialisasi saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        renderPagination();
+    });
+</script>
+{% endblock %}

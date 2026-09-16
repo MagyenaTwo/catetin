@@ -679,27 +679,36 @@
 </div>
 </div>
 
-            <div>
-                <button type="button" class="nav-item {% if '/stock' in request.path %}active{% endif %}" onclick="toggleStockSubmenu()" data-tooltip="Stock">
-                    <i class='bx bx-package'></i>
-                    <span>Stock</span>
-                    <i class='bx bx-chevron-down arrow-icon' id="stockArrow"></i>
-                </button>
-                <div class="submenu {% if '/stock' in request.path %}open{% endif %}" id="stockSubmenu">
-                    <a href="/stock" class="nav-item {% if request.path == '/stock' %}active{% endif %}">
-                        <i class='bx bx-list-ul'></i>
-                        <span>Daftar Stock</span>
-                    </a>
-                    <a href="/stock-masuk" class="nav-item {% if request.path == '/stock-masuk' %}active{% endif %}">
-                        <i class='bx bx-log-in-circle'></i>
-                        <span>Stock Masuk</span>
-                    </a>
-                    <a href="/stock-keluar" class="nav-item {% if request.path == '/stock-keluar' %}active{% endif %}">
-                        <i class='bx bx-log-out-circle'></i>
-                        <span>Stock Keluar</span>
-                    </a>
-                </div>
-            </div>
+    <div>
+    <!-- Tambahkan pengecekan '/stok' dan '/stock' agar menu induk aktif -->
+    <button type="button" class="nav-item {% if '/stock' in request.path or '/stok' in request.path %}active{% endif %}" onclick="toggleStockSubmenu()" data-tooltip="Stock">
+        <i class='bx bx-package'></i>
+        <span>Stock</span>
+        <i class='bx bx-chevron-down arrow-icon' id="stockArrow"></i>
+    </button>
+    
+  <!-- Submenu Stock -->
+<div class="submenu {% if '/stock' in request.path or '/stok' in request.path %}open{% endif %}" id="stockSubmenu">
+    
+    <!-- Daftar Stock -->
+    <a href="/stock" class="nav-item {% if request.path.rstrip('/') in ['/stock', '/stok'] %}active{% endif %}">
+        <i class='bx bx-list-ul'></i>
+        <span>Daftar Stock</span>
+    </a>
+    
+    <!-- Stock Masuk -->
+    <a href="/stok-masuk" class="nav-item {% if 'stok-masuk' in request.path or 'stock-masuk' in request.path %}active{% endif %}">
+        <i class='bx bx-log-in-circle'></i>
+        <span>Stock Masuk</span>
+    </a>
+    
+    <!-- Stock Keluar -->
+    <a href="/stok-keluar" class="nav-item {% if 'stok-keluar' in request.path or 'stock-keluar' in request.path %}active{% endif %}">
+        <i class='bx bx-log-out-circle'></i>
+        <span>Stock Keluar</span>
+    </a>
+</div>
+</div>
             
             <a href="javascript:void(0)" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan" onclick="showDevAlert(event)">
                 <i class='bx bx-pie-chart-alt-2'></i>
@@ -757,18 +766,15 @@
             {% block content %}{% endblock %}
         </main>
     </div>
-
     <div class="mobile-transaksi-menu" id="mobileTxMenu">
         <a href="/transaksi-masuk"><i class='bx bx-right-arrow-circle'></i> Transaksi Masuk</a>
         <a href="/transaksi-keluar"><i class='bx bx-left-arrow-circle'></i> Transaksi Keluar</a>
     </div>
-
-    <div class="mobile-transaksi-menu" id="mobileStockMenu">
-        <a href="/stock"><i class='bx bx-list-ul'></i> Daftar Stock</a>
-        <a href="/stock-masuk"><i class='bx bx-log-in-circle'></i> Stock Masuk</a>
-        <a href="/stock-keluar"><i class='bx bx-log-out-circle'></i> Stock Keluar</a>
-    </div>
-
+<div class="mobile-transaksi-menu" id="mobileStockMenu">
+    <a href="/stock"><i class='bx bx-list-ul'></i> Daftar Stock</a>
+    <a href="/stok-masuk"><i class='bx bx-log-in-circle'></i> Stock Masuk</a>
+    <a href="/stok-keluar"><i class='bx bx-log-out-circle'></i> Stock Keluar</a>
+</div>
     <nav class="mobile-bottom-nav">
         <a href="/dashboard" class="b-nav-item {% if request.path == '/dashboard' %}active{% endif %}">
             <i class='bx bx-grid-alt'></i>
@@ -778,10 +784,10 @@
             <i class='bx bx-transfer-alt'></i>
             <span>Transaksi</span>
         </button>
-        <button type="button" class="b-nav-item {% if '/stock' in request.path %}active{% endif %}" onclick="toggleMobileStockMenu()">
-            <i class='bx bx-package'></i>
-            <span>Stock</span>
-        </button>
+      <button type="button" class="b-nav-item {% if '/stock' in request.path or '/stok' in request.path %}active{% endif %}" onclick="toggleMobileStockMenu()">
+    <i class='bx bx-package'></i>
+    <span>Stock</span>
+</button>
         <a href="/laporan" class="b-nav-item {% if request.path == '/laporan' %}active{% endif %}">
             <i class='bx bx-pie-chart-alt-2'></i>
             <span>Laporan</span>

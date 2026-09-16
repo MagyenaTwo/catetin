@@ -11,32 +11,29 @@
         gap: 0.25rem;
     }
     .btn-icon {
-    background: transparent;
-    border: none;
-    color: #6b7280; /* menggantikan var(--text-muted) jika variabel tidak terdefinisi */
-    cursor: pointer;
-    padding: 0.35rem;
-    border-radius: 6px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    transition: background-color 0.15s, color 0.15s;
-}
+        background: transparent;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.35rem;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: background-color 0.15s, color 0.15s;
+    }
 
-/* Hover untuk tombol Edit */
-.btn-icon.btn-edit:hover {
-    background-color: #f3f4f6;
-    color: #111827;
-}
+    .btn-icon.btn-edit:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+    }
 
-/* Hover untuk tombol Delete */
-.btn-icon.delete:hover {
-    background-color: #fef2f2;
-    color: #dc2626;
-}
+    .btn-icon.delete:hover {
+        background-color: #fef2f2;
+        color: #dc2626;
+    }
     
-    /* Modal Component */
     .modal-backdrop {
         position: fixed;
         top: 0;
@@ -142,7 +139,6 @@
         gap: 0.5rem;
     }
 
-    /* Toast Notification */
     .toast-container {
         position: fixed;
         top: 1.5rem;
@@ -191,6 +187,7 @@
         .toast { min-width: auto; width: 100%; }
     }
 </style>
+
 <div class="max-w-7xl mx-auto space-y-4 pb-12 relative text-xs">
     <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -235,19 +232,21 @@
         </div>
     </div>
 
+    <!-- KONTENER TABEL UTAMA -->
     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <!-- Header Atas (Filter & Pencarian) -->
         <div class="p-3 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <form method="GET" action="/stock" class="flex items-center gap-2 w-full sm:w-auto">
                 <div class="relative w-full sm:w-72">
                     <input type="text" id="searchInput" name="search" placeholder="Cari nama barang / SKU..." value="{{ request.query_params.get('search', '') }}" 
-                           class="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-gray-900 transition">
+                           class="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-900 transition">
                     <i class='bx bx-search text-gray-400 text-base absolute left-2.5 top-2.5'></i>
                 </div>
-                <button type="submit" class="px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition shadow-sm">
+                <button type="submit" class="px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition shadow-sm">
                     Filter
                 </button>
                 {% if request.query_params.get('search') %}
-                <a href="/stock" class="px-2 py-1.5 text-xs text-gray-500 hover:text-gray-900 transition">Reset</a>
+                <a href="/stock" class="px-2 py-1.5 text-sm text-gray-500 hover:text-gray-900 transition">Reset</a>
                 {% endif %}
             </form>
             <div class="text-xs text-gray-500 font-medium">
@@ -255,41 +254,41 @@
             </div>
         </div>
 
+        <!-- TABEL PRODUK -->
         <div class="overflow-x-auto">
-            <table class="w-full text-xs text-left text-gray-600">
-                <thead class="bg-gray-50 text-gray-500 font-semibold border-b border-gray-200 uppercase tracking-wider text-[11px]">
+            <!-- Diubah ke text-sm (14px) untuk keterbacaan yang jauh lebih baik -->
+            <table class="w-full text-sm text-left text-gray-600">
+                <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-xs">
                     <tr>
-                        <th class="px-4 py-3">SKU</th>
-                        <th class="px-4 py-3">Nama Barang</th>
-                        <th class="px-4 py-3 text-center">Sisa Stok</th>
-                        <th class="px-4 py-3">Satuan</th>
-                        <th class="px-4 py-3">Harga Beli</th>
-                        <th class="px-4 py-3">Harga Jual</th>
-                        <th class="px-4 py-3 text-center">Opsi</th>
+                        <th class="px-4 py-3.5">SKU</th>
+                        <th class="px-4 py-3.5">Nama Barang</th>
+                        <th class="px-4 py-3.5 text-center">Sisa Stok</th>
+                        <th class="px-4 py-3.5">Satuan</th>
+                        <th class="px-4 py-3.5">Harga Beli</th>
+                        <th class="px-4 py-3.5">Harga Jual</th>
+                        <th class="px-4 py-3.5 text-center">Opsi</th>
                     </tr>
                 </thead>
                 <tbody id="productTableBody" class="divide-y divide-gray-100">
                     {% for item in products %}
                     <tr class="product-row hover:bg-gray-50/80 transition" data-name="{{ item.name|lower }}" data-sku="{{ (item.sku or '')|lower }}">
-                        <td class="px-4 py-3 font-mono text-gray-400">{{ item.sku if item.sku else '-' }}</td>
+                        <td class="px-4 py-3 font-mono text-gray-400 text-xs">{{ item.sku if item.sku else '-' }}</td>
                         <td class="px-4 py-3 font-medium text-gray-900 product-name">{{ item.name }}</td>
-                       <td class="px-4 py-3 text-center font-medium">
-    {% if item.min_stock and item.stock <= item.min_stock %}
-        <!-- Tampilan Stok Menipis: Solid, Kontras Tegas, dan Tidak Transparan -->
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold text-amber-900 bg-amber-100 border border-amber-300 rounded-md shadow-xs">
-            <svg class="w-3 h-3 text-amber-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
-            {{ item.stock }} <span class="text-[10px] uppercase tracking-wider text-amber-800/80 font-bold">· Menipis</span>
-        </span>
-    {% else %}
-        <!-- Tampilan Stok Normal: Clean & Professional -->
-        <span class="inline-flex items-center px-2.5 py-1 text-[11px] font-medium text-gray-700 bg-gray-100 border border-gray-200 rounded-md">
-            {{ item.stock }} {{ item.unit }}
-        </span>
-    {% endif %}
-</td>
-                        <td class="px-4 py-3 text-gray-500 uppercase">{{ item.unit }}</td>
+                        <td class="px-4 py-3 text-center font-medium">
+                            {% if item.min_stock and item.stock <= item.min_stock %}
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-amber-900 bg-amber-100 border border-amber-300 rounded-md shadow-xs">
+                                    <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ item.stock }} <span class="text-[11px] uppercase tracking-wider text-amber-800/80 font-bold">· Menipis</span>
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-200 rounded-md">
+                                    {{ item.stock }} {{ item.unit }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-gray-500 uppercase text-xs">{{ item.unit }}</td>
                         <td class="px-4 py-3 text-gray-500">Rp {{ "{:,.0f}".format(item.buy_price or 0).replace(',', '.') }}</td>
                         <td class="px-4 py-3 font-medium text-gray-900">Rp {{ "{:,.0f}".format(item.sell_price or 0).replace(',', '.') }}</td>
                         <td class="px-4 py-3 text-center">
@@ -311,25 +310,26 @@
                                     <i class='bx bx-edit-alt'></i>
                                 </button>
                                 <button 
-                                        type="button" 
-                                        class="btn-icon delete" 
-                                        title="Hapus Produk"
-                                        onclick="openDeleteModal('{{ item.id }}')"
-                                    >
-                                        <i class='bx bx-trash'></i>
-                                    </button>
+                                    type="button" 
+                                    class="btn-icon delete" 
+                                    title="Hapus Produk"
+                                    onclick="openDeleteModal('{{ item.id }}')"
+                                >
+                                    <i class='bx bx-trash'></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
                     {% else %}
                     <tr id="emptyRow">
-                        <td colspan="7" class="px-4 py-10 text-center text-gray-400 text-xs">Data barang belum tersedia.</td>
+                        <td colspan="7" class="px-4 py-10 text-center text-gray-400 text-sm">Data barang belum tersedia.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
+        <!-- PAGINASI -->
         <div id="paginationContainer" class="p-3 border-t border-gray-200 bg-gray-50/30 flex items-center justify-between">
             <button id="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
                 &larr; Sebelumnya
@@ -512,7 +512,7 @@
     </div>
 </div>
 
-<!-- Modal Konfirmasi Hapus (Disesuaikan ke Tailwind) -->
+<!-- Modal Konfirmasi Hapus -->
 <div id="deleteModal" class="fixed inset-0 bg-gray-900/40 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm rounded-xl shadow-xl overflow-hidden border border-gray-100 text-xs">
         {{ modal_header('Hapus Produk', 'deleteModal') }}

@@ -525,78 +525,78 @@
 {% endblock %}
 
 {% block content %}
-<div class="transaksi-container">
+<div class="transaksi-container max-w-7xl mx-auto space-y-4 pb-12 relative text-sm">
     <!-- Ringkasan -->
-    <div class="summary-grid">
-        <div class="summary-card">
-            <span class="summary-label">Total Pemasukan</span>
-            <div class="summary-value text-in">
+    <div class="summary-grid grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="summary-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
+            <span class="summary-label text-xs font-medium text-gray-500">Total Pemasukan</span>
+            <div class="summary-value text-in text-xl font-bold text-emerald-600 mt-0.5">
                 {% set total = (total_masuk or 0) | float %}
                 Rp {{ "{:,.0f}".format(total).replace(',', '.') }}
             </div>
         </div>
-        <div class="summary-card">
-            <span class="summary-label">Total Transaksi</span>
-            <div class="summary-value">
+        <div class="summary-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
+            <span class="summary-label text-xs font-medium text-gray-500">Total Transaksi</span>
+            <div class="summary-value text-xl font-bold text-gray-900 mt-0.5">
                 {{ total_count if total_count is defined else (transactions | length if transactions else 0) }}
             </div>
         </div>
     </div>
 
     <!-- Panel Tabel & Filter -->
-    <div class="card-panel">
-        <div class="filter-wrapper">
-            <form method="GET" action="" class="filter-form-container">
+    <div class="card-panel bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="filter-wrapper p-3 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <form method="GET" action="" class="filter-form-container flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 {% set req_search = request.query_params.get('search', '') if request.query_params else (request.args.get('search', '') if request.args else '') %}
                 {% set req_start = request.query_params.get('start_date', '') if request.query_params else (request.args.get('start_date', '') if request.args else '') %}
                 {% set req_end = request.query_params.get('end_date', '') if request.query_params else (request.args.get('end_date', '') if request.args else '') %}
 
-                <div class="filter-pill">
-                    <i class='bx bx-search'></i>
+                <div class="filter-pill relative flex-1 sm:flex-none">
                     <input 
                         type="text" 
                         name="search" 
-                        class="pill-input search-input-field" 
+                        class="pill-input search-input-field pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-900 transition w-full" 
                         placeholder="Cari transaksi..." 
                         value="{{ req_search }}"
                         autocomplete="off"
                     >
+                    <i class='bx bx-search text-gray-400 text-base absolute left-2.5 top-2.5'></i>
                 </div>
 
-                <div class="filter-pill">
-                    <label for="start_date">Dari:</label>
+                <div class="filter-pill flex items-center gap-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-lg px-2 py-1">
+                    <label for="start_date" class="font-medium">Dari:</label>
                     <input 
                         type="date" 
                         id="start_date"
                         name="start_date" 
-                        class="pill-input date-input-field"
+                        class="pill-input date-input-field text-xs outline-none bg-transparent"
                         value="{{ req_start }}"
                     >
                 </div>
 
-                <div class="filter-pill">
-                    <label for="end_date">Sampai:</label>
+                <div class="filter-pill flex items-center gap-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-lg px-2 py-1">
+                    <label for="end_date" class="font-medium">Sampai:</label>
                     <input 
                         type="date" 
                         id="end_date"
                         name="end_date" 
-                        class="pill-input date-input-field"
+                        class="pill-input date-input-field text-xs outline-none bg-transparent"
                         value="{{ req_end }}"
                     >
                 </div>
 
-                <button type="submit" class="btn-solid">
+                <button type="submit" class="btn-solid px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition shadow-sm flex items-center gap-1">
                     <i class='bx bx-filter-alt'></i> Filter
                 </button>
                 
                 {% if req_search or req_start or req_end %}
-                    <a href="{{ request.path if request.path else '#' }}" class="btn-outline" title="Reset Filter">
+                    <a href="{{ request.path if request.path else '#' }}" class="btn-outline px-2 py-1.5 text-sm text-gray-500 hover:text-gray-900 transition flex items-center gap-0.5" title="Reset Filter">
                         <i class='bx bx-x'></i> Reset
                     </a>
                 {% endif %}
             </form>
 
-            <button type="button" class="btn-solid" onclick="openCreateModal()">
+            <button type="button" class="btn-solid px-3 py-1.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition shadow-sm flex items-center gap-1 shrink-0" onclick="openCreateModal()">
                 <i class='bx bx-plus'></i> Tambah Transaksi
             </button>
         </div>
@@ -609,33 +609,34 @@
         {% set end_idx = start_idx + page_size %}
         {% set paged_transactions = transactions[start_idx:end_idx] if transactions else [] %}
 
-        <div class="table-responsive">
-            <table class="table-transaksi">
-                <thead>
+        <!-- TABEL TRANSAKSI -->
+        <div class="table-responsive overflow-x-auto">
+            <table class="table-transaksi w-full text-sm text-left text-gray-600">
+                <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-xs">
                     <tr>
-                        <th style="width: 50px; text-align: center;">Gambar</th>
-                        <th style="width: 15%;">Tanggal</th>
-                        <th>Keterangan</th>
-                        <th style="text-align: right; width: 20%;">Nominal</th>
-                        <th style="text-align: center; width: 90px;">Aksi</th>
+                        <th style="width: 60px;" class="px-4 py-3.5 text-center">Gambar</th>
+                        <th style="width: 15%;" class="px-4 py-3.5">Tanggal</th>
+                        <th class="px-4 py-3.5">Keterangan</th>
+                        <th style="width: 20%;" class="px-4 py-3.5 text-right">Nominal</th>
+                        <th style="width: 90px;" class="px-4 py-3.5 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100">
                     {% for tx in paged_transactions %}
-                        <tr>
-                            <td style="text-align: center;">
+                        <tr class="hover:bg-gray-50/80 transition">
+                            <td class="px-4 py-3 text-center">
                                 {% if tx.image_url %}
-                                    <div class="img-thumbnail-wrapper" onclick="openImagePreview('{{ tx.image_url }}')">
-                                        <img src="{{ tx.image_url }}" alt="Bukti">
+                                    <div class="img-thumbnail-wrapper inline-block cursor-pointer" onclick="openImagePreview('{{ tx.image_url }}')">
+                                        <img src="{{ tx.image_url }}" alt="Bukti" class="w-8 h-8 object-cover rounded border border-gray-200">
                                     </div>
                                 {% else %}
-                                    <div class="img-thumbnail-wrapper" style="cursor: default;">
-                                        <i class='bx bx-image-alt img-thumbnail-placeholder'></i>
+                                    <div class="img-thumbnail-wrapper inline-block cursor-default">
+                                        <i class='bx bx-image-alt img-thumbnail-placeholder text-xl text-gray-400'></i>
                                     </div>
                                 {% endif %}
                             </td>
 
-                            <td style="white-space: nowrap; color: #64748b; font-family: var(--mono-font); font-size: 0.785rem;">
+                            <td class="px-4 py-3 text-gray-500 font-mono text-xs whitespace-nowrap">
                                 {% if tx.created_at and tx.created_at.strftime is defined %}
                                     {{ tx.created_at.strftime('%d/%m/%Y') }}
                                 {% else %}
@@ -643,35 +644,33 @@
                                 {% endif %}
                             </td>
 
-                            <td>
-                                <strong style="font-weight: 500; color: #0f172a;">
-                                    {{ tx.description or tx.keterangan or '-' }}
-                                </strong>
+                            <td class="px-4 py-3 text-gray-900 font-medium">
+                                {{ tx.description or tx.keterangan or '-' }}
                             </td>
 
-                            <td class="text-in">
-                                <div class="nominal-cell">
+                            <td class="px-4 py-3 text-right text-emerald-600 font-medium text-sm">
+                                <div class="nominal-cell inline-flex items-center justify-end gap-1">
                                     <span>+ Rp</span>
                                     <span>{{ "{:,.0f}".format((tx.amount or 0) | float).replace(',', '.') }}</span>
                                 </div>
                             </td>
 
-                            <td>
-                                <div class="action-cell">
-                                   <button 
-    type="button" 
-    class="btn-icon btn-edit" 
-    title="Edit Transaksi"
-    data-id="{{ tx.id }}"
-    data-description="{{ tx.description or tx.keterangan or '' }}"
-    data-amount="{{ (tx.amount or 0) | int }}"
-    onclick="handleEditClick(this)"
->
-    <i class='bx bx-edit-alt'></i>
-</button>
+                            <td class="px-4 py-3 text-center">
+                                <div class="action-cell flex items-center justify-center gap-1">
                                     <button 
                                         type="button" 
-                                        class="btn-icon delete" 
+                                        class="btn-icon btn-edit p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md transition text-base" 
+                                        title="Edit Transaksi"
+                                        data-id="{{ tx.id }}"
+                                        data-description="{{ tx.description or tx.keterangan or '' }}"
+                                        data-amount="{{ (tx.amount or 0) | int }}"
+                                        onclick="handleEditClick(this)"
+                                    >
+                                        <i class='bx bx-edit-alt'></i>
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        class="btn-icon delete p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition text-base" 
                                         title="Hapus Transaksi"
                                         onclick="openDeleteModal('{{ tx.id }}')"
                                     >
@@ -682,10 +681,8 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="5">
-                                <div class="empty-state">
-                                    <p>Tidak ada transaksi ditemukan.</p>
-                                </div>
+                            <td colspan="5" class="px-4 py-10 text-center text-gray-400 text-sm">
+                                Tidak ada transaksi ditemukan.
                             </td>
                         </tr>
                     {% endfor %}
@@ -694,34 +691,34 @@
         </div>
 
         {% if total_items > 0 %}
-        <div class="pagination-wrapper">
+        <div class="pagination-wrapper p-3 border-t border-gray-200 bg-gray-50/30 flex items-center justify-between text-xs text-gray-600">
             <div>
                 Menampilkan {{ start_idx + 1 }}-{{ end_idx if end_idx < total_items else total_items }} dari {{ total_items }} data
             </div>
 
-            <div class="pagination-controls">
+            <div class="pagination-controls flex items-center gap-1">
                 {% if current_page > 1 %}
-                    <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page - 1 }}" class="page-btn">
+                    <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page - 1 }}" class="page-btn px-2.5 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition">
                         <i class='bx bx-chevron-left'></i>
                     </a>
                 {% else %}
-                    <span class="page-btn disabled"><i class='bx bx-chevron-left'></i></span>
+                    <span class="page-btn disabled px-2.5 py-1.5 bg-gray-100 border border-gray-200 text-gray-400 rounded cursor-not-allowed"><i class='bx bx-chevron-left'></i></span>
                 {% endif %}
 
                 {% for p in range(1, total_pages + 1) %}
                     {% if p == current_page %}
-                        <span class="page-btn active">{{ p }}</span>
+                        <span class="page-btn active px-3 py-1.5 bg-gray-900 text-white font-semibold rounded">{{ p }}</span>
                     {% else %}
-                        <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ p }}" class="page-btn">{{ p }}</a>
+                        <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ p }}" class="page-btn px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded transition">{{ p }}</a>
                     {% endif %}
                 {% endfor %}
 
                 {% if current_page < total_pages %}
-                    <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page + 1 }}" class="page-btn">
+                    <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page + 1 }}" class="page-btn px-2.5 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition">
                         <i class='bx bx-chevron-right'></i>
                     </a>
                 {% else %}
-                    <span class="page-btn disabled"><i class='bx bx-chevron-right'></i></span>
+                    <span class="page-btn disabled px-2.5 py-1.5 bg-gray-100 border border-gray-200 text-gray-400 rounded cursor-not-allowed"><i class='bx bx-chevron-right'></i></span>
                 {% endif %}
             </div>
         </div>
@@ -731,39 +728,39 @@
 
 <!-- Modal Form Tambah / Edit Transaksi -->
 <div class="modal-backdrop" id="transactionModal">
-    <div class="modal-card">
-        <div class="modal-header">
-            <h3 class="modal-title" id="modalTitle">Tambah Transaksi Masuk</h3>
-            <button class="modal-close" onclick="closeTransactionModal()">&times;</button>
+    <div class="modal-card bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100 w-full max-w-md text-sm">
+        <div class="modal-header border-b border-gray-100 px-5 py-3.5 flex items-center justify-between">
+            <h3 class="modal-title font-bold text-gray-900 text-sm" id="modalTitle">Tambah Transaksi Masuk</h3>
+            <button class="modal-close text-gray-400 hover:text-gray-600 text-lg leading-none" onclick="closeTransactionModal()">&times;</button>
         </div>
-        <form id="transactionForm" onsubmit="handleTransactionSubmit(event)">
+        <form id="transactionForm" onsubmit="handleTransactionSubmit(event)" class="p-5 space-y-3">
             <input type="hidden" id="edit_id" name="edit_id">
             
-            <div class="modal-body">
+            <div class="modal-body space-y-3 p-0">
                 <div class="form-group">
-                    <label for="description">Keterangan</label>
-                    <input type="text" id="description" name="description" class="form-control" placeholder="Contoh: Pembayaran Invoice #102" required>
+                    <label for="description" class="block font-medium text-gray-700 mb-1 text-xs">Keterangan</label>
+                    <input type="text" id="description" name="description" class="form-control w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none" placeholder="Contoh: Pembayaran Invoice #102" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="amount">Nominal (Rp)</label>
-                    <input type="text" id="amount" class="form-control" placeholder="0" oninput="formatRupiahInput(this)" required>
+                    <label for="amount" class="block font-medium text-gray-700 mb-1 text-xs">Nominal (Rp)</label>
+                    <input type="text" id="amount" class="form-control w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none" placeholder="0" oninput="formatRupiahInput(this)" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Bukti Transaksi (Opsional)</label>
-                    <label class="file-input-wrapper">
-                        <i class='bx bx-cloud-upload' style="font-size: 1.5rem; color: #94a3b8;"></i>
-                        <span id="fileNameLabel" style="display: block; font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                    <label class="block font-medium text-gray-700 mb-1 text-xs">Bukti Transaksi (Opsional)</label>
+                    <label class="file-input-wrapper border border-dashed border-gray-300 rounded-lg p-3 text-center bg-gray-50 cursor-pointer block">
+                        <i class='bx bx-cloud-upload text-2xl text-gray-400'></i>
+                        <span id="fileNameLabel" class="block text-xs text-gray-500 mt-1">
                             Pilih file gambar
                         </span>
-                        <input type="file" id="image" name="image" accept="image/*" onchange="handleFileSelect(this)">
+                        <input type="file" id="image" name="image" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
                     </label>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-outline" id="cancelBtn" onclick="closeTransactionModal()">Batal</button>
-                <button type="submit" class="btn-solid" id="submitBtn">
+            <div class="modal-footer flex justify-end gap-2 pt-3 border-t border-gray-100">
+                <button type="button" class="btn-outline px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50" id="cancelBtn" onclick="closeTransactionModal()">Batal</button>
+                <button type="submit" class="btn-solid px-3 py-1.5 text-xs text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 font-medium" id="submitBtn">
                     <span id="btnText">Simpan</span>
                 </button>
             </div>
@@ -773,19 +770,19 @@
 
 <!-- Modal Konfirmasi Hapus -->
 <div class="modal-backdrop" id="deleteModal">
-    <div class="modal-card" style="max-width: 400px;">
-        <div class="modal-header">
-            <h3 class="modal-title">Hapus Transaksi</h3>
-            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+    <div class="modal-card bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100 w-full max-w-sm text-sm">
+        <div class="modal-header border-b border-gray-100 px-5 py-3.5 flex items-center justify-between">
+            <h3 class="modal-title font-bold text-gray-900 text-sm">Hapus Transaksi</h3>
+            <button class="modal-close text-gray-400 hover:text-gray-600 text-lg leading-none" onclick="closeDeleteModal()">&times;</button>
         </div>
-        <div class="modal-body">
-            <p style="font-size: 0.875rem; color: #334155; margin: 0;">
+        <div class="modal-body p-5">
+            <p class="text-sm text-gray-600 leading-relaxed">
                 Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
             </p>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn-outline" id="cancelDeleteBtn" onclick="closeDeleteModal()">Batal</button>
-            <button type="button" class="btn-danger" id="confirmDeleteBtn" onclick="executeDelete()">
+        <div class="modal-footer flex justify-end gap-2 p-4 pt-3 border-t border-gray-100 bg-gray-50/50">
+            <button type="button" class="btn-outline px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50" id="cancelDeleteBtn" onclick="closeDeleteModal()">Batal</button>
+            <button type="button" class="btn-danger px-3 py-1.5 text-xs text-white bg-red-600 rounded-lg hover:bg-red-700 font-medium" id="confirmDeleteBtn" onclick="executeDelete()">
                 <span id="deleteBtnText">Hapus</span>
             </button>
         </div>
@@ -794,8 +791,8 @@
 
 <!-- Modal Preview Gambar -->
 <div class="modal-backdrop" id="imagePreviewModal" onclick="closeImagePreview()">
-    <div style="max-width: 90vw; max-height: 90vh;">
-        <img id="previewImageSrc" src="" alt="Preview Bukti" style="max-width: 100%; max-height: 85vh; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+    <div class="max-w-[90vw] max-h-[90vh]">
+        <img id="previewImageSrc" src="" alt="Preview Bukti" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl">
     </div>
 </div>
 
