@@ -163,7 +163,6 @@ def get_product_by_id(
         )
     return product
 
-
 @api_router.put("/products/{product_id}", response_model=ProductResponse)
 def update_product(
     product_id: int,
@@ -203,12 +202,25 @@ def update_product(
                 detail="SKU produk sudah digunakan.",
             )
 
+    # Ambil data update
     update_data = data.model_dump(exclude_unset=True)
+    
+    # DEBUG LOG: Cek terminal/log BE untuk memastikan data masuk
+    logger.info(f"[UPDATE PRODUCT DATA RECEIVED] ID: {product_id} | Data: {update_data}")
+
+    # Jika payload kosong atau tidak ada perubahan
+    if not update_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Tidak ada data yang dikirim untuk diubah.",
+        )
+
     for key, value in update_data.items():
         setattr(product, key, value)
 
     db.commit()
     db.refresh(product)
+    
     return product
 
 

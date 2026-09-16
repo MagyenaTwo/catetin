@@ -19,14 +19,17 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     stock: int = Field(default=0, ge=0, description="Stok awal produk", example=10)
 
-
 class ProductUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=255)
-    sku: Optional[str] = Field(None, max_length=100)
-    unit: Optional[str] = Field(None, max_length=50)
-    buy_price: Optional[float] = Field(None, ge=0)
-    sell_price: Optional[float] = Field(None, ge=0)
-    min_stock: Optional[int] = Field(None, ge=0)
+    name: Optional[str] = None
+    sku: Optional[str] = None
+    stock: Optional[int] = None
+    unit: Optional[str] = None
+    buy_price: Optional[float] = None
+    sell_price: Optional[float] = None
+    min_stock: Optional[int] = None
+
+    class Config:
+        from_attributes = True
 
 
 class ProductResponse(ProductBase):
