@@ -9,7 +9,7 @@ from slowapi.errors import RateLimitExceeded
 
 from app.database import engine, Base, get_db
 from app.dependencies import get_current_user
-from app.routers import barang_masuk, stock
+from app.routers import barang_keluar, barang_masuk, stock
 from app.models.user import User
 from app.routers import auth, dashboard, transactions, transaksi_keluar, whatsapp
 import app.models
@@ -37,6 +37,9 @@ app.include_router(stock.web_router)
 app.include_router(stock.api_router)
 app.include_router(barang_masuk.web_router)
 app.include_router(barang_masuk.api_router)
+
+app.include_router(barang_keluar.web_router)
+app.include_router(barang_keluar.api_router)
 
 @app.get("/")
 def root(request: Request):
