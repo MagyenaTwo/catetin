@@ -17,11 +17,12 @@ from fastapi import (
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.config import settings  # <-- DITAMBAHKAN: Memastikan Cloudinary terkonfigurasi saat router dimuat
 from app.database import get_db
 from app.dependencies import get_current_user
+from app.models.stock import BarangKeluar, Product
 from app.models.transaction import Transaction
 from app.models.user import User
 from app.schemas.transaction import TransactionResponse
@@ -32,7 +33,6 @@ logger = logging.getLogger(__name__)
 # 1. WEB ROUTER
 # --------------------------------------------------------------------------
 web_router = APIRouter(prefix="/transaksi", tags=["Web Pages"])
-
 
 @web_router.get("/", response_class=HTMLResponse)
 @web_router.get("/in", response_class=HTMLResponse)
@@ -55,13 +55,29 @@ def render_transactions_page(
         Transaction.amount > 0,
     )
 
+    # Query terpisah untuk barang keluar (join ke product untuk ambil nama produk)
+    query_bk = (
+        db.query(BarangKeluar)
+        .options(joinedload(BarangKeluar.product))
+        .filter(
+            BarangKeluar.user_id == current_user.id,
+            BarangKeluar.out_type == "Penjualan",
+        )
+    )
+
     if search and search.strip():
-        query = query.filter(Transaction.description.ilike(f"%{search.strip()}%"))
+        search_term = f"%{search.strip()}%"
+        query = query.filter(Transaction.description.ilike(search_term))
+        # Filter pencarian di barang keluar (nama produk atau catatan)
+        query_bk = query_bk.join(BarangKeluar.product).filter(
+            (Product.name.ilike(search_term)) | (BarangKeluar.notes.ilike(search_term))
+        )
 
     if start_date and start_date.strip():
         try:
             start_dt = datetime.strptime(start_date.strip(), "%Y-%m-%d")
             query = query.filter(Transaction.created_at >= start_dt)
+            query_bk = query_bk.filter(BarangKeluar.created_at >= start_dt)
         except ValueError:
             pass
 
@@ -71,23 +87,72 @@ def render_transactions_page(
                 f"{end_date.strip()} 23:59:59", "%Y-%m-%d %H:%M:%S"
             )
             query = query.filter(Transaction.created_at <= end_dt)
+            query_bk = query_bk.filter(BarangKeluar.created_at <= end_dt)
         except ValueError:
             pass
 
-    transactions = query.order_by(Transaction.created_at.desc()).all()
+    transactions_db = query.all()
+    barang_keluar_db = query_bk.all()
 
-    total_masuk = (
+    # Total transaksi uang masuk
+    total_transaksi_masuk = (
         db.query(func.coalesce(func.sum(Transaction.amount), 0))
-        .filter(Transaction.user_id == current_user.id, Transaction.amount > 0)
+        .filter(Transaction.id.in_(query.with_entities(Transaction.id)))
         .scalar()
     )
+
+    # Total nominal penjualan dari barang keluar (quantity * unit_price)
+    total_bk_masuk = (
+        db.query(
+            func.coalesce(
+                func.sum(BarangKeluar.quantity * BarangKeluar.unit_price), 0
+            )
+        )
+        .filter(BarangKeluar.id.in_(query_bk.with_entities(BarangKeluar.id)))
+        .scalar()
+    )
+
+    total_masuk = total_transaksi_masuk + total_bk_masuk
+
+    # --- NORMALISASI DAN PENGGABUNGAN DATA ---
+    combined_transactions = []
+
+    # 1. Masukkan data transaksi reguler
+    for tx in transactions_db:
+        combined_transactions.append({
+            "id": tx.id,
+            "description": tx.description,
+            "amount": tx.amount,
+            "created_at": tx.created_at,
+            "image_url": tx.image_url,
+            "source": "transaction",
+        })
+
+    # 2. Masukkan data barang keluar
+    for bk in barang_keluar_db:
+        product_name = bk.product.name if bk.product else "Produk"
+        total_price = (bk.quantity or 0) * (bk.unit_price or 0)
+        desc = f"Penjualan Stok: {product_name} ({bk.quantity} pcs)"
+       
+
+        combined_transactions.append({
+            "id": f"bk_{bk.id}",  # ID unik gabungan agar tidak bentrok
+            "description": desc,
+            "amount": total_price,
+            "created_at": bk.created_at,
+            "image_url": None,
+            "source": "barang_keluar",
+        })
+
+    # 3. Urutkan gabungan data berdasarkan tanggal terbaru (descending)
+    combined_transactions.sort(key=lambda x: x["created_at"], reverse=True)
 
     return templates.TemplateResponse(
         request=request,
         name="transaksi.html",
         context={
             "user": current_user,
-            "transactions": transactions,
+            "transactions": combined_transactions,
             "total_masuk": total_masuk,
         },
     )

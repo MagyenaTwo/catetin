@@ -10,10 +10,9 @@ from app.models.transaction import Transaction, Transaksi_Keluar  # Import model
 # from app.models.stock import Stock  # Import model Stok/Produk kamu jika ada
 from app.services.transaction_service import get_user_transactions
 from app.schemas.auth import PhoneUpdateSchema
-from app.models.stock import Product
+from app.models.stock import BarangKeluar, Product
 router = APIRouter(tags=["Dashboard"])
 templates = Jinja2Templates(directory="app/templates")
-
 
 @router.get("/dashboard")
 def dashboard(
@@ -21,27 +20,46 @@ def dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # 1. Hitung Total Pemasukan
-    total_masuk = (
+    total_transaksi_masuk = (
         db.query(func.coalesce(func.sum(Transaction.amount), 0.0))
         .filter(Transaction.user_id == current_user.id)
         .scalar()
     )
 
-    # 2. Hitung Total Pengeluaran
+    total_bk_masuk = (
+        db.query(
+            func.coalesce(
+                func.sum(BarangKeluar.quantity * BarangKeluar.unit_price), 0.0
+            )
+        )
+        .filter(
+            BarangKeluar.user_id == current_user.id,
+            BarangKeluar.out_type == "Penjualan"
+        )
+        .scalar()
+    )
+
+    total_masuk = total_transaksi_masuk + total_bk_masuk
+
     total_keluar = (
         db.query(func.coalesce(func.sum(Transaksi_Keluar.amount), 0.0))
         .filter(Transaksi_Keluar.user_id == current_user.id)
         .scalar()
     )
 
-    # 3. Hitung Total Saldo (Pemasukan - Pengeluaran)
     total_saldo = total_masuk - total_keluar
 
-    # 4. Hitung Total Transaksi (Banyaknya entri transaksi masuk + keluar)
     count_masuk = (
         db.query(func.count(Transaction.id))
         .filter(Transaction.user_id == current_user.id)
+        .scalar()
+    )
+    count_bk = (
+        db.query(func.count(BarangKeluar.id))
+        .filter(
+            BarangKeluar.user_id == current_user.id,
+            BarangKeluar.out_type == "Penjualan"
+        )
         .scalar()
     )
     count_keluar = (
@@ -49,16 +67,15 @@ def dashboard(
         .filter(Transaksi_Keluar.user_id == current_user.id)
         .scalar()
     )
-    total_transaksi = count_masuk + count_keluar
+    
+    total_transaksi = count_masuk + count_bk + count_keluar
 
-    # 5. Hitung Total Stok
     total_stock = (
         db.query(func.coalesce(func.sum(Product.stock), 0))
         .filter(Product.user_id == current_user.id)
         .scalar()
     )
 
-    # Ambil transaksi terbaru jika masih dibutuhkan
     transactions = get_user_transactions(db, user_id=current_user.id)
 
     return templates.TemplateResponse(
@@ -74,7 +91,6 @@ def dashboard(
             "transactions": transactions,
         }
     )
-
 
 @router.post("/user/update-phone")
 def update_phone_number(

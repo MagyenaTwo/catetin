@@ -71,10 +71,14 @@ class BarangMasukResponse(BaseModel):
 # ==========================================
 # BARANG KELUAR SCHEMAS
 # ==========================================
-
 class BarangKeluarCreate(BaseModel):
     product_id: int = Field(..., description="ID Produk yang keluar")
     quantity: PositiveInt = Field(..., description="Jumlah barang keluar (harus > 0)", example=5)
+    out_type: str = Field(
+        default="Penjualan", 
+        description="Tipe barang keluar (misal: Penjualan, Sampel, Rusak, dll.)", 
+        example="Penjualan"
+    )
     unit_price: Optional[float] = Field(None, ge=0, description="Harga jual per unit saat transaksi", example=25000.0)
     notes: Optional[str] = Field(None, max_length=500, example="Penjualan toko online")
 
@@ -84,6 +88,7 @@ class BarangKeluarResponse(BaseModel):
     user_id: int
     product_id: int
     quantity: int
+    out_type: str = Field(..., description="Tipe barang keluar")
     unit_price: Optional[float] = None
     notes: Optional[str] = None
     created_at: datetime

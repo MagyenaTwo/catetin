@@ -59,6 +59,7 @@ class BarangKeluar(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False)
     quantity = Column(Integer, nullable=False)  # Jumlah barang keluar
+    out_type = Column(String, nullable=False, default="Penjualan")  # 'Penjualan' atau 'Sampel'
     unit_price = Column(Float, nullable=True)  # Harga jual per unit (opsional)
     notes = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

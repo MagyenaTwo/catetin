@@ -95,6 +95,7 @@
                     <tr>
                         <th scope="col" class="px-3.5 py-2.5 border-r border-gray-100">Tanggal</th>
                         <th scope="col" class="px-3.5 py-2.5 border-r border-gray-100">Nama Barang</th>
+                        <th scope="col" class="px-3.5 py-2.5 text-center border-r border-gray-100">Tipe</th>
                         <th scope="col" class="px-3.5 py-2.5 text-center border-r border-gray-100">Jumlah</th>
                         <th scope="col" class="px-3.5 py-2.5 text-right border-r border-gray-100">Harga Per Unit</th>
                         <th scope="col" class="px-3.5 py-2.5 text-right border-r border-gray-100">Subtotal</th>
@@ -114,6 +115,20 @@
                             {{ item.product.name if item.product else 'Barang Dihapus' }}
                             {% if item.product and item.product.sku %}
                                 <span class="block text-xs font-mono text-gray-400">SKU: {{ item.product.sku }}</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Tipe Keluar -->
+                        <td class="px-3.5 py-2.5 text-center whitespace-nowrap">
+                            {% set tipe = item.out_type|default('Penjualan') %}
+                            {% if tipe|lower == 'sampel' %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                    Sampel
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                    Penjualan
+                                </span>
                             {% endif %}
                         </td>
 
@@ -148,7 +163,7 @@
                     {% else %}
                     <!-- Empty State -->
                     <tr id="emptyRow">
-                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                             Tidak ada riwayat stok keluar
                         </td>
                     </tr>

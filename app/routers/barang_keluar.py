@@ -34,6 +34,7 @@ web_router = APIRouter(prefix="/stok-keluar", tags=["Stok Keluar Web Pages"])
 def render_stok_keluar_page(
     request: Request,
     search: Optional[str] = None,
+    out_type: Optional[str] = None,  # Filter out_type untuk web
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     db: Session = Depends(get_db),
@@ -61,6 +62,10 @@ def render_stok_keluar_page(
             (Product.name.ilike(search_term)) | (BarangKeluar.notes.ilike(search_term))
         )
 
+    # Filter berdasarkan out_type (Penjualan / Sampel)
+    if out_type and out_type.strip():
+        query = query.filter(BarangKeluar.out_type == out_type.strip())
+
     # Filter rentang tanggal
     if start_date and start_date.strip():
         try:
@@ -82,7 +87,7 @@ def render_stok_keluar_page(
 
     return templates.TemplateResponse(
         request=request,
-        name="stok_keluar.html",  # Pastikan nama file template disesuaikan di folder app/templates
+        name="stok_keluar.html",
         context={
             "user": current_user,
             "stok_keluar_list": stok_keluar_list,
@@ -102,6 +107,7 @@ def get_stok_keluar_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     search: Optional[str] = None,
+    out_type: Optional[str] = Query(None, description="Filter berdasarkan tipe keluar: Penjualan/Sampel"),
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     db: Session = Depends(get_db),
@@ -117,6 +123,9 @@ def get_stok_keluar_list(
         query = query.join(BarangKeluar.product).filter(
             (Product.name.ilike(search_term)) | (BarangKeluar.notes.ilike(search_term))
         )
+
+    if out_type and out_type.strip():
+        query = query.filter(BarangKeluar.out_type == out_type.strip())
 
     if start_date and start_date.strip():
         try:
@@ -160,13 +169,14 @@ def get_stok_keluar_list(
 def create_stok_keluar(
     product_id: int = Form(...),
     quantity: int = Form(...),
+    out_type: str = Form("Penjualan"),  # Parameter Form baru untuk out_type
     unit_price: Optional[float] = Form(None),
     notes: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
-    Mencatat transaksi stok keluar/penjualan dan mengurangi jumlah stok pada tabel Product secara otomatis.
+    Mencatat transaksi stok keluar/penjualan/sampel dan mengurangi jumlah stok pada tabel Product secara otomatis.
     """
     if quantity <= 0:
         raise HTTPException(
@@ -200,6 +210,7 @@ def create_stok_keluar(
         user_id=current_user.id,
         product_id=product_id,
         quantity=quantity,
+        out_type=out_type,  # Disimpan ke database
         unit_price=unit_price,
         notes=notes,
     )

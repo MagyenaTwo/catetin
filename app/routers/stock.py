@@ -341,11 +341,12 @@ def create_barang_keluar(
             detail=f"Stok tidak mencukupi. Stok saat ini: {product.stock}",
         )
 
-    # 1. Catat transaksi barang keluar
+    # 1. Catat transaksi barang keluar (termasuk out_type)
     new_exit = BarangKeluar(
         user_id=current_user.id,
         product_id=data.product_id,
         quantity=data.quantity,
+        out_type=data.out_type,  # <-- Tambahkan atribut ini
         unit_price=data.unit_price if hasattr(data, 'unit_price') and data.unit_price else getattr(product, 'sell_price', 0),
         notes=data.notes,
     )
@@ -359,7 +360,7 @@ def create_barang_keluar(
 
     logger.info(
         f"[STOK KELUAR] User: {current_user.id} | Product ID: {product.id} | "
-        f"Kurang: {data.quantity} | Stok Sekarang: {product.stock}"
+        f"Tipe: {data.out_type} | Kurang: {data.quantity} | Stok Sekarang: {product.stock}"
     )
 
     return new_exit
