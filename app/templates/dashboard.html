@@ -5,148 +5,194 @@
 
 {% block extra_css %}
 <style>
-    .dashboard-container {
+    /* Full Width & Modern Clean Layout */
+    .dashboard-wrapper {
         width: 100%;
-        display: flex;
-        flex-direction: column;
+        color: #0f172a;
+        font-family: inherit;
+    }
+
+    /* Grid Ringkasan Tanpa Margin Samping */
+    .metrics-header-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
         gap: 2rem;
     }
 
-    /* Grid Ringkasan 3 Angka Utama */
-    .metrics-row {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        background: #ffffff;
-        overflow: hidden;
-    }
-
-    .metric-item {
-        padding: 1.5rem 1.75rem;
+    .metric-col {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.25rem;
     }
 
-    .metric-item:not(:last-child) {
-        border-right: 1px solid #e2e8f0;
-    }
-
-    .metric-label {
-        font-size: 0.875rem;
-        color: #64748b;
+    .metric-label-group {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.8125rem;
         font-weight: 500;
+        color: #64748b;
     }
 
-    .metric-value {
+    .metric-amount {
         font-size: 1.875rem;
         font-weight: 700;
+        letter-spacing: -0.03em;
         color: #0f172a;
-        line-height: 1.2;
+        font-variant-numeric: tabular-nums;
     }
 
-    /* Section Detail Bawah */
-    .section-block {
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        background: #ffffff;
-        padding: 1.5rem;
+    /* Tooltip Sederhana Sebaris */
+    .help-icon {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
     }
 
-    .section-head {
-        font-size: 1rem;
+    .help-icon:hover {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .help-icon .help-popover {
+        display: none;
+        position: absolute;
+        bottom: 130%;
+        left: 0;
+        width: 200px;
+        padding: 0.5rem 0.75rem;
+        background: #0f172a;
+        color: #f8fafc;
+        font-size: 0.75rem;
+        font-weight: 400;
+        border-radius: 6px;
+        z-index: 30;
+        line-height: 1.35;
+        white-space: normal;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .help-icon:hover .help-popover {
+        display: block;
+    }
+
+    /* Section Arus Kas Sebaris (Full Width) */
+    .cashflow-section {
+        width: 100%;
+    }
+
+    .cashflow-title {
+        font-size: 0.875rem;
         font-weight: 600;
         color: #0f172a;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
-    .detail-list {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .detail-row {
+    .cashflow-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 0;
+        padding: 0.875rem 0;
         border-bottom: 1px solid #f1f5f9;
         font-size: 0.875rem;
     }
 
-    .detail-row:last-child {
+    .cashflow-row:last-child {
         border-bottom: none;
-        padding-bottom: 0;
     }
 
-    .detail-row:first-child {
-        padding-top: 0;
-    }
-
-    .detail-label {
+    .cashflow-label {
         color: #475569;
+        font-weight: 500;
     }
 
-    .detail-value {
+    .cashflow-val {
         font-weight: 600;
-        color: #0f172a;
+        font-variant-numeric: tabular-nums;
     }
 
     @media (max-width: 768px) {
-        .metrics-row {
+        .metrics-header-grid {
             grid-template-columns: 1fr;
-        }
-        .metric-item:not(:last-child) {
-            border-right: none;
-            border-bottom: 1px solid #e2e8f0;
+            gap: 1.25rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
+<div class="dashboard-wrapper">
     {% set total_in = (total_masuk or 0) | float %}
     {% set total_out = (total_keluar or 0) | float %}
     {% set saldo = total_in - total_out %}
 
-    <!-- 3 Angka Utama dalam Satu Grid Garis Tegas -->
-    <div class="metrics-row">
-        <div class="metric-item">
-            <span class="metric-label">Total Saldo</span>
-            <div class="metric-value">
+    <!-- Metric Angka Lebar Penuh -->
+    <div class="metrics-header-grid">
+        <div class="metric-col">
+            <div class="metric-label-group">
+                <span>Total Saldo</span>
+                <span class="help-icon">?
+                    <span class="help-popover">Hasil pengurangan total pemasukan dengan pengeluaran.</span>
+                </span>
+            </div>
+            <div class="metric-amount">
                 Rp {{ "{:,.0f}".format(saldo).replace(',', '.') }}
             </div>
         </div>
 
-        <div class="metric-item">
-            <span class="metric-label">Total Transaksi</span>
-            <div class="metric-value">
+        <div class="metric-col">
+            <div class="metric-label-group">
+                <span>Total Transaksi</span>
+                <span class="help-icon">?
+                    <span class="help-popover">Jumlah seluruh aktivitas transaksi yang telah dicatat.</span>
+                </span>
+            </div>
+            <div class="metric-amount">
                 {{ total_count if total_count is defined else (transactions | length if transactions else 0) }}
             </div>
         </div>
 
-        <div class="metric-item">
-            <span class="metric-label">Total Stok</span>
-            <div class="metric-value">
+        <div class="metric-col">
+            <div class="metric-label-group">
+                <span>Total Stok</span>
+                <span class="help-icon">?
+                    <span class="help-popover">Jumlah unit barang yang tersedia di inventaris saat ini.</span>
+                </span>
+            </div>
+            <div class="metric-amount">
                 {{ total_stock if total_stock is defined else 0 }}
             </div>
         </div>
     </div>
 
-    <!-- Ringkasan Rincian Kas -->
-    <div class="section-block">
-        <div class="section-head">Rincian Saldo</div>
-        <div class="detail-list">
-            <div class="detail-row">
-                <span class="detail-label">Total Pemasukan</span>
-                <span class="detail-value">Rp {{ "{:,.0f}".format(total_in).replace(',', '.') }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Total Pengeluaran</span>
-                <span class="detail-value">Rp {{ "{:,.0f}".format(total_out).replace(',', '.') }}</span>
-            </div>
+    <!-- Rincian Arus Kas Full Width -->
+    <div class="cashflow-section">
+        <div class="cashflow-title">Rincian Kas</div>
+        <div class="cashflow-row">
+            <span class="cashflow-label">Total Pemasukan</span>
+            <span class="cashflow-val" style="color: #059669;">
+                + Rp {{ "{:,.0f}".format(total_in).replace(',', '.') }}
+            </span>
+        </div>
+        <div class="cashflow-row">
+            <span class="cashflow-label">Total Pengeluaran</span>
+            <span class="cashflow-val" style="color: #e11d48;">
+                - Rp {{ "{:,.0f}".format(total_out).replace(',', '.') }}
+            </span>
         </div>
     </div>
 </div>
