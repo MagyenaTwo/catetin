@@ -67,22 +67,23 @@ class BarangMasukResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-
 # ==========================================
-# BARANG KELUAR SCHEMAS
+# BARANG KELUAR SCHEMAS (UPDATED)
 # ==========================================
 class BarangKeluarCreate(BaseModel):
     product_id: int = Field(..., description="ID Produk yang keluar")
     quantity: PositiveInt = Field(..., description="Jumlah barang keluar (harus > 0)", example=5)
+    
+    # Hapus default="Penjualan" agar menjadi field Wajib (Required)
     out_type: str = Field(
-        default="Penjualan", 
+        ..., 
         description="Tipe barang keluar (misal: Penjualan, Sampel, Rusak, dll.)", 
-        example="Penjualan"
+        example="Sampel"
     )
+    
     unit_price: Optional[float] = Field(None, ge=0, description="Harga jual per unit saat transaksi", example=25000.0)
     notes: Optional[str] = Field(None, max_length=500, example="Penjualan toko online")
-
-
+    
 class BarangKeluarResponse(BaseModel):
     id: int
     user_id: int

@@ -132,7 +132,7 @@ def render_transactions_page(
     for bk in barang_keluar_db:
         product_name = bk.product.name if bk.product else "Produk"
         total_price = (bk.quantity or 0) * (bk.unit_price or 0)
-        desc = f"Penjualan Stok: {product_name} ({bk.quantity} pcs)"
+        desc = f"Penjualan: {product_name} ({bk.quantity} pcs)"
        
 
         combined_transactions.append({

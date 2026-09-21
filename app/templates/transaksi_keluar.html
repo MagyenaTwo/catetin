@@ -7,220 +7,9 @@
 <style>
     :root {
         --mono-font: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
-        --border-color: #e2e8f0;
-        --bg-hover: #f8fafc;
-        --text-primary: #0f172a;
-        --text-muted: #64748b;
-        --success-color: #0f766e;
-        --danger-color: #e11d48;
     }
-
-    .transaksi-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        width: 100%;
-    }
-
-    /* Summary Bar */
-    .summary-grid {
-        display: flex;
-        gap: 1rem;
-        width: 100%;
-    }
-
-    .summary-card {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 0.85rem 1.25rem;
-        flex: 1;
-        max-width: 280px;
-    }
-
-    .summary-label {
-        font-size: 0.6875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-muted);
-        font-weight: 600;
-        display: block;
-    }
-
-    .summary-value {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-top: 0.25rem;
-        font-family: var(--mono-font);
-        color: var(--text-primary);
-    }
-
-    .text-out { color: var(--danger-color); }
-
-    /* Card Panel */
-    .card-panel {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    /* Filter Toolbar Header */
-    .filter-wrapper {
-        padding: 0.85rem 1.25rem;
-        border-bottom: 1px solid var(--border-color);
-        background: #ffffff;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .filter-form-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-
-    .filter-pill {
-        display: inline-flex;
-        align-items: center;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 0 0.65rem;
-        height: 36px;
-        gap: 0.4rem;
-    }
-
-    .filter-pill:focus-within {
-        border-color: #0f172a;
-    }
-
-    .filter-pill i {
-        color: #94a3b8;
-        font-size: 0.95rem;
-    }
-
-    .filter-pill label {
-        font-size: 0.725rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        white-space: nowrap;
-    }
-
-    .pill-input {
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 0.8125rem;
-        color: var(--text-primary);
-        padding: 0;
-    }
-
-    .search-input-field { width: 160px; }
-    .date-input-field { width: 110px; cursor: pointer; }
-
-    /* Buttons */
-    .btn-solid {
-        background: #0f172a;
-        color: #ffffff;
-        border: 1px solid #0f172a;
-        border-radius: 6px;
-        padding: 0 0.85rem;
-        height: 36px;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: background-color 0.15s ease;
-    }
-
-    .btn-solid:hover:not(:disabled) {
-        background: #334155;
-        border-color: #334155;
-    }
-
-    .btn-solid:disabled {
-        opacity: 0.75;
-        cursor: not-allowed;
-    }
-
-    .btn-outline {
-        background: #ffffff;
-        color: #334155;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 0 0.85rem;
-        height: 36px;
-        font-size: 0.8125rem;
-        font-weight: 500;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-    .btn-outline:hover:not(:disabled) {
-        background: #f1f5f9;
-        color: #0f172a;
-    }
-
-    .btn-danger {
-        background: var(--danger-color);
-        color: #ffffff;
-        border: 1px solid var(--danger-color);
-        border-radius: 6px;
-        padding: 0 0.85rem;
-        height: 36px;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
-    }
-
-    .btn-danger:hover:not(:disabled) {
-        background: #be123c;
-    }
-
-    .btn-icon {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-        padding: 0.35rem;
-        border-radius: 4px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        transition: background-color 0.15s, color 0.15s;
-    }
-
-    .btn-icon:hover {
-        background: #f1f5f9;
-        color: var(--text-primary);
-    }
-
-    .btn-icon.delete:hover {
-        background: #ffe4e6;
-        color: var(--danger-color);
-    }
-
-    /* Spinner Loader */
+    .font-mono-num { font-family: var(--mono-font); }
+    
     .spinner {
         width: 14px;
         height: 14px;
@@ -235,369 +24,125 @@
         to { transform: rotate(360deg); }
     }
 
-    /* Table Styling */
-    .table-responsive {
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    .table-transaksi {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.8125rem;
-        text-align: left;
-    }
-
-    .table-transaksi th {
-        background: #f8fafc;
-        color: var(--text-muted);
-        font-weight: 600;
-        padding: 0.75rem 1.25rem;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 0.6875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .table-transaksi td {
-        padding: 0.75rem 1.25rem;
-        border-bottom: 1px solid #f1f5f9;
-        color: #334155;
-        vertical-align: middle;
-    }
-
-    .table-transaksi tbody tr:hover {
-        background-color: var(--bg-hover);
-    }
-
-    .img-thumbnail-wrapper {
-        width: 36px;
-        height: 36px;
-        border-radius: 4px;
-        border: 1px solid var(--border-color);
-        overflow: hidden;
-        background: #f1f5f9;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-
-    .img-thumbnail-wrapper img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .img-thumbnail-placeholder {
-        color: #cbd5e1;
-        font-size: 1.2rem;
-    }
-
-    .nominal-cell {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-family: var(--mono-font);
-        font-weight: 600;
-    }
-
-    .action-cell {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.25rem;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 3rem 1rem;
-        color: var(--text-muted);
-    }
-
-    /* Pagination Bar */
-    .pagination-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.75rem 1.25rem;
-        border-top: 1px solid var(--border-color);
-        background: #ffffff;
-        font-size: 0.8125rem;
-        color: var(--text-muted);
-    }
-
-    .pagination-controls {
-        display: flex;
-        gap: 0.25rem;
-        align-items: center;
-    }
-
-    .page-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 30px;
-        height: 30px;
-        padding: 0 0.4rem;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background: #ffffff;
-        color: #334155;
-        text-decoration: none;
-        font-size: 0.785rem;
-        font-weight: 500;
-    }
-
-    .page-btn:hover:not(.disabled):not(.active) {
-        background: #f8fafc;
-        color: #0f172a;
-    }
-
-    .page-btn.active {
-        background: #0f172a;
-        color: #ffffff;
-        border-color: #0f172a;
-        font-weight: 600;
-    }
-
-    .page-btn.disabled {
-        color: #cbd5e1;
-        cursor: not-allowed;
-        background: #f8fafc;
-    }
-
-    /* Modal Component */
+    /* Modal Backdrop Transitions */
     .modal-backdrop {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(15, 23, 42, 0.4);
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
         display: none;
         align-items: center;
         justify-content: center;
-        z-index: 1000;
+        z-index: 50;
         padding: 1rem;
     }
+    .modal-backdrop.active { display: flex; }
 
-    .modal-backdrop.active {
-        display: flex;
-    }
-
-    .modal-card {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        width: 100%;
-        max-width: 460px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-    }
-
-    .modal-header {
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .modal-title {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin: 0;
-    }
-
-    .modal-close {
-        background: transparent;
-        border: none;
-        font-size: 1.2rem;
-        color: var(--text-muted);
-        cursor: pointer;
-    }
-
-    .modal-body {
-        padding: 1.25rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-    }
-
-    .form-group label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #334155;
-    }
-
-    .form-control {
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 0.5rem 0.75rem;
-        font-size: 0.85rem;
-        color: var(--text-primary);
-        outline: none;
-    }
-
-    .form-control:focus {
-        border-color: #0f172a;
-    }
-
-    .file-input-wrapper {
-        border: 1px dashed var(--border-color);
-        border-radius: 6px;
-        padding: 1rem;
-        text-align: center;
-        background: #f8fafc;
-        cursor: pointer;
-    }
-
-    .file-input-wrapper input[type="file"] {
-        display: none;
-    }
-
-    .modal-footer {
-        padding: 0.85rem 1.25rem;
-        border-top: 1px solid var(--border-color);
-        background: #f8fafc;
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-    }
-
-    /* Toast Notification */
+    /* Toast Animation */
     .toast-container {
         position: fixed;
-        top: 1.5rem;
+        top: 1.25rem;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 1200;
+        z-index: 60;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
         pointer-events: none;
     }
-
     .toast {
-        background: #0f172a;
-        color: #ffffff;
-        border-radius: 8px;
-        padding: 0.85rem 1.25rem;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-        font-size: 0.875rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        min-width: 300px;
-        justify-content: center;
-        pointer-events: auto;
         animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: auto;
     }
-
-    .toast.success { background: #0f766e; }
-    .toast.error { background: #e11d48; }
 
     @keyframes slideDown {
-        from { transform: translateY(-100%); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-
-    @media (max-width: 640px) {
-        .filter-wrapper { flex-direction: column; align-items: stretch; }
-        .filter-form-container { flex-direction: column; }
-        .filter-pill, .btn-solid, .btn-outline { width: 100% !important; }
-        .search-input-field, .date-input-field { width: 100% !important; }
-        .summary-grid { flex-direction: column; }
-        .summary-card { max-width: 100%; }
-        .toast-container { width: 90%; }
-        .toast { min-width: auto; width: 100%; }
+        from { transform: translate(-50%, -100%); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="transaksi-container max-w-7xl mx-auto space-y-4 pb-12 relative text-sm">
-    <!-- Ringkasan -->
-    <div class="summary-grid grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div class="summary-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
-            <span class="summary-label text-xs font-medium text-gray-500">Total Pengeluaran</span>
-            <div class="summary-value text-out text-xl font-bold text-red-600 mt-0.5">
+<div class="max-w-7xl mx-auto space-y-5 pb-12 text-slate-800">
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Pengeluaran</span>
+            <div class="text-2xl font-bold text-rose-600 font-mono-num mt-1">
                 {% set total = (total_keluar if total_keluar is defined else (total_masuk or 0)) | float %}
                 Rp {{ "{:,.0f}".format(total).replace(',', '.') }}
             </div>
         </div>
-        <div class="summary-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
-            <span class="summary-label text-xs font-medium text-gray-500">Total Transaksi</span>
-            <div class="summary-value text-xl font-bold text-gray-900 mt-0.5">
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Transaksi</span>
+            <div class="text-2xl font-bold text-slate-900 font-mono-num mt-1">
                 {{ total_count if total_count is defined else (transactions | length if transactions else 0) }}
             </div>
         </div>
     </div>
 
-    <!-- Panel Tabel & Filter -->
-    <div class="card-panel bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div class="filter-wrapper p-3 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <form method="GET" action="" class="filter-form-container flex flex-wrap items-center gap-2 w-full sm:w-auto">
+    <!-- Main Table Card -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        
+        <!-- Filter Bar -->
+        <div class="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <form method="GET" action="" class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                 {% set req_search = request.query_params.get('search', '') if request.query_params else (request.args.get('search', '') if request.args else '') %}
                 {% set req_start = request.query_params.get('start_date', '') if request.query_params else (request.args.get('start_date', '') if request.args else '') %}
                 {% set req_end = request.query_params.get('end_date', '') if request.query_params else (request.args.get('end_date', '') if request.args else '') %}
 
-                <div class="filter-pill relative flex-1 sm:flex-none">
+                <!-- Search Input -->
+                <div class="relative flex-1 sm:w-64">
+                    <i class='bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg'></i>
                     <input 
                         type="text" 
                         name="search" 
-                        class="pill-input search-input-field pl-8 pr-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-900 transition w-full" 
+                        class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition" 
                         placeholder="Cari transaksi..." 
                         value="{{ req_search }}"
                         autocomplete="off"
                     >
-                    <i class='bx bx-search text-gray-400 text-base absolute left-2.5 top-2.5'></i>
                 </div>
 
-                <div class="filter-pill flex items-center gap-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-lg px-2 py-1">
-                    <label for="start_date" class="font-medium">Dari:</label>
+                <!-- Start Date -->
+                <div class="flex items-center gap-1.5 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs">
+                    <label for="start_date" class="font-semibold text-slate-500 shrink-0">Dari:</label>
                     <input 
                         type="date" 
                         id="start_date"
                         name="start_date" 
-                        class="pill-input date-input-field text-xs outline-none bg-transparent"
+                        class="bg-transparent border-none p-0 text-xs text-slate-800 outline-none cursor-pointer"
                         value="{{ req_start }}"
                     >
                 </div>
 
-                <div class="filter-pill flex items-center gap-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-lg px-2 py-1">
-                    <label for="end_date" class="font-medium">Sampai:</label>
+                <!-- End Date -->
+                <div class="flex items-center gap-1.5 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs">
+                    <label for="end_date" class="font-semibold text-slate-500 shrink-0">Sampai:</label>
                     <input 
                         type="date" 
                         id="end_date"
                         name="end_date" 
-                        class="pill-input date-input-field text-xs outline-none bg-transparent"
+                        class="bg-transparent border-none p-0 text-xs text-slate-800 outline-none cursor-pointer"
                         value="{{ req_end }}"
                     >
                 </div>
 
-                <button type="submit" class="btn-solid px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition shadow-sm flex items-center gap-1">
+                <button type="submit" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition inline-flex items-center gap-1 shadow-sm">
                     <i class='bx bx-filter-alt'></i> Filter
                 </button>
                 
                 {% if req_search or req_start or req_end %}
-                    <a href="{{ request.path if request.path else '#' }}" class="btn-outline px-2 py-1.5 text-sm text-gray-500 hover:text-gray-900 transition flex items-center gap-0.5" title="Reset Filter">
-                        <i class='bx bx-x'></i> Reset
+                    <a href="{{ request.path if request.path else '#' }}" class="px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-800 transition inline-flex items-center gap-1">
+                        <i class='bx bx-x text-base'></i> Reset
                     </a>
                 {% endif %}
             </form>
 
-            <button type="button" class="btn-solid px-3 py-1.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition shadow-sm flex items-center gap-1 shrink-0" onclick="openCreateModal()">
-                <i class='bx bx-plus'></i> Tambah Transaksi
+            <button type="button" class="px-4 py-2 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition shadow-sm inline-flex items-center justify-center gap-1.5 shrink-0" onclick="openCreateModal()">
+                <i class='bx bx-plus text-base'></i> Tambah Transaksi
             </button>
         </div>
 
@@ -609,34 +154,34 @@
         {% set end_idx = start_idx + page_size %}
         {% set paged_transactions = transactions[start_idx:end_idx] if transactions else [] %}
 
-        <!-- TABEL TRANSAKSI -->
-        <div class="table-responsive overflow-x-auto">
-            <table class="table-transaksi w-full text-sm text-left text-gray-600">
-                <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-xs">
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left text-slate-600">
+                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase tracking-wider">
                     <tr>
-                        <th style="width: 60px;" class="px-4 py-3.5 text-center">Gambar</th>
-                        <th style="width: 15%;" class="px-4 py-3.5">Tanggal</th>
+                        <th class="w-16 px-4 py-3.5 text-center">Gambar</th>
+                        <th class="w-32 px-4 py-3.5">Tanggal</th>
                         <th class="px-4 py-3.5">Keterangan</th>
-                        <th style="width: 20%;" class="px-4 py-3.5 text-right">Nominal</th>
-                        <th style="width: 90px;" class="px-4 py-3.5 text-center">Aksi</th>
+                        <th class="w-44 px-4 py-3.5 text-right">Nominal</th>
+                        <th class="w-24 px-4 py-3.5 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-slate-100">
                     {% for tx in paged_transactions %}
-                        <tr class="hover:bg-gray-50/80 transition">
+                        <tr class="hover:bg-slate-50/80 transition">
                             <td class="px-4 py-3 text-center">
                                 {% if tx.image_url %}
-                                    <div class="img-thumbnail-wrapper inline-block cursor-pointer" onclick="openImagePreview('{{ tx.image_url }}')">
-                                        <img src="{{ tx.image_url }}" alt="Bukti" class="w-8 h-8 object-cover rounded border border-gray-200">
-                                    </div>
+                                    <button type="button" class="w-9 h-9 rounded-lg border border-slate-200 overflow-hidden bg-slate-100 inline-flex items-center justify-center hover:opacity-80 transition" onclick="openImagePreview('{{ tx.image_url }}')">
+                                        <img src="{{ tx.image_url }}" alt="Bukti" class="w-full h-full object-cover">
+                                    </button>
                                 {% else %}
-                                    <div class="img-thumbnail-wrapper inline-block cursor-default">
-                                        <i class='bx bx-image-alt img-thumbnail-placeholder text-xl text-gray-400'></i>
+                                    <div class="w-9 h-9 rounded-lg border border-slate-200 bg-slate-50 inline-flex items-center justify-center text-slate-300">
+                                        <i class='bx bx-image-alt text-lg'></i>
                                     </div>
                                 {% endif %}
                             </td>
 
-                            <td class="px-4 py-3 text-gray-500 font-mono text-xs whitespace-nowrap">
+                            <td class="px-4 py-3 text-slate-500 font-mono-num whitespace-nowrap">
                                 {% if tx.created_at and tx.created_at.strftime is defined %}
                                     {{ tx.created_at.strftime('%d/%m/%Y') }}
                                 {% else %}
@@ -644,22 +189,19 @@
                                 {% endif %}
                             </td>
 
-                            <td class="px-4 py-3 text-gray-900 font-medium">
+                            <td class="px-4 py-3 text-slate-900 font-medium">
                                 {{ tx.description or tx.keterangan or '-' }}
                             </td>
 
-                            <td class="px-4 py-3 text-right text-red-600 font-medium text-sm">
-                                <div class="nominal-cell inline-flex items-center justify-end gap-1">
-                                    <span>- Rp</span>
-                                    <span>{{ "{:,.0f}".format((tx.amount or 0) | float).replace(',', '.') }}</span>
-                                </div>
+                            <td class="px-4 py-3 text-right text-rose-600 font-semibold font-mono-num whitespace-nowrap">
+                                - Rp {{ "{:,.0f}".format((tx.amount or 0) | float).replace(',', '.') }}
                             </td>
 
                             <td class="px-4 py-3 text-center">
-                                <div class="action-cell flex items-center justify-center gap-1">
+                                <div class="inline-flex items-center gap-1">
                                     <button 
                                         type="button" 
-                                        class="btn-icon btn-edit p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md transition text-base" 
+                                        class="p-1.5 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-md transition text-base" 
                                         title="Edit Transaksi"
                                         data-id="{{ tx.id }}"
                                         data-description="{{ tx.description or tx.keterangan or '' }}"
@@ -670,7 +212,7 @@
                                     </button>
                                     <button 
                                         type="button" 
-                                        class="btn-icon delete p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition text-base" 
+                                        class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition text-base" 
                                         title="Hapus Transaksi"
                                         onclick="openDeleteModal('{{ tx.id }}')"
                                     >
@@ -681,7 +223,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="5" class="px-4 py-10 text-center text-gray-400 text-sm">
+                            <td colspan="5" class="px-4 py-12 text-center text-slate-400">
                                 Tidak ada transaksi ditemukan.
                             </td>
                         </tr>
@@ -690,35 +232,40 @@
             </table>
         </div>
 
+        <!-- Pagination -->
         {% if total_items > 0 %}
-        <div class="pagination-wrapper p-3 border-t border-gray-200 bg-gray-50/30 flex items-center justify-between text-xs text-gray-600">
+        <div class="p-3 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
             <div>
-                Menampilkan {{ start_idx + 1 }}-{{ end_idx if end_idx < total_items else total_items }} dari {{ total_items }} data
+                Menampilkan <span class="font-semibold text-slate-700">{{ start_idx + 1 }}</span> - <span class="font-semibold text-slate-700">{{ end_idx if end_idx < total_items else total_items }}</span> dari <span class="font-semibold text-slate-700">{{ total_items }}</span> data
             </div>
 
-            <div class="pagination-controls flex items-center gap-1">
+            <div class="inline-flex items-center gap-1">
                 {% if current_page > 1 %}
-                    <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page - 1 }}" class="page-btn px-2.5 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition">
-                        <i class='bx bx-chevron-left'></i>
+                    <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page - 1 }}" class="p-1.5 bg-white border border-slate-300 rounded hover:bg-slate-50 transition text-slate-700">
+                        <i class='bx bx-chevron-left text-base leading-none block'></i>
                     </a>
                 {% else %}
-                    <span class="page-btn disabled px-2.5 py-1.5 bg-gray-100 border border-gray-200 text-gray-400 rounded cursor-not-allowed"><i class='bx bx-chevron-left'></i></span>
+                    <span class="p-1.5 bg-slate-100 border border-slate-200 text-slate-300 rounded cursor-not-allowed">
+                        <i class='bx bx-chevron-left text-base leading-none block'></i>
+                    </span>
                 {% endif %}
 
                 {% for p in range(1, total_pages + 1) %}
                     {% if p == current_page %}
-                        <span class="page-btn active px-3 py-1.5 bg-gray-900 text-white font-semibold rounded">{{ p }}</span>
+                        <span class="px-3 py-1 bg-slate-900 text-white font-semibold rounded">{{ p }}</span>
                     {% else %}
-                        <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ p }}" class="page-btn px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded transition">{{ p }}</a>
+                        <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ p }}" class="px-3 py-1 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded transition">{{ p }}</a>
                     {% endif %}
                 {% endfor %}
 
                 {% if current_page < total_pages %}
-                    <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page + 1 }}" class="page-btn px-2.5 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition">
-                        <i class='bx bx-chevron-right'></i>
+                    <a href="?search={{ req_search }}&start_date={{ req_start }}&end_date={{ req_end }}&page={{ current_page + 1 }}" class="p-1.5 bg-white border border-slate-300 rounded hover:bg-slate-50 transition text-slate-700">
+                        <i class='bx bx-chevron-right text-base leading-none block'></i>
                     </a>
                 {% else %}
-                    <span class="page-btn disabled px-2.5 py-1.5 bg-gray-100 border border-gray-200 text-gray-400 rounded cursor-not-allowed"><i class='bx bx-chevron-right'></i></span>
+                    <span class="p-1.5 bg-slate-100 border border-slate-200 text-slate-300 rounded cursor-not-allowed">
+                        <i class='bx bx-chevron-right text-base leading-none block'></i>
+                    </span>
                 {% endif %}
             </div>
         </div>
@@ -726,41 +273,40 @@
     </div>
 </div>
 
-<!-- Modal Form Tambah / Edit Transaksi -->
+<!-- Modal Form -->
 <div class="modal-backdrop" id="transactionModal">
-    <div class="modal-card bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100 w-full max-w-md text-sm">
-        <div class="modal-header border-b border-gray-100 px-5 py-3.5 flex items-center justify-between">
-            <h3 class="modal-title font-bold text-gray-900 text-sm" id="modalTitle">Tambah Transaksi Keluar</h3>
-            <button class="modal-close text-gray-400 hover:text-gray-600 text-lg leading-none" onclick="closeTransactionModal()">&times;</button>
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-slate-200 w-full max-w-md text-xs">
+        <div class="border-b border-slate-100 px-5 py-4 flex items-center justify-between">
+            <h3 class="font-bold text-slate-900 text-sm" id="modalTitle">Tambah Transaksi Keluar</h3>
+            <button type="button" class="text-slate-400 hover:text-slate-600 text-lg leading-none" onclick="closeTransactionModal()">&times;</button>
         </div>
-        <form id="transactionForm" onsubmit="handleTransactionSubmit(event)" class="p-5 space-y-3">
+        <form id="transactionForm" onsubmit="handleTransactionSubmit(event)" class="p-5 space-y-4">
             <input type="hidden" id="edit_id" name="edit_id">
             
-            <div class="modal-body space-y-3 p-0">
-                <div class="form-group">
-                    <label for="description" class="block font-medium text-gray-700 mb-1 text-xs">Keterangan</label>
-                    <input type="text" id="description" name="description" class="form-control w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none" placeholder="Contoh: Pembelian Alat Tulis Kantor" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="amount" class="block font-medium text-gray-700 mb-1 text-xs">Nominal (Rp)</label>
-                    <input type="text" id="amount" class="form-control w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-gray-900 focus:outline-none" placeholder="0" oninput="formatRupiahInput(this)" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="block font-medium text-gray-700 mb-1 text-xs">Bukti Transaksi (Opsional)</label>
-                    <label class="file-input-wrapper border border-dashed border-gray-300 rounded-lg p-3 text-center bg-gray-50 cursor-pointer block">
-                        <i class='bx bx-cloud-upload text-2xl text-gray-400'></i>
-                        <span id="fileNameLabel" class="block text-xs text-gray-500 mt-1">
-                            Pilih file gambar
-                        </span>
-                        <input type="file" id="image" name="image" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
-                    </label>
-                </div>
+            <div>
+                <label for="description" class="block font-semibold text-slate-700 mb-1">Keterangan</label>
+                <input type="text" id="description" name="description" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition" placeholder="Contoh: Pembelian Alat Tulis Kantor" required>
             </div>
-            <div class="modal-footer flex justify-end gap-2 pt-3 border-t border-gray-100">
-                <button type="button" class="btn-outline px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50" id="cancelBtn" onclick="closeTransactionModal()">Batal</button>
-                <button type="submit" class="btn-solid px-3 py-1.5 text-xs text-white bg-gray-900 rounded-lg hover:bg-gray-800 font-medium" id="submitBtn">
+
+            <div>
+                <label for="amount" class="block font-semibold text-slate-700 mb-1">Nominal (Rp)</label>
+                <input type="text" id="amount" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition font-mono-num" placeholder="0" oninput="formatRupiahInput(this)" required>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1">Bukti Transaksi (Opsional)</label>
+                <label class="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center bg-slate-50 hover:bg-slate-100/50 transition cursor-pointer block">
+                    <i class='bx bx-cloud-upload text-3xl text-slate-400'></i>
+                    <span id="fileNameLabel" class="block text-slate-500 mt-1 font-medium">
+                        Pilih file gambar
+                    </span>
+                    <input type="file" id="image" name="image" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
+                </label>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" class="px-3.5 py-2 text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50 font-medium transition" onclick="closeTransactionModal()">Batal</button>
+                <button type="submit" class="px-3.5 py-2 text-white bg-slate-900 rounded-lg hover:bg-slate-800 font-semibold transition" id="submitBtn">
                     <span id="btnText">Simpan</span>
                 </button>
             </div>
@@ -770,19 +316,19 @@
 
 <!-- Modal Konfirmasi Hapus -->
 <div class="modal-backdrop" id="deleteModal">
-    <div class="modal-card bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100 w-full max-w-sm text-sm">
-        <div class="modal-header border-b border-gray-100 px-5 py-3.5 flex items-center justify-between">
-            <h3 class="modal-title font-bold text-gray-900 text-sm">Hapus Transaksi</h3>
-            <button class="modal-close text-gray-400 hover:text-gray-600 text-lg leading-none" onclick="closeDeleteModal()">&times;</button>
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-slate-200 w-full max-w-sm text-xs">
+        <div class="border-b border-slate-100 px-5 py-4 flex items-center justify-between">
+            <h3 class="font-bold text-slate-900 text-sm">Hapus Transaksi</h3>
+            <button type="button" class="text-slate-400 hover:text-slate-600 text-lg leading-none" onclick="closeDeleteModal()">&times;</button>
         </div>
-        <div class="modal-body p-5">
-            <p class="text-sm text-gray-600 leading-relaxed">
+        <div class="p-5">
+            <p class="text-slate-600 leading-relaxed">
                 Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
             </p>
         </div>
-        <div class="modal-footer flex justify-end gap-2 p-4 pt-3 border-t border-gray-100 bg-gray-50/50">
-            <button type="button" class="btn-outline px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50" id="cancelDeleteBtn" onclick="closeDeleteModal()">Batal</button>
-            <button type="button" class="btn-danger px-3 py-1.5 text-xs text-white bg-red-600 rounded-lg hover:bg-red-700 font-medium" id="confirmDeleteBtn" onclick="executeDelete()">
+        <div class="flex justify-end gap-2 p-4 border-t border-slate-100 bg-slate-50/50">
+            <button type="button" class="px-3.5 py-2 text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50 font-medium transition" onclick="closeDeleteModal()">Batal</button>
+            <button type="button" class="px-3.5 py-2 text-white bg-rose-600 rounded-lg hover:bg-rose-700 font-semibold transition" id="confirmDeleteBtn" onclick="executeDelete()">
                 <span id="deleteBtnText">Hapus</span>
             </button>
         </div>
@@ -792,12 +338,13 @@
 <!-- Modal Preview Gambar -->
 <div class="modal-backdrop" id="imagePreviewModal" onclick="closeImagePreview()">
     <div class="max-w-[90vw] max-h-[90vh]">
-        <img id="previewImageSrc" src="" alt="Preview Bukti" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl">
+        <img id="previewImageSrc" src="" alt="Preview Bukti" class="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain">
     </div>
 </div>
 
 <!-- Container Toast -->
 <div class="toast-container" id="toastContainer"></div>
+
 
 <script>
     let selectedDeleteId = null;

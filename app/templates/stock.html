@@ -479,13 +479,12 @@
         </form>
     </div>
 </div>
-
 <!-- Modal Barang Keluar -->
 <!-- Modal Barang Keluar -->
 <div id="modalBarangKeluar" class="fixed inset-0 bg-gray-900/40 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden border border-gray-100 text-xs">
         {{ modal_header('Catat Barang Keluar', 'modalBarangKeluar') }}
-        <form id="formBarangKeluar" onsubmit="submitForm(event, '/api/v1/stock/out', this)" class="p-5 space-y-3">
+        <form id="formBarangKeluar" onsubmit="submitBarangKeluarForm(event, this)" class="p-5 space-y-3">
             <div>
                 <label class="block font-medium text-gray-700 mb-1">Pilih Produk *</label>
                 <select name="product_id" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
@@ -496,10 +495,10 @@
                 </select>
             </div>
 
-            <!-- DPD/Dropdown Jenis Keluar Tambahan -->
+            <!-- Tipe Keluar: Hanya Penjualan dan Sampel -->
             <div>
                 <label class="block font-medium text-gray-700 mb-1">Tipe Keluar *</label>
-                <select name="type" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
+                <select name="out_type" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
                     <option value="">-- Pilih Tipe --</option>
                     <option value="Penjualan">Penjualan</option>
                     <option value="Sampel">Sampel</option>
@@ -510,10 +509,12 @@
                 <label class="block font-medium text-gray-700 mb-1">Jumlah Keluar *</label>
                 <input type="number" name="quantity" min="1" required class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
             </div>
+            
             <div>
                 <label class="block font-medium text-gray-700 mb-1">Catatan</label>
                 <input type="text" name="notes" placeholder="Penjualan toko..." class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-gray-900 focus:outline-none">
             </div>
+
             <div class="flex justify-end gap-2 pt-3 border-t border-gray-100">
                 <button type="button" onclick="closeModal('modalBarangKeluar')" class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
                 <button type="submit" class="submit-btn px-3 py-1.5 text-white bg-gray-900 rounded-lg hover:bg-gray-800 font-medium inline-flex items-center gap-1.5">
@@ -698,6 +699,7 @@ function setButtonLoading(btn, isLoading, defaultText = 'Simpan') {
     }
 }
 
+// Submit Form Generic (Tambah / Edit Umum)
 async function submitForm(event, url, formElement) {
     event.preventDefault();
     const btn = formElement.querySelector('.submit-btn');
@@ -706,8 +708,11 @@ async function submitForm(event, url, formElement) {
     const formData = new FormData(formElement);
     const data = Object.fromEntries(formData.entries());
 
+    // Formatting & Type Casting
     if (data.buy_price) data.buy_price = cleanCurrency(data.buy_price);
     if (data.sell_price) data.sell_price = cleanCurrency(data.sell_price);
+    if (data.quantity !== undefined) data.quantity = parseInt(data.quantity, 10) || 0;
+    if (data.product_id !== undefined) data.product_id = parseInt(data.product_id, 10) || data.product_id;
 
     try {
         const response = await fetch(url, {
@@ -721,7 +726,54 @@ async function submitForm(event, url, formElement) {
             setTimeout(() => window.location.reload(), 600);
         } else {
             const err = await response.json();
-            showToast('Gagal: ' + (err.detail || 'Terjadi kesalahan.'), 'error');
+            const errorMsg = Array.isArray(err.detail) 
+                ? err.detail.map(e => `${e.loc.join('.')}: ${e.msg}`).join(', ') 
+                : (err.detail || 'Terjadi kesalahan.');
+            showToast('Gagal: ' + errorMsg, 'error');
+            setButtonLoading(btn, false, 'Simpan');
+        }
+    } catch (error) {
+        showToast('Terjadi kesalahan koneksi jaringan.', 'error');
+        setButtonLoading(btn, false, 'Simpan');
+    }
+}
+
+// Submit Form Khusus Barang Keluar (Mengatasi Perbedaan Name Attribute & Formatting)
+async function submitBarangKeluarForm(event, formElement) {
+    event.preventDefault();
+    const btn = formElement.querySelector('.submit-btn');
+    setButtonLoading(btn, true, 'Simpan');
+
+    const formData = new FormData(formElement);
+    const rawData = Object.fromEntries(formData.entries());
+
+    // Pemetaan data sesuai BarangKeluarCreate Pydantic Schema
+    const payload = {
+        product_id: parseInt(rawData.product_id, 10),
+        quantity: parseInt(rawData.quantity, 10),
+        out_type: rawData.out_type || rawData.type, // Menangani name="type" atau name="out_type"
+        notes: rawData.notes && rawData.notes.trim() !== "" ? rawData.notes.trim() : null
+    };
+
+    try {
+        const response = await fetch('/api/v1/stock/out', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            showToast('Barang keluar berhasil dicatat!', 'success');
+            setTimeout(() => {
+                window.location.href = window.location.pathname + '?t=' + new Date().getTime();
+            }, 600);
+        } else {
+            const err = await response.json();
+            const errorMsg = Array.isArray(err.detail)
+                ? err.detail.map(e => `${e.loc.join('.')}: ${e.msg}`).join(', ')
+                : (err.detail || 'Terjadi kesalahan.');
+            
+            showToast('Gagal: ' + errorMsg, 'error');
             setButtonLoading(btn, false, 'Simpan');
         }
     } catch (error) {
@@ -743,7 +795,7 @@ async function submitEditForm(event, formElement) {
     data.buy_price = cleanCurrency(data.buy_price);
     data.sell_price = cleanCurrency(data.sell_price);
 
-    // 2. Konversi stok & min_stock ke Integer (Penyebab Utama Data Tidak Berubah)
+    // 2. Konversi stok & min_stock ke Integer
     if (data.stock !== undefined) data.stock = parseInt(data.stock, 10) || 0;
     if (data.min_stock !== undefined) data.min_stock = parseInt(data.min_stock, 10) || 0;
 
@@ -763,7 +815,10 @@ async function submitEditForm(event, formElement) {
             }, 600);
         } else {
             const err = await response.json();
-            showToast('Gagal update: ' + (err.detail || 'Terjadi kesalahan.'), 'error');
+            const errorMsg = Array.isArray(err.detail)
+                ? err.detail.map(e => `${e.loc.join('.')}: ${e.msg}`).join(', ')
+                : (err.detail || 'Terjadi kesalahan.');
+            showToast('Gagal update: ' + errorMsg, 'error');
             setButtonLoading(btn, false, 'Update');
         }
     } catch (error) {
