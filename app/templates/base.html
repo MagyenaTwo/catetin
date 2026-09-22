@@ -644,7 +644,7 @@
     </script>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeSidebar(); closeMobileTxMenu();"></div>
-<aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="brand-area">
             <img src="/static/logo2.png" alt="Catetin Logo" class="brand-logo-img">
             <button class="btn-sidebar-toggle" onclick="handleMenuToggle()" title="Toggle Sidebar">
@@ -657,62 +657,71 @@
                 <i class='bx bx-grid-alt'></i>
                 <span>Dashboard</span>
             </a>
-<div>
-    <button type="button" class="nav-item {% if '/transaksi' in request.path %}active{% endif %}" onclick="toggleTransaksiSubmenu()" data-tooltip="Transaksi">
-        <i class='bx bx-transfer-alt'></i>
-        <span>Transaksi</span>
-        <i class='bx bx-chevron-down arrow-icon' id="txArrow"></i>
-    </button>
+            <div>
+                <button type="button" class="nav-item {% if '/transaksi' in request.path %}active{% endif %}" onclick="toggleTransaksiSubmenu()" data-tooltip="Transaksi">
+                    <i class='bx bx-transfer-alt'></i>
+                    <span>Transaksi</span>
+                    <i class='bx bx-chevron-down arrow-icon' id="txArrow"></i>
+                </button>
 
-    <div class="submenu {% if request.path.startswith('/transaksi') %}open{% endif %}" id="transaksiSubmenu">
-    <a href="/transaksi"
-       class="nav-item {% if request.path.rstrip('/') == '/transaksi' %}active{% endif %}">
-        <i class="ri-arrow-down-line"></i>
-        <span>Transaksi Masuk</span>
-    </a>
+                <div class="submenu {% if request.path.startswith('/transaksi') %}open{% endif %}" id="transaksiSubmenu">
+                    <a href="/transaksi"
+                       class="nav-item {% if request.path.rstrip('/') == '/transaksi' %}active{% endif %}">
+                        <i class="ri-arrow-down-line"></i>
+                        <span>Transaksi Masuk</span>
+                    </a>
 
-    <a href="/transaksi-keluar"
-       class="nav-item {% if request.path.rstrip('/') == '/transaksi-keluar' %}active{% endif %}">
-        <i class="ri-arrow-up-line"></i>
-        <span>Transaksi Keluar</span>
-    </a>
-</div>
-</div>
+                    <a href="/transaksi-keluar"
+                       class="nav-item {% if request.path.rstrip('/') == '/transaksi-keluar' %}active{% endif %}">
+                        <i class="ri-arrow-up-line"></i>
+                        <span>Transaksi Keluar</span>
+                    </a>
+                </div>
+            </div>
 
-    <div>
-    <!-- Tambahkan pengecekan '/stok' dan '/stock' agar menu induk aktif -->
-    <button type="button" class="nav-item {% if '/stock' in request.path or '/stok' in request.path %}active{% endif %}" onclick="toggleStockSubmenu()" data-tooltip="Stock">
-        <i class='bx bx-package'></i>
-        <span>Stock</span>
-        <i class='bx bx-chevron-down arrow-icon' id="stockArrow"></i>
-    </button>
-    
-  <!-- Submenu Stock -->
-<div class="submenu {% if '/stock' in request.path or '/stok' in request.path %}open{% endif %}" id="stockSubmenu">
-    
-    <!-- Daftar Stock -->
-    <a href="/stock" class="nav-item {% if request.path.rstrip('/') in ['/stock', '/stok'] %}active{% endif %}">
-        <i class='bx bx-list-ul'></i>
-        <span>Daftar Stock</span>
-    </a>
-    
-    <!-- Stock Masuk -->
-    <a href="/stok-masuk" class="nav-item {% if 'stok-masuk' in request.path or 'stock-masuk' in request.path %}active{% endif %}">
-        <i class='bx bx-log-in-circle'></i>
-        <span>Stock Masuk</span>
-    </a>
-    
-    <!-- Stock Keluar -->
-    <a href="/stok-keluar" class="nav-item {% if 'stok-keluar' in request.path or 'stock-keluar' in request.path %}active{% endif %}">
-        <i class='bx bx-log-out-circle'></i>
-        <span>Stock Keluar</span>
-    </a>
-</div>
-</div>
+            <div>
+                <!-- Tambahkan pengecekan '/stok' dan '/stock' agar menu induk aktif -->
+                <button type="button" class="nav-item {% if '/stock' in request.path or '/stok' in request.path %}active{% endif %}" onclick="toggleStockSubmenu()" data-tooltip="Stock">
+                    <i class='bx bx-package'></i>
+                    <span>Stock</span>
+                    <i class='bx bx-chevron-down arrow-icon' id="stockArrow"></i>
+                </button>
+                
+                <!-- Submenu Stock -->
+                <div class="submenu {% if '/stock' in request.path or '/stok' in request.path %}open{% endif %}" id="stockSubmenu">
+                    
+                    <!-- Daftar Stock -->
+                    <a href="/stock" class="nav-item {% if request.path.rstrip('/') in ['/stock', '/stok'] %}active{% endif %}">
+                        <i class='bx bx-list-ul'></i>
+                        <span>Daftar Stock</span>
+                    </a>
+                    
+                    <!-- Stock Masuk -->
+                    <a href="/stok-masuk" class="nav-item {% if 'stok-masuk' in request.path or 'stock-masuk' in request.path %}active{% endif %}">
+                        <i class='bx bx-log-in-circle'></i>
+                        <span>Stock Masuk</span>
+                    </a>
+                    
+                    <!-- Stock Keluar -->
+                    <a href="/stok-keluar" class="nav-item {% if 'stok-keluar' in request.path or 'stock-keluar' in request.path %}active{% endif %}">
+                        <i class='bx bx-log-out-circle'></i>
+                        <span>Stock Keluar</span>
+                    </a>
+                </div>
+            </div>
             
             <a href="javascript:void(0)" class="nav-item {% if request.path == '/laporan' %}active{% endif %}" data-tooltip="Laporan" onclick="showDevAlert(event)">
                 <i class='bx bx-pie-chart-alt-2'></i>
                 <span>Laporan</span>
+            </a>
+
+            <!-- PEMISAH / DIVIDER -->
+            <div style="margin: 0.75rem 0; border-top: 1px solid var(--border, #e2e8f0);"></div>
+
+            <!-- MENU KONTEN (DI BAWAH) -->
+            <a href="/konten" class="nav-item {% if '/konten' in request.path %}active{% endif %}" data-tooltip="Konten">
+                <i class='bx bx-video'></i>
+                <span>Konten</span>
             </a>
         </nav>
 
@@ -766,15 +775,18 @@
             {% block content %}{% endblock %}
         </main>
     </div>
+
     <div class="mobile-transaksi-menu" id="mobileTxMenu">
         <a href="/transaksi-masuk"><i class='bx bx-right-arrow-circle'></i> Transaksi Masuk</a>
         <a href="/transaksi-keluar"><i class='bx bx-left-arrow-circle'></i> Transaksi Keluar</a>
     </div>
-<div class="mobile-transaksi-menu" id="mobileStockMenu">
-    <a href="/stock"><i class='bx bx-list-ul'></i> Daftar Stock</a>
-    <a href="/stok-masuk"><i class='bx bx-log-in-circle'></i> Stock Masuk</a>
-    <a href="/stok-keluar"><i class='bx bx-log-out-circle'></i> Stock Keluar</a>
-</div>
+
+    <div class="mobile-transaksi-menu" id="mobileStockMenu">
+        <a href="/stock"><i class='bx bx-list-ul'></i> Daftar Stock</a>
+        <a href="/stok-masuk"><i class='bx bx-log-in-circle'></i> Stock Masuk</a>
+        <a href="/stok-keluar"><i class='bx bx-log-out-circle'></i> Stock Keluar</a>
+    </div>
+
     <nav class="mobile-bottom-nav">
         <a href="/dashboard" class="b-nav-item {% if request.path == '/dashboard' %}active{% endif %}">
             <i class='bx bx-grid-alt'></i>
@@ -784,10 +796,14 @@
             <i class='bx bx-transfer-alt'></i>
             <span>Transaksi</span>
         </button>
-      <button type="button" class="b-nav-item {% if '/stock' in request.path or '/stok' in request.path %}active{% endif %}" onclick="toggleMobileStockMenu()">
-    <i class='bx bx-package'></i>
-    <span>Stock</span>
-</button>
+        <button type="button" class="b-nav-item {% if '/stock' in request.path or '/stok' in request.path %}active{% endif %}" onclick="toggleMobileStockMenu()">
+            <i class='bx bx-package'></i>
+            <span>Stock</span>
+        </button>
+        <a href="/konten" class="b-nav-item {% if '/konten' in request.path %}active{% endif %}">
+            <i class='bx bx-video'></i>
+            <span>Konten</span>
+        </a>
         <a href="/laporan" class="b-nav-item {% if request.path == '/laporan' %}active{% endif %}">
             <i class='bx bx-pie-chart-alt-2'></i>
             <span>Laporan</span>
