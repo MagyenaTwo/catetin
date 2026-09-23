@@ -250,6 +250,47 @@
         cursor: pointer;
     }
 
+    /* Struktur Flex Rapi & Sejajar untuk Nama & Ikon TikTok */
+    .kreator-cell {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .kreator-nama {
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+    }
+
+    .tiktok-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #0f172a;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 11px;
+        flex-shrink: 0;
+        transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .tiktok-link i {
+        line-height: 1;
+    }
+
+    .tiktok-link:hover {
+        transform: scale(1.1);
+        background: #000000;
+    }
+
     /* Pagination Component */
     .pagination-container {
         display: flex;
@@ -479,16 +520,15 @@
                 <table class="custom-table">
                     <thead>
                         <tr>
-                            <th style="width: 14%;">Nama</th>
-                            <th style="width: 12%;">Akun</th>
-                            <th style="width: 9%;">VT</th>
-                            <th style="width: 9%;">Views</th>
+                            <th style="width: 22%;">Nama Kreator</th>
+                            <th style="width: 10%;">VT</th>
+                            <th style="width: 10%;">Views</th>
                             <th style="width: 10%;">Link</th>
-                            <th style="width: 11%;">Tanggal</th>
+                            <th style="width: 12%;">Tanggal</th>
                             <th style="width: 11%;">Status</th>
                             <th style="width: 10%;">Review</th>
-                            <th style="width: 12%;">Penghasilan</th>
-                            <th style="width: 8%; text-align: center;">Aksi</th>
+                            <th style="width: 15%;">Penghasilan</th>
+                            <th style="width: 10%; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -505,13 +545,23 @@
                                 data-tanggal="{{ item.tanggal_upload.strftime('%Y-%m-%d') if item.tanggal_upload else '' }}"
                                 data-statusupload="{{ item.status_upload }}"
                                 data-review="{{ item.review }}">
-                                
-                                <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ item.nama }}">
-                                    <strong>{{ item.nama }}</strong>
-                                </td>
-                                <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="@{{ item.akun }}">
-                                    @{{ item.akun }}
-                                </td>
+                                <td>
+    <div class="kreator-cell">
+        <span class="kreator-nama" title="{{ item.nama }}">{{ item.nama }}</span>
+        
+        {% if item.akun and item.akun.replace('@', '').strip() != '' %}
+            {% set clean_akun = item.akun.replace('@', '').strip() %}
+            <!-- Tambahkan ?lang=en di akhir URL untuk bypass redirect FYP -->
+            <a href="https://www.tiktok.com/@{{ clean_akun }}?lang=en" 
+               target="_blank" 
+               rel="noopener"
+               class="tiktok-link" 
+               title="Buka TikTok @{{ clean_akun }}">
+                <i class='bx bxl-tiktok'></i>
+            </a>
+        {% endif %}
+    </div>
+</td>
                                 <td>
                                     <span class="badge {{ 'badge-success' if item.status_vt == 'Kerkun' else 'badge-danger' }}">
                                         {{ item.status_vt }}
@@ -521,7 +571,7 @@
                                     {{ "{:,}".format(item.views or 0) }}
                                 </td>
                                 <td>
-                                    <a href="{{ item.link_video or item.link or '#' }}" target="_blank" style="color: #0f766e; text-decoration: none; font-weight: 600;">
+                                    <a href="{{ item.link_video or item.link or '#' }}" target="_blank" rel="noopener noreferrer" style="color: #0f766e; text-decoration: none; font-weight: 600;">
                                         Buka <i class='bx bx-link-external'></i>
                                     </a>
                                 </td>
@@ -560,7 +610,7 @@
                             {% endfor %}
                         {% else %}
                             <tr id="noDataRow">
-                                <td colspan="10" style="text-align: center; padding: 24px; color: #64748b;">
+                                <td colspan="9" style="text-align: center; padding: 24px; color: #64748b;">
                                     <i class='bx bx-folder-open' style="font-size: 28px; color: #cbd5e1; display: block; margin-bottom: 4px;"></i>
                                     Belum ada data konten yang ditemukan.
                                 </td>
@@ -705,6 +755,8 @@
         </form>
     </div>
 </div>
+
+
 
 <!-- Toast Container -->
 <div id="toastContainer" class="toast-container"></div>
