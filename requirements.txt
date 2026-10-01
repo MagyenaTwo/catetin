@@ -11,6 +11,7 @@ mistralai
 slowapi
 python-dotenv
 psycopg2-binary
+psycopg[binary]
 python-jose[cryptography]
 resend
 bcrypt==4.0.1
